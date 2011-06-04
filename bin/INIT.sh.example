@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*- 
 
+# This is an example init file.
+# Modify it for your own site, and save as: INIT.sh
+
+
 # NOTE: for non-ascii characters, this file should be encoded in utf-8
 
 umask 077
