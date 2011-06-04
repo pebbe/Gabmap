@@ -1,0 +1,71 @@
+# -*- coding: utf-8 -*- 
+
+# NOTE: for non-ascii characters, this file should be encoded in utf-8
+
+umask 077
+
+ulimit -v 500000
+
+export MAXPROJECTS=20
+export MAXDAYS=60
+
+export PYTHON2PATH=`pwd`
+export PYTHON3PATH=`pwd`
+export PYTHONPATH=$PYTHON3PATH
+
+# where libraries for R are stored
+export R_LIBS_USER=/home/yourname/.Rlib
+
+# some string used for encryption, change it for your site
+export SECRET='gasheyri iorhyer fjdfjlui dfpe8'
+
+# make sure sys.stdout is set to UTF-8
+export PYTHONIOENCODING=utf-8
+export LANG=en_US.UTF-8  
+export LC_COLLATE=C
+
+# which Python binary to use, requires Python 3.1 or above
+export PYTHON2=python2.6
+export PYTHON3=python3.1
+
+# where the webapp stores its data, including trailing slash
+export DATADIR=/home/yourname/.gabmap/
+
+# location of the webapp, including trailing slash
+export APPDIR=/home/yourname/public_html/gabmap/
+
+# the base url to the webapp, including trailing slash
+export APPURL=http://yourdomain/~yourname/gabmap/
+
+# the base url to the webapp using https, including trailing slash
+export APPURLS=https://yourdomain/~yourname/gabmap/
+
+# the base url to the webapp without server, including trailing slash
+export APPREL=/~yourname/gabmap/
+
+export ABOUTURL="http://www.gabmap.nl/?page_id=18"
+export HELPURL="http://www.gabmap.nl/?page_id=12"
+
+# PATH should include the Python binary, and the RuG/L04 binaries
+PATH=${APPDIR}util:$PATH
+
+#export LD_LIBRARY_PATH=${APPDIR}lib
+
+# The bare e-mail address used as sender in e-mail messages
+export MAILFROM=yourname@yourdomain
+
+export SMTPSERV=your.mailserver.com
+export SMTPUSER=
+export SMTPPASS=
+
+
+### The following variables are optional
+
+# url of contact person, http:// or mailto:
+export CONTACT=mailto:yourname@yourdomain
+
+# name of contact person
+export CONTACTNAME="Your Name"
+
+# this overrides CONTACT and CONTACTNAME, and defines a complete footer in HTML
+export CONTACTLINE=
