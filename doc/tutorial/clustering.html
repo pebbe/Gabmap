@@ -1,0 +1,166 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="3 days">
+ <META NAME="description" CONTENT="Gabmap Tutorial">
+ <META NAME="keywords" CONTENT="Gabmap, tutorial, dialectometry, dialect, maps, dialectology, L04, Adept">
+<title>Gabmap Tutorial</title>
+ <link rel="stylesheet" type="text/css" href="tutorial.css">
+</head>
+
+<body>
+
+<center style="background-color:#800000;color:#ffffff;padding:.2em 0px"><b>
+<a class="navigationbar" href="mds.html">previous topic</a>
+| <a class="navigationbar" href="index.htm">Start screen</a>
+| <a class="navigationbar" href="solutions.html">solutions</a>
+</b>
+</center>
+
+<h1>Cluster analysis</h1>
+
+<p>
+While MDS displays dialect continua, cluster analysis can be used for classifying dialects and identifying dialect areas. Clustering is the process of dividing a set of objects into groups (clusters). In our case, the objects are geographic places and we want to divide them into groups based on their linguistic similarity.
+</p>
+
+<p>
+Cluster analysis is applied to the distance matrix with the pair-wise aggregate linguistic distances between places.
+In clustering, groups are merged based on similarity. To start with, each place is a cluster of its own, a cluster with only one element. The two places that have the smallest linguistic distance in the distance table are merged into a cluster. Then the difference is calculated between that new cluster, and all remaining places. Based on the new distances, again, the objects with the smallest difference are merged. And so on, until all places are merged into one big cluster. 
+</p>
+
+
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">The history of the clustering procedure is displayed in a dendrogram:</td>
+<td valign="center"><img src="images/den_penn7.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<p>
+In this example dendrogram, Armstrong and Butler are the two places with the smallest linguistic distance in the distance matrix and they have been grouped together first. After that Chester and Montgomery have been joined, and in the third step McKean and Tioga. After these pairs have been formed, the clusters containing Chester and Montgomery and McKean and Tioga are joined to form a cluster with four items. Berks has such a large distance to all other sites that it has been merged with the rest only in the very last step of clustering. 
+</p>
+
+<p>
+When making a dialect classification, you proceed from the right to the left in the dendrogram until you find the break point with as many branches as you want groups in your classification. The break point is marked with a read line in the dendrograms below.
+</p>
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">So if one would like to make a division into two clusters of this small data set, Berks would be in one group by itself and all the other places would form the second group together.</td>
+<td valign="center"><img src="images/den2_penn7-break.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">In a division into three groups, there would be one group with one member (Berks), one group with four members, and one group with two members.</td>
+<td valign="center"><img src="images/den3_penn7-break.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<p>
+A map can be created by coloring the area of each cluster with a distinct color. The colors in these maps are arbitrary. Similarity of colors does not imply linguistic similarity, but each distinct color simply denotes one cluster. This is how a cluster map with four clusters would look:
+</p>
+
+<div style="padding: 0px 60px 0px">
+   <img  src="images/clustmap_penn7.wm4.png" alt="map"/>
+   <img  src="images/den4_penn7-break.png" alt="dendrogram"/>
+</div>
+
+
+<h2>Fuzzy clustering</h2>
+<p>
+A problem with cluster analysis is that it is a relatively unstable method. Small changes in the distance matrix can lead to large changes in the clustering results, which makes the results of clustering unreliable. Different methods have been developed to solve this problem. One such method is <i>fuzzy clustering</i>. Fuzzy clustering means that the original distance matrix is contaminated with (varying) small amounts of random noise. This is done several times and each time clustering is performed on the contaminated matrix. After that we count how many times each cluster has appeared. Clusters that appear in many runs of the analysis with added noise are particularly stable ones. The results are displayed in a probabilistic dendrogram:  
+</p>
+
+<div style="padding: 0px 60px 0px">
+    <img src="images/probbw-penn15.png" alt="dendrogram"/>
+</div>
+
+
+<p>
+The percentages in the probabilistic dendrogram indicate how many times each cluster was encountered in the repeated clustering with noise. In the example above, the largest clusters have been encountered in all the iterations and have a probability of 100%. We can therefore be pretty sure that these are real clusters. On the lower levels the percentages are somewhat smaller, so we cannot be completely sure about these clusters. 
+</p>
+
+<!--
+<p style="color:#c0c0c0">
+coming up ...
+</p>
+-->
+
+<p>
+Go to <i>Fuzzy clustering - probabilistic dendrogram</i> in your Gabmap project. 
+</p>
+
+<table border="0" cellpadding="5">
+<tr>
+   <td><img src="images/ink.jpg" alt="Exercise"/></td>
+   <td>Which dialect groups in Pennsylvania can be identified with high confidence?</td>
+</tr>
+</table>
+
+<p>
+Note that the colors in the probabilistic dendrogram are from a different analysis and are there to help you identify the places in the map under the dendrogram. 
+This map is also displayed at <i>Fuzzy clustering - fuzzy cluster maps</i>. The map visualizes something between MDS and cluster analysis: main dialect groups are identified in the map, but continuous relationships are displayed for places which cannot be put in one group with high probability. The map is created by running MDS on the branch lengths of the dendrogram (so-called cophenetic distances) instead of on the original linguistic distances. 
+</p>
+
+<h2>Discrete clustering</h2>
+
+<p>
+Results of clustering without noise are found under <i>Discrete clustering - cluster maps and dendrograms</i> in Gabmap. Remember that caution should be taken when interpreting these results, because cluster analysis is not a stable technique (see above).
+</p>
+
+<p>
+You can inspect the results of four different clustering algorithms in this view in Gabmap. The four methods are <i>Complete Link</i>, <i>Group Average</i>, <i>Weighted Average</i> and <i>Ward's Method</i>. The different algorithms have different ways of determining how distances between newly formed clusters are calculated in the clustering process. The different methods have different biases, for example, Ward's Method favors equal size clusters, while the other methods are more true to the original linguistic distances. 
+</p>
+
+<p>
+The default cluster map represents eight clusters obtained by using Weighted Average for clustering. 
+</p>
+
+<table border="0" cellpadding="5">
+<tr>
+   <td><img src="images/ink.jpg" alt="Exercise"/></td>
+   <td>Look at the map of eight clusters with Weighted Average as clustering method. Compare this map to the difference maps (<i>Differences</i> - <i>statistics and difference maps</i>). Is there an agreement between the line maps on the one hand and the cluster map on the other? What is similar? What is different?</td>
+</tr>
+</table>
+
+<p>
+Now, let's change clustering method. You can change the parameters in the box under the map in this view. Choose <i>Ward's Method</i> instead of <i>Weighted Average</i>, and then click <i>Change settings</i>. The default number of clusters displayed is eight, but you can change the number of clusters displayed yourself. Choose six instead of eight, and then click <i>Change settings</i> again.
+</p>
+
+<table border="0" cellpadding="5">
+<tr>
+   <td><img src="images/ink.jpg" alt="Exercise"/></td>
+   <td>Compare the results of six clusters using Ward's Method to the results of fuzzy clustering. Are the results similar?</td>
+</tr>
+</table>
+
+<table border="0" cellpadding="5">
+<tr>
+   <td><img src="images/ink.jpg" alt="Exercise"/></td>
+   <td>Compare the map of six clusters using Ward's Method to the one of eight clusters with Weighted Average as clustering method. Which one is better?</td>
+</tr>
+</table>
+
+
+<p>
+An additional method for validating the results of cluster analysis is available under <i>Discrete clustering - cluster validation</i>. A cluster map is displayed, and under the map, there is a plot which is actually the same MDS plot which you find at <i>Multidimensional scaling - mds plots</i>. The plot is colored according to the chosen cluster analysis, so that you can compare the clustering results with the results of MDS. The plot helps you to see how well separated the clusters are. If no clear, separated clouds of dots can be identified in the plot, the data set is probably truly continuous and it does not make sense to use cluster analysis.
+</p>
+
+<p align="right"><a href="solutions-clustering.html" target="_blank">Solutions</a></p>
+<br>
+<center style="background-color:#800000;color:#ffffff;padding:.2em 0px"><b>
+<a class="navigationbar" href="mds.html">previous topic</a>
+| <a class="navigationbar" href="index.htm">Start screen</a>
+| <a class="navigationbar" href="solutions.html">solutions</a>
+</b>
+</center>
+
+
+</body>
+</html>

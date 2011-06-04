@@ -1,0 +1,12 @@
+OK: ../diff/OK
+	rm -f OK
+
+	difmodin ../data/labels.txt tmp.tbl
+	difmod ../map/map.geo tmp.tbl > tmp.dst
+	R --no-save < {0[appdir]}util/{0[script]}
+
+	eps2png
+
+	rm -f tmp*
+
+	touch OK

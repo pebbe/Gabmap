@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/09/14"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, sys
+
+#| globals
+
+pattern = b'''
+gsave
+<<
+    /PatternType 1
+    /PaintType 1
+    /TilingType 1
+    /PaintProc {
+        begin
+            XStep
+            YStep
+            8
+            [ 1 0 0 1 0 0 ]
+            data
+            false 3
+            colorimage
+        end
+    }
+>>
+/pdict exch def
+/defpattern {
+    /pat exch def
+    /y exch def
+    /x exch def
+    pdict /BBox [ 0 0 x y ] put
+    pdict /XStep x put
+    pdict /YStep y put
+    pdict /data pat put
+    pdict [ 72 20 div 0 0
+            72 20 div 0 0 ] makepattern
+} bind def
+/Pattern setcolorspace
+4 4 {< dfdfdf
+       dfdfdf
+       afafaf
+       afafaf
+       dfdfdf
+       dfdfdf
+       afafaf
+       afafaf
+       afafaf
+       afafaf
+       dfdfdf
+       dfdfdf
+       afafaf
+       afafaf
+       dfdfdf
+       dfdfdf  >} defpattern
+setcolor
+eofill
+grestore
+'''
+
+#| main
+
+fpin = open(sys.argv[1], 'rb')
+fpout = open(sys.argv[2], 'wb')
+
+state = 0
+for line in fpin:
+    if state == 0:
+        if line.startswith(b'gsave Backrgb aload'):
+            state = 1
+            fpout.write(pattern)
+        else:
+            fpout.write(line)
+    else:
+        fpout.write(line)
+
+fpout.close()
+fpin.close()

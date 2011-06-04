@@ -1,0 +1,88 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+<h1>Data file</h1>
+
+<p>
+The data is uploaded in Gabmap as a plain text file with a single tab-separated table. You can create this file, for example, by using MS Excel, see example <a href="datafile-howto.html">here</a>.
+</p>
+
+<h2><a name="format">File format</a></h2>
+<p>
+Each line in the file is a row in the table. Table cells are separated by a tab character. There are no quotes around the contents of a cell, and
+the contents does not contain escape characters. That is, the content of each cell is used as it is. Lines starting with a hash (#) are considered comments, and ignored.
+</p>
+
+<p>
+The first row in the table contains the labels for the the linguistic variables (except if the data is <a href="datafile-difference.html">difference data</a>). The first column in the table contains the names of the locations. Each column (except column one) has all the variants of a single linguistic variable for all locations. Each row (except row one) has the variants of all items for a single location.
+</p>
+
+<table cellpadding="4" border="1">
+<tr><td colspan="4"># this is a comment: ignored
+<tr><th><th bgcolor="yellow">item 1<th bgcolor="yellow">item 2<th bgcolor="yellow">item 3
+<tr><td bgcolor="yellow">place A<td>variant A1<td>variant A2<td>variant A3
+<tr><td bgcolor="yellow">place B<td>variant B1<td>variant B2<td>variant B3
+<tr><td bgcolor="yellow">place C<td>variant C1<td>variant C2<td>variant C3
+<tr><td bgcolor="yellow">place D<td>variant D1<td>variant D2<td>variant D3
+</table>
+
+<p>
+The first cell in the first row can be empty or missing. When missing, the first line has one cell less than all the other rows.
+</p>
+
+<p><b>Examples and specifications for different data types:<p><b>
+
+<ul>
+<li><a href="datafile-string.html">String data and categorical data</a></li>
+<li><a href="datafile-numeric.html">Numeric data</a></li>
+<li><a href="datafile-difference.html">Difference data</a></li>
+</ul>
+
+<h2><a name="encoding">Character encoding</a></h2>
+<p>
+The following file encodings are recognized:
+</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Ascii" target="_top">US-ASCII</a>
+<li><a href="http://en.wikipedia.org/wiki/Utf-8" target="_top">UTF-8</a> with/without <a href="http://en.wikipedia.org/wiki/Byte_Order_Mark" target="_top">BOM</a>
+
+<li><a href="http://en.wikipedia.org/wiki/Utf-16" target="_top">UTF-16</a> with <a href="http://en.wikipedia.org/wiki/Byte_Order_Mark" target="_top">BOM</a>
+</ul>
+
+<p>
+All other encodings are assumed to be
+<a href="http://en.wikipedia.org/wiki/Iso-8859-1" target="_top">ISO-8859-1</a>.
+</p>
+
+<!--
+<h3><a name="itemindex">Item index</a></h3>
+
+<p>
+When a project has been created, the item index lists all the linguistic variables in the data file and the number of instances of each of them. Since there might be multiple transcriptions of one item from a single site and/or missing data, the number of instances of a variable might be smaller or greater than the number of places in the data set. 
+</p>
+-->
+
+
+<blockquote>
+<p class="center">
+<a href="mapfile.html" target="_top">previous</a>
+| <a href ="index.htm" target="_top">Start</a>
+| <a href="datafile-string.html">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>

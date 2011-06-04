@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+
+
+<h1>Cluster analysis</h1>
+
+<h2>Fuzzy clustering</h2>
+
+
+<p>
+Fuzzy clustering means that the original distance matrix is contaminated with (varying) small amounts of random noise. This is done several times and each time clustering is performed on the contaminated matrix. After that we count how many times each cluster has appeared. Clusters that appear in many runs of the analysis with added noise are particularly stable ones. The results are displayed in a probabilistic dendrogram:  
+</p>
+
+<div style="padding: 0px 60px 0px">
+    <img src="images/probbw-penn15.png" alt="dendrogram"/>
+</div>
+
+<p>
+The percentages in the probabilistic dendrogram indicate how many times each cluster was encountered in the repeated clustering with noise. In the example above, the largest clusters have been encountered in all the iterations and have a probability of 100%. We can therefore be pretty sure that these are real clusters. On the lower levels the percentages are somewhat smaller, so we cannot be completely sure about these clusters. 
+</p>
+
+<h3>Settings</h3>
+
+<p>
+In the settings box you can change the amount of noise used. If the data has a very clear cluster structure it will be detected even with a high amount of noise. By changing the percentage limit, you choose how high the probability has to be for a cluster to be displayed in the dendrogram. 
+</p>
+
+
+<p>
+[Exponent?]
+</p>
+
+<p>
+In the default settings, a combination of Group Average and Weighted Average is used for clustering. You can also choose to use only one of these two methods. 
+</p>
+
+<p>
+The colors in the probabilistic dendrogram won't change when you change the settings. They are from a different analysis and are there to help you identify the places in the map under the dendrogram. 
+This map is also displayed at <i>Fuzzy clustering - fuzzy cluster maps</i>.
+</p>
+
+<h2>Fuzzy cluster maps</h2>
+
+<p>
+The map visualizes something between multidimensional scaling (MDS) and cluster analysis: main dialect groups are identified in the map, but continuous relationships are displayed for places which cannot be put in one group with high probability. The map is created by running MDS on the branch lengths of the dendrogram (so-called cophenetic distances) instead of on the original linguistic distances. 
+</p>
+
+<p>
+[define clustering settings]
+</p>
+
+<p>
+This kind of maps will always have four main colors. Displaying four main clusters might not be the optimal solution for all data sets, so before you choose to use this method for displaying your clustering results, you should compare it to the <i>probabilistic dendrogram</i> or use <i>cluster validation</i>.
+</p>
+
+<p>
+Below the full fuzzy cluster map, similar maps are available for subsets of the data.
+</p>
+
+<blockquote>
+<p class="center">
+<a href="clustering-validation.html">previous</a>
+| <a href="index.htm" target="_top">Start</a>
+| <a href="datamining.html" target="_top">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>

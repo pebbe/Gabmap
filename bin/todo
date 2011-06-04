@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo Content-type: text/plain
+echo 
+grep -E -i -n 'to ?do' `find . -name '*.py' | sort`
+grep -E -i -n 'to ?do' `find ../help -name '*.html' | sort`
+grep -E -i -n 'to ?do' `find ../templates -name '*.html' | sort`
+grep -E -i -n 'to ?do' ../util/*

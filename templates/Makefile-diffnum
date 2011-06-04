@@ -1,0 +1,32 @@
+OK: ../data/table.txt
+	rm -f OK
+	rm -f tmp*
+	R --no-save < {0[appdir]}util/num.R
+	{0[python3]} {0[appdir]}util/numbox
+	{0[python3]} {0[appdir]}util/difok diff.txt || \
+		diffix -a 1 -o tmp.diff diff.txt ../map/map.coo || \
+		{0[python3]} {0[appdir]}util/diffix2 diff.txt diff.txt
+	if [ -f tmp.diff ] ; \
+		then \
+			mv diff.txt tmp ; \
+			comments tmp diff.txt ; \
+			cat tmp.diff >> diff.txt ; \
+		fi
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+			echo unavailable > linc.txt ; \
+		else \
+			linc -D diff.txt ../map/map.geo > linc.txt ; \
+		fi
+	R --no-save < {0[appdir]}util/histnorm.R
+	mapdiff -l -r -o diff1.eps -c 2 ../map/map.cfg ../diff/diff.txt
+	{0[python3]} {0[appdir]}util/smappost diff1.eps
+	maplink -o diff.eps ../map/map.cfg ../diff/diff.txt
+	eps2png
+	rm -f tmp*
+	touch OK
+	cd ../data ; eps2png
+	touch ../data/OK

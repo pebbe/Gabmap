@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+"""
+--documentation--
+"""
+
+import sys
+
+counts = {}
+
+for filename in sys.argv[1:]:
+    utf = False
+    fp = open(filename, 'rb')
+    for line in fp:
+        if line.startswith(b'%utf8'):
+            utf = True
+        elif line.startswith(b'-'):
+            line = line[1:].strip()
+            if utf:
+                cc = [ord(x) for x in line.decode('utf-8')]
+            else:
+                cc = line
+            for c in cc:
+                if not c in counts:
+                    counts[c] = 0
+                counts[c] += 1
+    fp.close()
+
+for i in sorted(counts):
+    sys.stdout.write('{}\t{}\n'.format(i, counts[i]))

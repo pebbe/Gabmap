@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Regular expressions</title>
+</head>
+<body>
+
+A regular expression (RE) can contain both special and ordinary characters.<br>
+Most ordinary characters, like <span class="re">A</span>, <span class="re">a</span>, or <span class="re">0</span>, are the simplest
+regular expressions; they simply match themselves.  You can
+concatenate ordinary characters, so <span class="re">last</span> matches the string 'last'.
+<p>    
+The special characters are:
+<p>
+<table>
+
+<tr valign="top"><td><span class="re">.</span>      <td>Matches any
+	    character.<br>
+Example: <span class="re">a.z</span> matches 'abz' and 'acz', but not
+	    'az' or 'abcz'.
+
+<tr valign="top"><td><span class="re">^</span>      <td>Matches the start of the string.<br>
+Example:  <span class="re">^a</span> matches 'ab', but not 'ba'.
+
+<tr valign="top"><td><span class="re">$</span>      <td>Matches the end
+	    of the string.<br>
+Example:  <span class="re">z$</span> matches 'yz', but not 'zy'.
+
+<tr valign="top"><td><span class="re">*</span>      <td>Matches 0 or
+	    more repetitions of the preceding RE.<br>
+Example:  <span class="re">ab*c</span> matches 'ac' and 'abc' and 'abbc'
+	    and 'abbbc'.<br>
+Example:  <span class="re">a.*z</span> matches 'az' and 'abcz' and 'abcdefz'.
+
+<tr valign="top"><td><span class="re">+</span>      <td>Matches 1 or more repetitions of the preceding RE.<br>
+Example:  <span class="re">ab+c</span> matches 'abc' and 'abbc'
+	    and 'abbbc', but not 'ac'.
+
+<tr valign="top"><td><span class="re">?</span>      <td>Matches 0 or 1 of the preceding RE.<br>
+Example:  <span class="re">ab?c</span> matches 'ac' and 'abc', but not 'abbc'
+	    or 'abbbc'.
+
+<tr valign="top"><td><span class="re">{</span><em>m</em><span class="re">,</span><em>n</em><span class="re">}</span>    <td>Matches from <em>m</em> to <em>n</em> repetitions of the preceding RE.<br>
+Example:  <span class="re">ab{2,4}c</span> matches 'abbc' and 'abbbc'
+	    and 'abbbbc', but not 'abc' or 'abbbbbc'.
+
+<tr valign="top"><td><span class="re">\</span>     <td>Escapes special characters.<br>
+Example:  <span class="re">\?</span> matches '?'.
+
+<tr valign="top"><td><span class="re">[]</span>       <td>Indicates a set of characters.<br>
+Example: <span class="re">[a-z124680]</span> matches any lower case letter
+                 or a single digit even number.<br>
+                 A <span class="re">^</span> as the first character indicates a complementing set.<br>
+Example: <span class="re">[^0-9]</span> matches anything that is not a digit.<br>
+Example: <span class="re">^[^0-9]*$</span> matches any string that does
+	    not contain a digit.
+
+<tr valign="top"><td><span class="re">|</span>      <td><span class="re">A|B</span>, creates an RE that will match either 'A' or 'B'.
+
+<tr valign="top"><td><span class="re">(</span>...<span class="re">)</span>    <td>Matches the RE inside the parentheses.<br>
+Example without parentheses: <span class="re">abc*d</span> matches 'abd' and 'abcd' and
+	    'abccd' and 'abcccd'.<br>
+Example with parentheses: <span class="re">a(bc)*d</span> matches 'ad' and 'abcd' and
+	    'abcbcd' and 'abcbcbcd'.<br>
+Example without parentheses: <span class="re">ab|cd</span> matches 'ab' and 'cd'.<br>
+Example with parentheses: <span class="re">a(b|c)d</span> matches 'abd' and 'acd'.
+
+
+</table>    
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

@@ -1,0 +1,509 @@
+#!/usr/bin/env python
+# -*- coding: iso-8859-1 -*-
+"""
+--documentation--
+"""
+
+__author__ = 'Peter Kleiweg'
+__version__ = '0.2'
+__date__ = '2007/06/26'
+
+#| imports
+
+import getopt, glob, math, os, re, sys, tempfile
+
+#| PostScript
+
+FW = [
+        0,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,
+      278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,
+      278,  278,  355,  556,  556,  889,  667,  222,  333,  333,  389,  584,  278,  584,  278,  278,
+      556,  556,  556,  556,  556,  556,  556,  556,  556,  556,  278,  278,  584,  584,  584,  556,
+     1015,  667,  667,  722,  722,  667,  611,  778,  722,  278,  500,  667,  556,  833,  722,  778,
+      667,  778,  722,  667,  611,  722,  667,  944,  667,  667,  611,  278,  278,  278,  469,  556,
+      222,  556,  556,  500,  556,  556,  278,  556,  556,  222,  222,  500,  222,  833,  556,  556,
+      556,  556,  333,  500,  278,  556,  500,  722,  500,  500,  500,  334,  260,  334,  584,  278,
+      278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,  278,
+      278,  333,  333,  333,  333,  333,  333,  333,  333,  278,  333,  333,  278,  333,  333,  333,
+      278,  333,  556,  556,  556,  556,  260,  556,  333,  737,  370,  556,  584,  333,  737,  333,
+      400,  584,  333,  333,  333,  556,  537,  278,  333,  333,  365,  556,  834,  834,  834,  611,
+      667,  667,  667,  667,  667,  667, 1000,  722,  667,  667,  667,  667,  278,  278,  278,  278,
+      722,  722,  778,  778,  778,  778,  778,  584,  778,  722,  722,  722,  722,  667,  667,  611,
+      556,  556,  556,  556,  556,  556,  889,  500,  556,  556,  556,  556,  278,  278,  278,  278,
+      556,  556,  556,  556,  556,  556,  556,  584,  611,  556,  556,  556,  556,  500,  556,  500
+]
+
+colorvals = ((255, 255, 217),
+             (237, 248, 177),
+             (199, 233, 180),
+             (127, 205, 187),
+             ( 65, 182, 196),
+             ( 29, 145, 192),
+             ( 34,  94, 168),
+             ( 37,  52, 148),
+             (  8,  29,  88))
+
+header = """
+64 dict begin
+"""
+
+large = {'fontsize': 14,
+         'dy': 4.0,
+         'dylbl': 18,
+         'numsub': 5,
+         'lblsub': 12,
+         'linewidth': 1.0,
+         'c1': -16,
+         'ch': 18}
+
+medium = {'fontsize': 11,
+          'dy': 1.5,
+          'dylbl': 11,
+          'numsub': 4,
+          'lblsub': 8,
+          'linewidth': .5,
+          'c1': -10,
+          'ch': 11}
+
+small = {'fontsize': 8,
+         'dy': .5,
+         'dylbl': 7,
+         'numsub': 3,
+         'lblsub': 6,
+         'linewidth': .5,
+         'c1': -7,
+         'ch': 7}
+
+
+main = """
+% `new-font-name' `encoding-vector' `old-font-name' RE -
+/RE {
+    findfont
+    dup maxlength dict begin {
+        1 index /FID ne { def } { pop pop } ifelse
+    } forall
+    /Encoding exch def
+    dup /FontName exch def
+    currentdict end definefont pop
+} bind def
+
+/right {
+    dup stringwidth
+    exch neg
+    exch neg
+    rmoveto
+} bind def
+
+/y 800 def
+
+/Font ISOLatin1Encoding /Helvetica RE
+/Font findfont fontsize scalefont setfont
+
+/nl {
+    /y y dy sub def
+} bind def
+
+/nstart {
+    y
+    nl
+} bind def
+
+/str 10 string def
+/nend {
+    Exp exp /f exch def
+    /n exch def
+    /y1 exch def
+    colorlinks {
+        n 50 sub 50 div
+        9 mul
+        cvi
+        dup 8 gt { pop 8 } if
+        colors exch get aload pop setrgbcolor
+    } if
+    100 y moveto
+    100 f dx mul add dup y lineto
+    y1 lineto
+    100 y1 lineto
+    stroke
+    showpercent {
+        102 f dx mul add y y1 add 2 div numsub sub moveto
+        n str cvs show
+    } if
+    nl
+    0 setgray
+} bind def
+
+/lbl {
+    98 y lblsub sub moveto
+    right
+    show
+    /y y dylbl sub def
+    0 setgray
+} bind def
+
+/cl {
+    setrgbcolor
+    cx y c1 add 99 cx sub ch rectfill
+    currentgray graylim gt { 0 } { 1 } ifelse setgray
+} bind def
+
+"""
+
+ruler = """
+/y y dylbl 1.5 mul sub def
+0 RulerStep 5 div Max {
+    Exp exp dx mul 100 add
+    y moveto
+    0 2 rlineto
+    stroke
+} for
+0 RulerStep Max {
+    dup
+    Exp exp dx mul 100 add
+    y moveto
+    gsave
+        0 4 rlineto
+        stroke
+    grestore
+    0 fontsize neg rmoveto
+    20 string cvs
+    dup stringwidth pop 2 div neg 0 rmoveto
+    show
+} for
+100 y moveto
+Max Exp exp dx mul 0 rlineto stroke
+"""
+
+footer = """
+end
+showpage
+%%EOF
+"""
+
+#| globals
+
+outfile = ''
+size = medium
+methods = []
+noise = .5
+runs = 100
+margin = 4
+exp = 1.0
+colorfile = ''
+coloreq = False
+colorraw = False
+percentage = 50.001
+showpercent = True
+colorlinks = False
+
+#| functions
+
+def psstr(s):
+    p = ''
+    for c in s:
+        if c == '(' or c == ')' or c == '\\':
+            p += '\\'
+            p += c
+        elif c >= ' ' and c <= '~':
+            p += c
+        else:
+            p += '\\%03o' % ord(c)
+    return p
+
+def pslen(s):
+    f = 0
+    for i in s:
+        f += FW[ord(i)]
+    return f
+
+def getline(fp):
+    while True:
+        line = fp.readline()
+        if not line:
+            return False
+        line = line.strip()
+        if line and line[0] != '#':
+            return line
+
+def usage():
+    sys.stderr.write("""
+Usage: %(progname)s [General options] [-m string] [-n float] [-r int] difference_file
+Usage: %(progname)s [General options] [-m string] difference_file ...
+Usage: %(progname)s [General options] cluster_file ...
+
+General options: [-L|-M|-S] [-e float] [-f] [-c colour_file] [-Ce|-Cr] [-g] [-p float] [-P]
+
+ -L  : large
+ -M  : medium (default)
+ -S  : small
+ -c  : coloured labels (a 3D vector file)
+ -Ce : (with -c) equivalent scaling of colour axes
+ -Cr : (with -c) raw input, no scaling of colour axes
+ -e  : exponent (default: 1.0)
+ -f  : no ruler
+ -g  : coloured links
+ -m  : cluster method: sl cl ga wa uc wc wm (default: wa)
+ -n  : noise level (default: 0.5)
+ -p  : minimum percentage (default: 50.001)
+ -P  : don't print percentage
+ -r  : number of runs (default: 100)
+
+""" % globals())
+    sys.exit()
+
+
+#| set-up
+
+dirname, progname = os.path.split(os.path.realpath(sys.argv[0]))
+
+os.environ['PATH'] = dirname + os.path.pathsep + os.environ['PATH']
+
+optd, argv = getopt.getopt(sys.argv[1:], 'LMSe:fgm:n:r:v:c:C:p:P')
+for op, val in optd:
+    if op == '-C':
+        if val == 'e':
+            coloreq = True
+            colorraw = False
+        elif val == 'r':
+            coloreq = False
+            colorraw = True
+    elif op == '-L':
+        size = large
+    elif op == '-M':
+        size = medium
+    elif op == '-S':
+        size = small
+    elif op == '-c':
+        colorfile = val
+    elif op == '-e':
+        exp = float(val)
+    elif op == '-f':
+        ruler = ''
+    elif op == '-g':
+        colorlinks = True
+    elif op == '-m':
+        assert re.match('(sl|cl|ga|wa|uc|wc|wm)$', val)
+        methods.append(val)
+    elif op == '-n':
+        noise = float(val)
+    elif op == '-p':
+        percentage = float(val)
+    elif op == '-P':
+        showpercent = False
+    elif op == '-r':
+        runs = int(val)
+    elif op == '-v':
+        margin = int(val)
+    else:
+        assert False
+if not methods:
+    methods = ['wa']
+
+argv1 = argv
+argv = []
+for arg in argv1:
+    #if arg.find('?') < 0 and arg.find('*') < 0 and arg.find('[') < 0:
+    #    argv.append(arg)
+    #    continue
+    for f in glob.glob(arg):
+        argv.append(f)
+if not argv:
+    usage()
+
+fp = open(argv[0], 'r')
+items = getline(fp).split()
+fp.close()
+if len(items) == 1:
+    if len(argv) == 1:
+        what = 'onedif'
+    else:
+        what = 'manydifs'
+else:
+    what = 'clus'
+
+#| colorfile
+
+if colorfile:
+    colors = {}
+    fp = open(colorfile, 'r')
+    i = int(getline(fp))
+    assert i == 3
+    while True:
+        lbl = getline(fp)
+        if not lbl:
+            break
+        r = float(getline(fp))
+        g = float(getline(fp))
+        b = float(getline(fp))
+        colors[psstr(lbl)] = [r, g, b]
+    fp.close()
+    if not colorraw:
+        r1 = r2 = r
+        g1 = g2 = g
+        b1 = b2 = b
+        for lbl in colors:
+            if colors[lbl][0] < r1: r1 = colors[lbl][0]
+            if colors[lbl][0] > r2: r2 = colors[lbl][0]
+            if colors[lbl][1] < g1: g1 = colors[lbl][1]
+            if colors[lbl][1] > g2: g2 = colors[lbl][1]
+            if colors[lbl][2] < b1: b1 = colors[lbl][2]
+            if colors[lbl][2] > b2: b2 = colors[lbl][2]
+        if coloreq:
+            m = max(r2 - r1, g2 - g1, b2 - b1)
+            rs = (m - (r2 - r1)) / (2.0 * m)
+            gs = (m - (g2 - g1)) / (2.0 * m)
+            bs = (m - (b2 - b1)) / (2.0 * m)
+            for lbl in colors:
+                colors[lbl][0] = (colors[lbl][0] - r1) / m + rs
+                colors[lbl][1] = (colors[lbl][1] - g1) / m + gs
+                colors[lbl][2] = (colors[lbl][2] - b1) / m + bs
+        else:
+            for lbl in colors:
+                colors[lbl][0] = (colors[lbl][0] - r1) / (r2 - r1)
+                colors[lbl][1] = (colors[lbl][1] - g1) / (g2 - g1)
+                colors[lbl][2] = (colors[lbl][2] - b1) / (b2 - b1)
+
+#| try: main
+
+tempdir = tempfile.mkdtemp()
+
+try:
+
+    #| clustering
+
+    filelist = os.path.join(tempdir, 'filelist')
+    fpl = open(filelist, 'w')
+    if what == 'onedif':
+        diffile = argv[0]
+        seed = 0
+        for run in range(runs):
+            for method in methods:
+                f = os.path.join(tempdir, 'f%(run)03i-%(method)s.clu' % vars())
+                fpl.write(f + '\n')
+                seed += 1
+                os.system('cluster -%(method)s -N %(noise)g -s %(seed)i -o %(f)s %(diffile)s' % vars())
+    elif what == 'manydifs':
+        i = 0
+        for diffile in argv:
+            for method in methods:
+                f = os.path.join(tempdir, 'f%(i)03i-%(method)s.clu' % vars())
+                fpl.write(f + '\n')
+                os.system('cluster -%(method)s -o %(f)s %(diffile)s' % vars())
+            i += 1
+    else:
+        for f in argv:
+            fpl.write(f + '\n')
+    fpl.close()
+
+    gr = os.path.join(tempdir, 'groups')
+    os.system('agclus -o %s -l %s' % (gr, filelist))
+
+    fp = os.popen('agden -p %f %s' % (percentage, gr), 'r')
+    result = fp.readlines()
+    fp.close()
+
+
+    #| longest string and maximum value
+
+    fp = open(gr, 'r')
+    n = int(getline(fp))
+    n = int(getline(fp))
+    maxlbl = 0
+    for i in range(n):
+        l = pslen(getline(fp))
+        if l > maxlbl:
+            maxlbl = l
+    maxdif = 0
+    while True:
+        line = getline(fp)
+        if not line:
+            break
+        f = float (line.split()[2])
+        if f > maxdif:
+            maxdif = f
+    fp.close()
+
+    #| interval on ruler
+
+    minvalue = 0.0
+    step = pow(10.0, math.ceil(math.log10(maxdif - minvalue)) - 1.0)
+    if ((maxdif - minvalue) / step > 6.0):
+        step *= 2.0
+    elif ((maxdif - minvalue) / step < 3.0):
+        step *= 0.5
+
+    #| bounding box
+
+    x1 = 96 - int(maxlbl / 1000.0 * size['fontsize'])
+    x2 = 504
+    if showpercent:
+        x2 += int(pslen('100') / 1000.0 * size['fontsize'])
+    y2 = 804
+    y1 = 798.0
+    for line in result:
+        if line.startswith('nstart'):
+            y1 -= size['dy'] * 2.0
+        elif line[0] == '(':
+            y1 -= size['dylbl']
+    if ruler:
+        y1 -= 1.5 * size['dylbl']
+        y1 -= size['fontsize']
+    y1 = int(y1 - .5)
+
+    #| output
+
+    if outfile:
+        fp = open(outfile, 'w')
+    else:
+        fp = sys.stdout
+
+
+    fp.write('''%%!PS-Adobe-3.0 EPSF-3.0
+%%%%BoundingBox: %i %i %i %i
+''' % (x1, y1, x2, y2))
+    fp.write(header)
+    fp.write('''
+/fontsize %(fontsize)i def
+/dy %(dy)g def
+/dylbl %(dylbl)i def
+/numsub %(numsub)i def
+/lblsub %(lblsub)i def
+%(linewidth)g setlinewidth
+/c1 %(c1)i def
+/ch %(ch)i def
+/graylim .55 def
+''' % size)
+    fp.write('/cx %i def\n' % (x1 + 1))
+    fp.write('/dx %g def\n' % (400.0 / (maxdif ** exp)))
+    fp.write('/Exp %g def\n' % exp)
+    fp.write('/RulerStep %g def\n' % step)
+    fp.write('/Max %g def\n' % maxdif)
+    fp.write('/showpercent %s def\n' % str(showpercent).lower())
+    fp.write('/colorlinks %s def\n' % str(colorlinks).lower())
+    if colorlinks:
+        fp.write('/colors [\n')
+        for r, g, b in colorvals:
+            fp.write('  [ %g %g %g ]\n' % (r / 255.0, g / 255.0, b / 255.0))
+        fp.write ('] def\n')
+    fp.write(main)
+    for line in result:
+        if colorfile:
+            if line[0] == '(':
+                m = re.match(r'\((.*)\)', line)
+                lbl = m.group(1)
+                fp.write('%g %g %g cl\n' % (colors[lbl][0], colors[lbl][1], colors[lbl][2]))
+        fp.write(line)
+    fp.write(ruler)
+    fp.write(footer)
+    fp.close()
+
+    if outfile:
+        fp.close()
+
+#| finally: clean up
+
+finally:
+
+    for f in os.listdir(tempdir):
+        os.remove(os.path.join(tempdir, f))
+    os.rmdir(tempdir)

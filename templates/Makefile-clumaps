@@ -1,0 +1,13 @@
+OK: ../diff/OK
+	rm -f OK
+	cluster -o tmp.wm -wm ../diff/diff.txt
+	clgroup -n 6 -i -o grp_wm_6 tmp.wm
+	mkoutliers grp_wm_6 ../diff/diff.txt
+	grep -v ^markers: ../map/map.cfg > map.cfg
+	echo othermarkers: grp_wm_6.map >> map.cfg
+	mapclust -u {0[appdir]}templates/palette12.txt map.cfg tmp.wm 6 | perl -p -e s'!/Graylimit .* def!/Graylimit 0 def!' > wm6.eps
+	{0[python3]} {0[appdir]}util/smappost wm6.eps
+	PYTHONPATH={0[python2path]} ; mdsplot plot_wm_6_all.cfg 2> plot_wm_6_all.log
+	eps2png
+	rm -f tmp*
+	touch OK

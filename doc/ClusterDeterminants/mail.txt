@@ -1,0 +1,25 @@
+Step 4. Verwijs ook naar een uitleg over reguliere expressies!
+
+Step 4, derde block: noem de [l] zonder tilde  'the dark (velar) l, which is
+   standard in American speech' en  de [l] met tilde 'the light (palatal) [l],
+   which is unusual.
+
+uitleg 'representativeness':  Sounds are *representative* in a region to the
+degree they appear in the various sites in the region.  A threshold may
+be set to ensure that a sound must occur a minimal number of times.
+Note that common sounds are typically quite representative (see below
+in the explanation http://www.gabmap.nl/~app/doc/ClusterDeterminants/
+for an example).
+
+uitleg 'distinctivenss':  Distinctiveness is more complicated, but the
+  the basic idea is that a sound (or a word pronunciation) is
+*distinctive* in a
+  dialect area with respect to a larger language area to the degree that
+  it occurs exclusively in that (smaller) area.  The exact definitions are
+  available in Wieling and Nerbonne (to appear).
+
+WIELING, Martijn & John NERBONNE (to appear) “Bipartite spectral
+  graph partitioning for clustering dialect varieties and detecting their
+  linguistic features” Computer Speech and Language.
+  doi:10.1016/j.csl.2010.05.004
+  Available online (http://www.sciencedirect.com/) since May 21, 2010.

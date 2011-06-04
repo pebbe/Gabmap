@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/10/01"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, re, sys
+
+#| globals
+
+labels = []
+lblidx = {}
+lbluse = set()
+cx = {}
+cy = {}
+
+used = []
+unused = []
+
+#| functions
+
+def unquote(s):
+    if not s:
+        return ''
+    s = s.strip()
+    if s[0] != '"' or s[-1] != '"':
+        return s
+    return re.sub(r'\\(\\")', r'\1', s[1:-1])
+
+
+
+#| main
+
+open('map.ex', 'wt').close()
+if os.access('WARNINGS.txt', os.F_OK):
+    os.remove('WARNINGS.txt')
+
+fp = open('map.lbl', 'rt', encoding='iso-8859-1')
+for line in fp:
+    a, b = line.split(None, 1)
+    i = int(a)
+    s = unquote(b)
+    labels.append(s)
+    lblidx[s] = i - 1
+fp.close()
+
+fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+for line in fp:
+    b = line.split(None, 1)[1]
+    s = unquote(b)
+    lbluse.add(s)
+fp.close()
+
+fp = open('map.coo', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    x, y, dx, dy, s = line.split(None, 4)
+    lbl = unquote(s)
+    if lbl in lbluse:
+        used.append(line)
+    else:
+        unused.append(line)
+    cx[lbl] = x
+    cy[lbl] = y
+fp.close()
+
+fp = open('map.tmp', 'wt', encoding='iso-8859-1')
+for line in used:
+    fp.write(line + '\n')
+fp.close()
+
+os.system('smap map.tmp > map.coo2')
+os.remove('map.tmp')
+fp = open('map.coo2', 'at', encoding='iso-8859-1')
+for line in unused:
+    fp.write(line + '\n')
+fp.close()
+
+if not os.access('map.cfg.ori', os.F_OK):
+    os.rename('map.cfg', 'map.cfg.ori')
+
+fp = open('map.cfg.ori', 'rt')
+lines = fp.readlines()
+fp.close()
+
+fp = open('map.cfg', 'wt')
+for i in range(len(lines)):
+    l = lines[i]
+    if l.startswith('coordinates:'):
+        lines[i] = lines[i].strip() + '2\n'
+    elif l.startswith('missing:'):
+        lines[i] = 'missing: ignore\n'
+    elif l.startswith('limit:'):
+        lines[i] = 'limit: 20\n'
+    elif l.startswith('boundingbox:'):
+        lines[i] = 'boundingbox: 0 0 595 842'
+    fp.write(lines[i])
+fp.close()
+
+fp = open('map.tail', 'wt')
+fp.write('/QQ [\n')
+for lbl in labels:
+    if lbl in lbluse:
+        fp.write(' [ {} {} true ]\n'.format(cx[lbl], cy[lbl]))
+    else:
+        fp.write(' [ false ]\n')
+fp.write('''] def
+
+1 setgray
+2 setlinecap
+1.5 setlinewidth
+0 1 NR {
+    /n exch def
+    QQ n get aload pop {
+        Map
+        /y2 exch def
+        /x2 exch def
+        PP n get aload
+        length 3 sub { pop } repeat
+        /s exch def
+        /y1 exch def
+        /x1 exch def
+        s length 0 ne {
+            x1 y1 moveto
+            x2 y2 lineto
+            stroke
+            x2 1 add y2 moveto
+            x2 y2 1 0 360 arc
+            closepath
+            stroke
+        } if
+    } if
+} for
+
+1 0 0 setrgbcolor
+0 setlinecap
+.5 setlinewidth
+0 1 NR {
+    /n exch def
+    QQ n get aload pop {
+        Map
+        /y2 exch def
+        /x2 exch def
+        PP n get aload
+        length 3 sub { pop } repeat
+        /s exch def
+        /y1 exch def
+        /x1 exch def
+        s length 0 ne {
+            x1 y1 moveto
+            x2 y2 lineto
+            stroke
+            x2 1 add y2 moveto
+            x2 y2 1 0 360 arc
+            closepath
+            fill
+        } if
+    } if
+} for
+
+''')
+
+fp.close()
+
+
+if not os.access('map.map.ori', os.F_OK):
+    os.rename('map.map', 'map.map.ori')
+
+fp = open('map.map.ori', 'rt')
+lns = fp.readlines()
+fp.close()
+state = 0
+fp = open('map.map', 'wt')
+for line in lns:
+    if state == 0:
+        if line.startswith('/Stroke'):
+            fp.write('/Stroke { stroke } bind def\n')
+            state = 1
+        else:
+            fp.write(line)
+    elif state == 1:
+        if line.startswith('} bind def'):
+            state = 2
+    elif state == 2:
+        if line.startswith('0 setgray'):
+            #fp.write('.5 setgray\n')
+            fp.write('0 setgray\n')
+            state = 3
+        else:
+            fp.write(line)
+    else:
+        fp.write(line)
+fp.close()
+
+fp = open('tmp.rgb', 'wt', encoding='iso-8859-1')
+fp.write('3\n')
+for lbl in lbluse:
+    fp.write('{}\n{}\n{}\n{}\n'.format(lbl, cx[lbl], cx[lbl], cy[lbl]))
+fp.close()
+
+os.system('maprgb -o tmp.eps map.cfg tmp.rgb')
+os.system('$PYTHON3 $APPDIR/util/smappost tmp.eps')
+
+bbox = 'boundingbox: 0 0 595 842\n'
+fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET tmp.eps 2>&1', 'r')
+for line in fp:
+    if line.startswith('%%BoundingBox:'):
+        s, x1, y1, x2, y2 = line.split()
+        bbox = 'boundingbox: {} {} {} {}\n'.format(int(x1) - 2, int(y1) - 2, int(x2) + 2, int(y2) + 2)
+        break
+fp.close()
+fp = open('map.cfg', 'wt')
+for line in lines:
+    if line.startswith('boundingbox:'):
+        fp.write(bbox)
+    else:
+        fp.write(line)
+fp.close()
+
+for i in 'tmp.rgb tmp.eps'.split():
+    os.remove(i)

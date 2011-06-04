@@ -1,0 +1,5 @@
+#!/bin/sh
+source INIT.sh
+export PYTHON=$PYTHON3
+export PYTHONPATH=$PYTHON3PATH
+$PYTHON help.py

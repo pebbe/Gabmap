@@ -1,0 +1,14 @@
+
+OK: map.cfg map.coo
+	rm -f OK
+	perl -p -e 's/map.coo\s*$$/mapidx.coo\n/; s/^othermarkers:.*/othermarkers: mapidx.ex/;  s/^fontmatrix:.*/fontmatrix: [ 6 0 0 6 0 0 ]/' < map.cfg > mapidx.cfg
+	perl -p -e 's/\t1\t0\t/\t0\t0\t/' < map.coo > mapidx.coo
+	perl -p -e 's/\s*\d+\s*/2 /' < ../data/labels.txt > mapidx.ex
+	cat map.ex >> mapidx.ex
+	mapmap -o mapidx.eps mapidx.cfg
+	{0[python3]} {0[appdir]}util/smappost mapidx.eps
+	{0[python3]} {0[appdir]}util/ps2coo
+	eps2png
+	{0[python3]} {0[appdir]}util/mkmap
+	touch OK
+

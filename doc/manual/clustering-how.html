@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+
+
+<h1>Cluster analysis</h1>
+
+<h2>How does cluster analysis work?</h2>
+
+
+<p>
+Cluster analysis is applied to the distance matrix with the pair-wise aggregate linguistic distances between places.
+In clustering, groups are merged based on similarity. To start with, each place is a cluster of its own, a cluster with only one element. The two places that have the smallest linguistic distance in the distance table are merged into a cluster. Then the difference is calculated between that new cluster, and all remaining places. Based on the new distances, again, the objects with the smallest difference are merged. And so on, until all places are merged into one big cluster. 
+</p>
+
+
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">The history of the clustering procedure is displayed in a dendrogram:</td>
+<td valign="center"><img src="images/den_penn7.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<p>
+The same small example data set is used as in the <a href="mds-how.html">explanation of multidimensional scaling</a>. Armstrong and Butler are the two places with the smallest linguistic distance in the distance matrix and they have been grouped together first. After that Chester and Montgomery have been joined, and in the third step McKean and Tioga. After these pairs have been formed, the clusters containing Chester and Montgomery and McKean and Tioga are joined to form a cluster with four items. Berks has such a large distance to all other sites that it has been merged with the rest only in the very last step of clustering. 
+</p>
+
+<p>
+When making a dialect classification, you proceed from the right to the left in the dendrogram until you find the break point with as many branches as you want groups in your classification. The break point is marked with a read line in the dendrograms below.
+</p>
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">So if one would like to make a division into two clusters of this small data set, Berks would be in one group by itself and all the other places would form the second group together.</td>
+<td valign="center"><img src="images/den2_penn7-break.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<table cellpadding=3>
+<tr>
+<td valign="top" width="35%">In a division into three groups, there would be one group with one member (Berks), one group with four members, and one group with two members.</td>
+<td valign="center"><img src="images/den3_penn7-break.png" alt="dendrogram"/></td>
+</tr>
+</table> 
+
+<p>
+A map can be created by coloring the area of each cluster with a distinct color. The colors in these maps are arbitrary. Similarity of colors does not imply linguistic similarity, but each distinct color simply denotes one cluster. This is how a cluster map with four clusters would look:
+</p>
+
+<div style="padding: 0px 60px 0px">
+   <img  src="images/clustmap_penn7.wm4.png" alt="map"/>
+   <img  src="images/den4_penn7-break.png" alt="dendrogram"/>
+</div>
+
+<blockquote>
+<p class="center">
+<a href="clustering1.html">previous</a>
+| <a href="index.htm" target="_top">Start</a>
+| <a href="clustering-discrete.html">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>

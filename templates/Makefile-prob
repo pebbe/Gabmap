@@ -1,0 +1,6 @@
+
+OK: ../diff/OK ../cccmaps/OK
+	rm -f OK
+	agd -S {0[method]} -n {0[noise]} -p {0[limit]} -e {0[exp]} -c ../cccmaps/ccc.rgb -Cr ../diff/diff.txt > prob.eps
+	eps2png
+	touch OK

@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/05/16"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, random, re, sys, time
+
+#| globals
+
+lockfile = '.queue.lock'
+
+proglock = '.doqueue.lock'
+
+
+#| functions
+
+def running(pid):
+    try:
+        pid = int(pid)
+    except:
+        return False
+    fp = os.popen('ps h -p {} -o s'.format(pid), 'r')
+    s = fp.read().strip()
+    fp.close()
+    return len(s) == 1 and 'DRS'.find(s) > -1
+
+def getlock(lock, retry=True):
+    dest = '{}'.format(os.getpid())
+    while True:
+        try:
+            os.symlink(dest, lock)
+            s = os.readlink(lock)
+            assert s == dest
+        except:
+            pass
+        else:
+            return True
+        
+        try:
+            s = os.readlink(lock)
+            assert not running(s)
+            os.remove(lock)
+        except:
+            pass
+        else:
+            continue
+
+        if not retry:
+            return False
+        else:
+            time.sleep(1 + random.random())
+
+
+#| main
+
+basedir = os.environ['DATADIR']
+
+os.chdir(basedir)
+
+if not getlock(proglock, retry=False):
+    sys.exit()
+
+
+try:
+
+    while True:
+        os.chdir(basedir)
+        getlock(lockfile)
+        filenames = [int(x) for x in os.listdir('.queue') if re.match('[0-9]+$', x)]
+        if not filenames:
+            break
+        filename = '.queue/{}'.format(sorted(filenames)[0])
+        fp = open(filename, 'rt')
+        s = fp.read().strip()
+        fp.close()
+        os.remove(filename)
+        os.remove(lockfile)
+
+        try:
+            os.chdir(s)
+            os.system('make -k > make.log 2>&1')
+            os.remove('QUEUED')
+        except:
+            pass
+
+finally:
+
+    os.chdir(basedir)
+    try:
+        os.remove(lockfile)
+    except:
+        pass
+    os.remove(proglock)

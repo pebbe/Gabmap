@@ -1,0 +1,276 @@
+#!/usr/bin/env python3
+
+import hashlib, os, re, math, sys
+
+template = """# Example configuration file for the programs 'mapclust', 'mapdiff', 'maplink', 'mapmap', 'maprgb', and 'mapvec'
+
+# Filenames, the first three are required
+transform: {0[dirname]}/map.trn
+labels: {0[dirname]}/map.lbl
+coordinates: {0[dirname]}/map.coo
+clipping: {0[dirname]}/map.clp
+map: {0[dirname]}/map.map
+othermarkers:
+
+# Background colour for areas without data, red green and blue value
+backrgb: .9 .9 .9
+
+# Aspect ratio between X and Y, must be 1 or greater
+aspect: 1
+
+# Type of markers to put at locations
+# Any number of: dot label number poly
+# You shouldn't mix dot and number
+markers: number
+
+# What to do with locations without data, one of: ignore preserve
+missing: preserve
+
+# How far to extend filling beyond extreme data points,
+# as a fraction of distance between extreme data points
+fillmargin: .5
+
+# Radius for filling if file for clipping is missing
+limit: 20
+
+# Use limit, even if file for clipping is not missing: yes or no
+uselimit: no
+
+### PostScript options
+boundingbox: {0[bbox]}
+fontname: Helvetica
+fontmatrix: [ 10 0 0 10 0 0 ]
+pslevel: 2
+# one of: fill eofill
+fillstyle: eofill
+
+# Markers dot and label
+# Size of black dot
+radius: 2.5
+# Width of white line around black dot
+white: 1
+# Horizontal distance of label from center of location, for dx = 1 or dx = -1
+xgap: 4
+# Vertical distance of label from center of location, for dy = 1 or dy = -1
+ygap: 4
+
+# Line width in polygons
+linewidth: .5
+
+### Options for 'mapclust' and 'maprgb'
+islandr: 10
+islandlw: 1
+
+### Options for 'mapclust' and 'mapdiff'
+
+# Width of lines between clusters
+borderwidth: 3
+
+### Options for 'mapclust' only
+
+# Colour of lines between clusters, red green and blue value
+borderrgb: 0 0 1
+
+# Size of symbols
+symbolsize: 5
+# Line width in symbols
+symbollinewidth: .3
+"""
+
+def getline(fp, required = False):
+    while True:
+        line = fp.readline()
+        if not line:
+            assert not required
+            return ''
+        line = line.strip()
+        if line and line[0] != '#':
+            return line
+
+def escape(s):
+    return s.replace('\\', '\\\\').replace('"', '\\"')
+
+
+dirname = os.getcwd()
+
+#| check for existing pseudomap
+
+import hashlib
+m = hashlib.md5()
+fp = open('../data/labels.txt', 'rb')
+m.update(fp.read())
+fp.close()
+md5 = m.hexdigest()
+
+found = ''
+for filename in os.listdir('../../'):
+    if filename.startswith('project_'):
+        f = '../../' + filename + '/map/map.md5'
+        if os.access(f, os.F_OK):
+            fp = open(f, 'rt')
+            s = fp.read().strip()
+            fp.close()
+            if s == md5:
+                found = filename
+                break
+
+if found:
+    sys.stdout.write('Copying pseudo map from {}\n'.format(filename))
+    os.system('cp ../../{}/map/map* .'.format(filename))
+    fp = open('map.cfg', 'rt')
+    lines = fp.readlines()
+    fp.close()
+    fp = open('map.cfg', 'wt')
+    for line in lines:
+        fp.write(re.sub(r'^(transform|labels|coordinates|clipping|map): .*(/map.*)', '\\1: {}\\2'.format(dirname), line))
+    fp.close()
+    sys.exit()
+
+
+#| new pseudomap
+
+os.system('mds -o tmp 2 ../diff/diff.txt')
+
+
+x1 = x2 = y1 = y2 = 0.0
+
+fp = open('tmp', 'rt', encoding='iso-8859-1')
+vectors = []
+n = int(getline(fp, True))
+assert n == 2
+while True:
+    lbl = getline(fp)
+    if not lbl:
+        break
+    x = float(getline(fp, True))
+    y = float(getline(fp, True))
+    vectors.append((x, y, lbl))
+    if x < x1: x1 = x
+    if x > x2: x2 = x
+    if y < y1: y1 = y
+    if y > y2: y2 = y
+
+fp.close()
+
+PI2 = 2.0 * math.pi
+
+dR = PI2 / math.pow(0.5 + 0.5 * math.sqrt(5), 2.0)
+
+grid = []
+gridsize = len(vectors)
+
+r = 0.0
+for n in range(gridsize):
+    v = math.sqrt(n + .3)
+    x = v * math.sin(r)
+    y = v * math.cos(r)
+    grid.append((x, y))
+    r += dR
+
+p = math.sqrt(gridsize)
+dx = x2 - x1
+dy = y2 - y1
+for n in range(gridsize):
+    x, y, lbl = vectors[n]
+    x = (2.0 * (x - x1) / dx - 1.0) * p
+    y = (2.0 * (y - y1) / dy - 1.0) * p
+    vectors[n] = (x, y, lbl)
+
+busy = True
+while busy:
+    busy = False
+    for i in range(gridsize):
+        for j in range(i + 1, gridsize):
+            d1 = math.sqrt(math.pow(vectors[i][0] - grid[i][0], 2) + math.pow(vectors[i][1] - grid[i][1], 2))
+            d2 = math.sqrt(math.pow(vectors[j][0] - grid[j][0], 2) + math.pow(vectors[j][1] - grid[j][1], 2))
+            d3 = math.sqrt(math.pow(vectors[i][0] - grid[j][0], 2) + math.pow(vectors[i][1] - grid[j][1], 2))
+            d4 = math.sqrt(math.pow(vectors[j][0] - grid[i][0], 2) + math.pow(vectors[j][1] - grid[i][1], 2))
+            if d1 + d2 > d3 + d4:
+                busy = True
+                g = grid[i]
+                grid[i] = grid[j]
+                grid[j] = g
+
+fp1 = open('map.coo', 'wt', encoding='iso-8859-1')
+fp2 = open('map.lbl', 'wt', encoding='iso-8859-1')
+for i in range(gridsize):
+    s = escape(vectors[i][2])
+    fp1.write('{:g}\t{:g}\t1\t0\t"{}"\n'.format(grid[i][0], grid[i][1], s))
+    fp2.write('{:3d}\t"{}"\n'.format(i + 1, s))
+fp2.close()
+fp1.close()
+
+x1 = min([i[0] for i in grid])
+x2 = max([i[0] for i in grid])
+y1 = min([i[1] for i in grid])
+y2 = max([i[1] for i in grid])
+
+r = max(-x1, x2, -y1, y2)
+
+r2 = math.pi * r * r
+ra2 = r2 / gridsize
+
+r += math.sqrt(ra2 / math.pi) * .8
+
+fp = open('tmp', 'wt')
+fp.write('''-{0} -{0}
+{0} -{0}
+{0} {0}
+-{0} {0}
+-{0} -{0}
+'''.format(r))
+fp.close()
+
+os.system('mapsetup -c tmp')
+
+os.rename('out.trn', 'map.trn')
+os.remove('out.clp')
+
+fp = open('map.clp', 'wt')
+fp.write('''
+/r {0} 0 Map pop 0 0 Map pop sub def
+{0} 0 Map moveto
+0 0 Map r 0 360 arc
+closepath
+'''.format(r))
+fp.close()
+
+fp = open('map.map', 'wt')
+fp.write('''
+1 setlinewidth
+.5 setgray
+/r {0} 0 Map pop 0 0 Map pop sub def
+{0} 0 Map moveto
+0 0 Map r 0 360 arc
+closepath
+stroke
+'''.format(r))
+fp.close()
+
+bbox = '0 0 595 842'
+fp = open('map.cfg', 'wt')
+fp.write(template.format({'bbox': bbox, 'dirname': dirname}))
+fp.close()
+
+os.system('mapmap -o mapidx.eps map.cfg')
+
+fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET mapidx.eps 2>&1', 'r')
+lines = fp.readlines()
+fp.close()
+for line in lines:
+    if line.startswith('%%BoundingBox:'):
+        s, x1, y1, x2, y2 = line.split()
+        bbox = '{} {} {} {}'.format(int(x1) - 2, int(y1) - 2, int(x2) + 2, int(y2) + 2)
+
+fp = open('map.cfg', 'wt')
+fp.write(template.format({'bbox': bbox, 'dirname': dirname}))
+fp.close()
+
+os.system('mapmap -o mapidx.eps map.cfg')
+
+fp = open('map.md5', 'wt')
+fp.write(md5 + '\n')
+fp.close()
+
+os.remove('tmp')
+

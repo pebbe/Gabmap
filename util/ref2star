@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/09/14"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, sys
+
+#| globals
+
+star = b'''
+    p 256 and 0 ne {
+        gsave
+            x y translate
+            0 8 moveto
+            4 {
+                144 rotate
+                0 8 lineto
+            } repeat
+            closepath
+            1 setgray
+            gsave
+                1 setlinecap
+                1 setlinejoin
+                2 setlinewidth
+                stroke
+            grestore
+            0 setgray
+            fill
+        grestore
+    } if
+'''
+
+#| main
+
+if sys.argv[1] == '-r':
+    currev = True
+    sys.argv.pop(1)
+else:
+    currev = False
+
+fpin = open(sys.argv[1], 'rb')
+fpout = open(sys.argv[1] + '.tmp', 'wb')
+
+state = 0
+for line in fpin:
+    if state == 0:
+        if line[:3] == b'/PP':
+            state = 1
+        fpout.write(line)
+    elif state == 1:
+        a, b, c = line.partition(b'default')
+        if c.startswith(b' 1 0 0'):
+            if currev:
+                fpout.write(a + b'256 1 1 1' + c[6:])
+            else:
+                fpout.write(a + b'256 0.03 0.11 0.36' + c[6:])
+            state = 2
+        else:
+            fpout.write(line)
+    elif state == 2:
+        fpout.write(line)
+        if line.find(b'p 4 and 0 ne') > -1:
+            state = 3
+    elif state == 3:
+        fpout.write(line)
+        if line.find(b'} if') > -1:
+            state = 4
+            fpout.write(star)
+    else:
+        fpout.write(line)
+
+fpout.close()
+fpin.close()
+
+os.rename(sys.argv[1] + '.tmp', sys.argv[1])

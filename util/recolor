@@ -1,0 +1,150 @@
+#!/usr/bin/env python2.6
+
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/06/01"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import math, sys
+from colormath.color_objects import RGBColor, HSVColor
+
+#| globals
+
+axEqual = False
+
+#| functions
+
+def isNaN(f):
+    return str(f) == 'nan'
+
+def recolor(r, g, b):
+    if dim1:
+        r = int(math.sqrt((r - rmin) / (rmax - rmin)) * 255.99)
+    else:
+        r = 181
+    if dim2:
+        g = int(math.sqrt((g - gmin) / (gmax - gmin)) * 255.99)
+    else:
+        g = 181
+    if dim3:
+        b = int(math.sqrt((b - bmin) / (bmax - bmin)) * 255.99)
+    else:
+        b = 181
+    hsv = RGBColor(r, g, b).convert_to('hsv')
+    rgb = HSVColor(hsv.hsv_h, hsv.hsv_s, hsv.hsv_v * hsv.hsv_v).convert_to('rgb')
+    return (rgb.rgb_r / 255.0, rgb.rgb_g / 255.0, rgb.rgb_b / 255.0)
+
+#| main
+
+colors = []
+
+while sys.argv[1][0] == '-':
+    if sys.argv[1] == '-e':
+        axEqual = True
+    elif sys.argv[1] == '-m':
+        fromMDS = True
+    sys.argv.pop(1)
+
+dim1 = dim2 = dim3 = True
+fp = open(sys.argv[1], 'rt')
+state = 0
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    if state == 0:
+        n = int(line)
+        assert n == 3
+        state = 1
+    elif state == 1:
+        lbl = line
+        state = 2
+    elif state == 2:
+        r = float(line)
+        if isNaN(r):
+            dim1 = False
+        state = 3
+    elif state == 3:
+        g = float(line)
+        if isNaN(g):
+            dim2 = False
+        state = 4
+    elif state == 4:
+        b = float(line)
+        if isNaN(b):
+            dim3 = False
+        colors.append((lbl, r, g, b))
+        state = 1
+fp.close()
+
+if fromMDS:
+    if len(colors) < 4:
+        dim3 = False
+    if len(colors) < 3:
+        dim2 = False
+    if len(colors) < 2:
+        dim1 = False
+
+rmin = rmax = colors[0][1]
+gmin = gmax = colors[0][2]
+bmin = bmax = colors[0][3]
+for lbl, r, g, b in colors[1:]:
+    if dim1:
+        if r > rmax: rmax = r
+        if r < rmin: rmin = r
+    if dim2:
+        if g > gmax: gmax = g
+        if g < gmin: gmin = g
+    if dim3:
+        if b > bmax: bmax = b
+        if b < bmin: bmin = b
+
+if rmin == rmax:
+    dim1 = False
+if gmin == gmax:
+    dim2 = False
+if bmin == bmax:
+    dim3 = False
+
+if axEqual:
+    ranges = []
+    if dim1:
+        rrange = rmax - rmin
+        ranges.append(rrange)
+    if dim2:
+        grange = gmax - gmin
+        ranges.append(grange)
+    if dim3:
+        ranges.append(brange)
+        brange = bmax - bmin
+    rgbrange = max(ranges)
+    if dim1:
+        rmin -= (rgbrange - rrange) / 2.0
+        rmax += (rgbrange - rrange) / 2.0
+    if dim2:
+        gmin -= (rgbrange - grange) / 2.0
+        gmax += (rgbrange - grange) / 2.0
+    if dim3:
+        bmin -= (rgbrange - brange) / 2.0
+        bmax += (rgbrange - brange) / 2.0
+
+if len(sys.argv) > 2:
+    fp = open(sys.argv[2], 'wt')
+else:
+    fp = sys.stdout
+
+lines = []
+lines.append('3\n')
+for lbl, r, g, b in colors:
+    r2, g2, b2 = recolor(r, g, b)
+    lines.append('%s\n%g\n%g\n%g\n' % (lbl, r2, g2, b2))
+for line in lines:
+    fp.write(line)
+

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Type of data</title>
+</head>
+<body>
+
+<h4>Example string data</h4>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">bloemen</th><th bgcolor="yellow">machines
+<tr><td bgcolor="yellow">Amsterdam
+  <td>blʊmə
+  <td>məʃinəs
+<tr><td bgcolor="yellow">Groningen
+  <td>blɔˑŭm̩
+  <td>məsinəs
+<tr><td bgcolor="yellow">Utrecht
+  <td>blɔmə
+  <td>məsin
+</table>
+
+<p>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">bloemen</th><th bgcolor="yellow">machines
+<tr><td bgcolor="yellow">Amsterdam
+  <td>blUm@
+  <td>
+<tr><td bgcolor="yellow">Groningen
+  <td>blO.u^-m
+  <td>m@sin@s
+<tr><td bgcolor="yellow">Utrecht
+  <td>blOm@ / blUm@
+  <td>m@sin
+</table>
+
+<h4>Example numerical data</h4>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">prop1</th><th bgcolor="yellow">prop2
+<tr><td bgcolor="yellow">Amsterdam
+  <td>-27.42076
+  <td>-96.15972
+<tr><td bgcolor="yellow">Groningen
+  <td>140.35684
+  <td>NA
+<tr><td bgcolor="yellow">Utrecht
+  <td>121.25366
+  <td>126.24443
+</table>
+<p>
+Only a single value in each cell. Empty cells are not allowed. If a
+      value is missing, use <u>NA</u> instead.
+
+
+<h4>Example categorical data</h4>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">shape</th><th bgcolor="yellow">color
+<tr><td bgcolor="yellow">Amsterdam
+  <td>round
+  <td>yellow
+<tr><td bgcolor="yellow">Groningen
+  <td>square
+  <td>red
+<tr><td bgcolor="yellow">Utrecht
+  <td>round
+  <td>grey / red
+</table>
+
+<h4>Example difference data</h4>
+
+<table border="1" cellpadding="4">
+<tr><td><td bgcolor="yellow">Amsterdam<td bgcolor="yellow">Groningen<td bgcolor="yellow">Utrecht
+<tr><td bgcolor="yellow">Amsterdam
+  <td>0
+  <td>1.42
+  <td>0.63
+<tr><td bgcolor="yellow">Groningen
+  <td>1.42
+  <td>0
+  <td>1.38
+<tr><td bgcolor="yellow">Utrecht
+  <td>0.63
+  <td>1.38
+  <td>0
+</table>
+<p>
+The table is symmetrical along the diagonal, with zeros on the diagonal.
+No negative values allowed.
+Only a single value in each cell. Empty cells are not allowed.
+<p>
+A difference file in L04 format is OK too.
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

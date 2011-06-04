@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/07/14"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import math, os, sys
+
+#| globals
+
+limit = 2.5
+
+#| functions
+
+def unquote(s):
+    s = s.strip()
+    if s[0] == '"' and s[-1] == '"':
+        return s[1:-1].replace('\\\\', '\n').replace('\\', '').replace('\n', '\\').strip()
+    else:
+        return s
+
+def median(l):
+    ll = list(sorted(l))
+    n = len(ll)
+    if n % 2 == 0:
+        m = (ll[n // 2 - 1] + ll[n // 2]) / 2.0
+    else:
+        m = ll[n // 2]
+    return m
+
+#| main
+
+
+# grp_wm_6 ../diff/diff.txt
+
+lines = []
+imax = 0
+fp = open(sys.argv[1], 'rt', encoding='iso-8859-1')
+for line in fp:
+    a = int(line.split()[0])
+    if a > imax:
+        imax = a
+    lines.append(line)
+fp.close()
+
+clusters = []
+for i in range(imax):
+    clusters.append(set())
+
+for line in lines:
+    a, b = line.split(None, 1)
+    clusters[int(a) - 1].add(unquote(b))
+
+outliers = []
+outliers2 = []
+
+for clnum in range(imax):
+    items = []
+    fp = open('outliers.tmp', 'wt', encoding='iso-8859-1')
+    for i in sorted(clusters[clnum]):
+        fp.write(': {0}\n- {0}\n'.format(i))
+    fp.close()
+    os.system('difmod -o outliers-diff.tmp {} outliers.tmp'.format(sys.argv[2]))
+    os.system('mds -o outliers-mds.tmp 2 outliers-diff.tmp')
+    if not os.access('outliers-mds.tmp', os.F_OK):
+        continue
+    fp = open('outliers-mds.tmp', 'rt', encoding='iso-8859-1')
+    state = 0
+    for line in fp:
+        if not line.strip() or line[0] == '#':
+            continue
+        if state == 0:
+            state = 1
+        elif state == 1:
+            lbl = line.strip()
+            state = 2
+        elif state == 2:
+            x = float(line)
+            state = 3
+        elif state == 3:
+            y = float(line)
+            items.append((lbl, x, y))
+            state = 1
+    fp.close()
+    os.remove('outliers-mds.tmp')
+    if not items:
+        continue
+    x0 = median([i[1] for i in items])
+    y0 = median([i[2] for i in items])
+    isizes = []
+    for lbl, x, y in items:
+        d = math.sqrt((x0 - x) * (x0 - x) + (y0 - y) * (y0 - y))
+        isizes.append((d, lbl))
+
+    m = median([i[0] for i in isizes])
+    for d, lbl in isizes:
+        if d > m * limit:
+            outliers.append(lbl)
+
+    if len(isizes) > 2:
+        s = list(sorted(isizes))
+        for i in [-1, -2]:
+            if s[i][0] <= m * limit:
+                outliers.append(s[i][1])
+        outliers2.append(s[0][1])
+
+for f in 'outliers.tmp outliers-diff.tmp outliers-mds.tmp'.split():
+    try:
+        os.remove(f)
+    except:
+        pass
+
+fp1 = open(sys.argv[1] + '.map', 'wt', encoding='iso-8859-1')
+fp2 = open(sys.argv[1] + '.plot', 'wt', encoding='iso-8859-1')
+for i in outliers:
+    fp1.write('2 {}\n'.format(i))
+    fp2.write('number {}\n'.format(i))
+for i in outliers2:
+    fp1.write('1 {}\n'.format(i))
+fp2.close()
+fp2.close()
+
+

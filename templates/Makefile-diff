@@ -1,0 +1,34 @@
+OK: ../data/OK ../data/labels.txt ../data/_/*.data
+	rm -f OK
+	rm -f tmp*
+	{0[ca1]}{0[plain]}leven -c -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	{0[ca0]}{0[plain]}leven    -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	{0[ca1]}{0[feat]}leven-r  -c -n {0[nplaces]} -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt ../data/_/*.ftr
+	{0[ca0]}{0[feat]}leven-r    -n {0[nplaces]} -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt ../data/_/*.ftr
+	{0[python3]} {0[appdir]}util/difok diff.txt || \
+		diffix -a 1 -o tmp.diff diff.txt ../map/map.coo || \
+		{0[python3]} {0[appdir]}util/diffix2 diff.txt diff.txt
+	if [ -f tmp.diff ] ; \
+		then \
+			mv diff.txt tmp ; \
+			comments tmp diff.txt ; \
+			cat tmp.diff >> diff.txt ; \
+		fi
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+			echo unavailable > linc.txt ; \
+		else \
+			linc -D diff.txt ../map/map.geo > linc.txt ; \
+		fi
+	{0[ca1]}perl -n -e 'if (/^# Cronbach Alpha/) {{ @i = split /\s+/, $$_; print "$$i[3] $$i[4] $$i[5]\n"; }}' diff.txt > ca.txt
+	{0[ca0]}echo skipped > ca.txt
+	R --no-save < {0[appdir]}util/histnorm.R
+	mapdiff -l -r -o diff1.eps -c 2 ../map/map.cfg ../diff/diff.txt
+	{0[python3]} {0[appdir]}util/smappost diff1.eps
+	maplink -o diff.eps ../map/map.cfg ../diff/diff.txt
+	eps2png
+	rm -f tmp*
+	touch OK

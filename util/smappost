@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/10/01"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, sys
+
+#| main
+
+if os.access('../map/map.tail', os.F_OK):
+    tl = '../map/map.tail'
+elif os.access('map/map.tail', os.F_OK):
+    tl = 'map/map.tail'
+else:
+    tl = None
+
+if tl:
+    fpin = open(sys.argv[1], 'rt')
+    fpout = open(sys.argv[1] + '.tmp', 'wt')
+    for line in fpin:
+        if line.startswith('gsave eoclip newpath'):
+            line = 'gsave newpath\n'
+        elif line.startswith('0 1 NR { dot1 } for') or line.startswith('0 1 NR { dot } for'):
+            fp2 = open(tl, 'rt')
+            for s in fp2:
+                fpout.write(s)
+            fp2.close()
+        fpout.write(line)
+    fpout.close()
+    fpin.close()
+    os.rename(sys.argv[1] + '.tmp', sys.argv[1])

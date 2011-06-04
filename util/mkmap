@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/10/09"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import re, sys
+
+#| globals
+
+#| functions
+
+def num2chr(m):
+    return '{:c}'.format(int(m.group(1)))
+
+def iso2html(s):
+    return re.sub('&#([0-9]+);', num2chr, s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+
+
+#| main
+
+if len(sys.argv) > 1:
+    prefix = mapname = sys.argv[1]
+else:
+    mapname = 'map1'
+    prefix = 'c'
+
+
+items = []
+fp = open('image.coo', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    x, y, s = line.split(None, 2)
+    s = iso2html(s)
+    items.append((x, y, s))
+fp.close()
+
+fp = open('image.html', 'wt', encoding='utf-8')
+fp.write('<map name="{}">\n'.format(mapname))
+for i in range(len(items)):
+    fp.write('<area href="#" onmouseover="popUp(event,\'{2}{0}\')" onmouseout="stopTimer()" onclick="return false" shape="circle" coords="{1[0]},{1[1]},5">\n'.format(i, items[i], prefix))
+fp.write('</map>\n')
+for i in range(len(items)):
+    fp.write('<div id="{2}{0}" class="tip" onMouseOut="popDown(event,\'{2}{0}\')">{1}</div>\n'.format(i, items[i][2], prefix))
+fp.close()

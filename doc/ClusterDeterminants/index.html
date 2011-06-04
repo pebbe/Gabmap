@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Gabmap: cluster determinants - demonstration</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <link rel="stylesheet" type="text/css" href="../../styles.css">
+    <link rel="icon" href="../../L04.ico" type="image/ico">
+    <base target="_blank">
+</head>
+<body class="demo">
+
+<div>
+<h1>Gabmap: cluster determinants - demonstration</h1>
+This demonstration uses data from LAMSAS for Pennsylvania, USA
+<ul>
+<li>map: <a href="../../examples/Demo-Pennsylvania.kml">Demo-Pennsylvania.kml</a>
+<li>data: <a href="../../examples/Demo-Pennsylvania.utxt">Demo-Pennsylvania.utxt</a>
+</ul>
+</div>
+
+<div>
+<h3>Step 1: select number of clusters</h3>
+At the start, there is a map with six areas for you to
+      choose from. You can increase the number of clusters to get
+      smaller areas, or decrease the number of clusters to get larger
+      areas.
+<p>
+Let's reduce the number of clusters to four:
+<p>
+<img src="screen02.png">
+</div>
+
+<div>
+There are now four areas:
+<p>
+<img src="screen01.png">
+</div>
+
+<div>
+<h3>Step 2: select cluster</h3>
+Now you select the area you are interested in.
+<p>
+At this stage, you also
+choose what special characters should be included in the search for
+relevant patterns. Usually, diacritics are ignored because they
+introduce too much detail, hiding the more global features. 
+(Characters known to be vowels, semi-vowels or consonants are used always.)
+However, some diacritics may be needed to be able to find important
+distinctions. For instance, if you expect there may be a contrast
+of
+<span class="ipa2">t</span> (non-aspirated t) versus <span
+	  class="ipa2">t&#688;</span> (aspirated t),
+      you should check the box for <span class="ipa2">&#688;</span>.
+<p>
+Some diacritics can be hard to recognise. To help you, if you move your mouse over
+	it, you get to see the official Unicode name of the character,
+	for instance <tt><small><u>MODIFIER LETTER SMALL H WITH
+	HOOK</u></small></tt> for <span class="ipa2">&#689;</span>.
+<p>
+<img src="screen03a.png">
+<p>
+Our data for Pennsylvania doesn't have special characters for
+	aspiration. The special characters it does have are shown below.
+
+
+<p>
+Don't select any special characters. Just pick the light
+      blue area:
+<p>
+<img src="screen03.png">
+</div>
+
+<div>
+<h3>step 3: select relevant item</h3>
+The server needs some time to score all words and their variants for the
+      area you have chosen. When it is finished, you get a list of words to
+      choose from. These words are ordered by relevance for the
+      selected area, starting with
+      the most relevant word at the top. 
+<p>
+After each word is a number in brackets. This is how many instances of
+	the word were found to be relevant.
+
+<p>
+Let's pick the second word, <em>Philadelphia</em>. Its score is slightly
+	less than the number one, but it has more instances:
+<p>
+<img src="screen04.png">
+</div>
+
+<div>
+After you selected a word, you get a list of all variants of that word
+      that contributed to the relevance for the area you selected (the
+      light blue area), as well as a list with rejected patterns:
+<p>
+<img src="screen05.png">
+<p>
+You also get a distribution map for the relevant variants:
+<p>
+<img src="screen06.png">
+<p>
+This distribution map matches quite well with the light blue area:
+<p>
+<img src="screen01.png">
+</div>
+
+<div>
+<h3>Step 4: try for determinant feature</h3>
+Now, what is it about these patterns of the word <em>Philadelphia</em>
+      that are so characteristic of the light blue area?
+<p>
+Compare the matching patterns with the rejected patterns.
+How are they different? The relevant
+patterns have <span class="ipa2">l</span> where other patterns
+have <span class="ipa2">&#619;</span>. So lets see what that gives
+us:
+<p>
+<img src="screen07.png">
+<p>
+<a href="../../bin/help?s=regex" class="more">Read more about regular expressions&rarr;</a>
+</div>
+
+<div>
+Here is what you get with the selection of variants with <span class="ipa2">l</span>:
+<p>
+<img src="screen10.png">
+<p>
+It's not quite OK. There are too many variants, in a larger area than the initial
+match:
+<p>
+<img src="screen11.png">
+</div>
+
+<div>
+We have found matches with one <span class="ipa2">l</span> and one <span
+	class="ipa2">&#619;</span>, but <span class="ipa2">&#619;</span> doesn't
+	occur at all in the relevant matches. So, try a pattern with two
+	occurrences of <span class="ipa2">l</span>:
+<p>
+<img src="screen12.png">
+<p>
+This is identical to the list of variants we started with, and the
+	distribution map is identical too:
+<p>
+<img src="screen13.png">
+</div>
+
+<div>
+We have found our determining feature for the light blue area (in the
+      word <em>Philadelphia</em>): only <span class="ipa2">l</span> (or <span
+      class="ipa2">l&#791;</span>) where other areas have <span class="ipa2">&#619;</span>.
+</div>
+
+<div>
+<h3>The next steps</h3>
+The next question is, is this <span class="ipa2">l</span> the
+      determining feature in the word <em>Philadelphia</em> only, or in
+      other words as well?
+<p>
+Try the next word on the list with an 'l', <em>quilt</em>:
+<p>
+<img src="screen15.png">
+</div>
+
+<div>
+The results for <em>quilt</em> (not shown) are similar to those for
+      <em>Philadelphia</em>. Before going on to the next word, you may
+      ask whether <span class="ipa2">l</span> is the determining feature
+      in all words.
+</div>
+
+<div>
+Go to the main page for your project, and then to <u>data overview</u>.
+<p>
+In data overview, go to <u>Sample search</u>:
+<p>
+<img src="screen16.png">
+<p>
+Enter a search pattern that has at least one <span class="ipa2">l</span>,
+	and no <span class="ipa2">&#619;</span> at all:
+<p>
+<img src="screen17.png">
+</div>
+
+<div>
+You get a distribution map of matching words:
+<p>
+<img src="screen18.png">
+<p>
+You can see that <span class="ipa2">l</span> is quite dominant in the
+	target area, but occurs quite often in all other areas as well.
+<p>
+You also get a random list of matching words:
+<p>
+<img src="screen19.png">
+</div>
+
+<div>
+So, back to <u>cluster determinants</u>
+<p>
+Keep trying, and you come to <em>St. Louis</em>, the first word that
+	shows different results.
+<p>
+All matching words have <span class="ipa2">l</span>, not <span
+	  class="ipa2">&#619;</span>, but many rejected patterns have
+	  <span class="ipa2">l</span> as well:
+<p>
+<img src="screen20.png">
+</div>
+
+<div>
+When you try for words with <span class="ipa2">l</span> in Step 4, you
+      see this is not a determining feature for the target area.
+<p>
+<img src="screen21.png">
+<p>
+<img src="screen22.png">
+</div>
+
+<div>
+<h3>That's it</h3>
+You found that <span class="ipa2">l</span> is a determining feature for
+the light blue area, but not in all words. It looks like the
+position in the word matters. Like, not at the beginning
+of a word, or at the beginning of some syllables.
+<p>
+<img src="screen01.png">
+</div>
+
+<div>
+Of course, this doesn't have to be the only determining feature for this
+	area. Other words may help you find other determining features.
+	What about <em>nice day</em>? It is on the top of the list, but
+	has no 'l' in it.
+<p>
+<img src="screen04.png">
+</div>
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

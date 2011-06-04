@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="nl">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="Author" CONTENT="Therese Leinonen">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+<link rel="stylesheet" type="text/css" href="preparing.css">
+<base target="_blank">
+<title>Preparing data for Gabmap</title>
+</head>
+
+
+<body>
+
+
+<h1>Preparing dialect data for <a href="http://www.gabmap.nl/">Gabmap</a></h1>
+
+<p>
+<big>For analysis in Gabmap you need two things:</big>
+</p>
+
+<ol>
+<li><a href="#dialectdata" target="_self">dialect data</a> in a table</li>
+<li><a href="#geographicdata" target="_self">geographic coordinates</a> of the places where the dialect data was collected</li>
+</ol> 
+
+<h2 id="dialectdata">Dialect data</h2>
+
+<blockquote>
+Example: <a href="../../examples/Demo-Pennsylvania.utxt">Demo-Pennsylvania.utxt</a>
+</blockquote>
+
+<p>
+The dialect data should be in a table where the rows represent the sites where the data was collected and the columns represent the data items. The data items are, for example, a number of words for which you collected dialect forms. You can prepare the data file using Microsoft Excel. This is how it would look:
+<p>
+
+<img src="excel1.jpg" alt="spreadsheet">
+
+<p>
+For uploading the data file in Gabmap it has to be a tab-separated plain text file encoded as Unicode (UTF-8/UTF-16). To save the file in this format in Excel, you choose "Save As" in the "File" menu, and in the drop-down-menu "Save as type:" you choose "Unicode text (*.txt)". The resulting file with the extension .txt can be uploaded in Gabmap.
+<p>
+
+<img src="excel2.jpg" alt="spreadsheet">
+
+<p>
+Other types of data than transcriptions can be analyzed in Gabmap, too. Your table might, for example, comprise numeric dialect data or categorical information on some syntactic variables. You can read more about data formats in Gabmap <a href="../manual/datafile.html">here</a>.
+
+
+<h2 id="geographicdata">Geographic data</h2>
+
+<blockquote>
+Example: <a href="../../examples/Demo-Pennsylvania.kml">Demo-Pennsylvania.kml</a>
+</blockquote>
+
+
+<p>
+In order to make dialect maps of your data, you need a basic map of the
+ area you are analyzing. This map is uploaded in Gabmap as a .kml or
+ kmz. file, which can be created using <a
+ href="http://earth.google.com/">Google Earth</a>. Google Earth is a
+ free software which you can download and install on your computer.
+<!-- If you want to get help with the basic map during the hands-on
+ session, it is a good idea to have Google Earth installed on your
+ laptop.
+-->
+
+
+<p>
+With Google Earth you can draw the borders of your area (add one ore more <b>polygons</b>) and add <b>placemarks</b> for the locations where the data was collected. Note that the place names have to be spelled exactly as in your data file. Optionally, you can add more details, like internal borders or rivers, to the map. 
+
+
+<p>
+A short manual for making a map with Google Earth is available <a href="http://www.let.rug.nl/~kleiweg/L04/kml/manual.html">here</a>. If you follow this manual you can skip the last step (Convert to RuG/L04), because the manual was made for the older Groningen software RuG/L04, but in Gabmap you can upload the .kml file directly.
+
+ 
+<p>
+If you already have a list of locations with coordinates, you can find a tool <a href="../../tools/ll2kml.html">here</a> for converting it to .kml. Then you can open the converted file in Google Earth to add borders.
+
+
+<br>
+
+</body>
+</html>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

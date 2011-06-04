@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Gabmap: cluster validation - demonstration</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <link rel="stylesheet" type="text/css" href="../../styles.css">
+    <link rel="icon" href="../../L04.ico" type="image/ico">
+    <base target="_blank">
+</head>
+<body class="demo">
+
+<div>
+<h1>Gabmap: cluster validation - demonstration</h1>
+This demonstration uses data from Germany
+</div>
+
+<div>
+<h3>The problem</h3>
+The result of clustering can be deceptive. 
+<p>
+You ask for six clusters, and
+you get six clusters, no matter if there are actually more
+clusters in the data, or even less.
+<p>
+Sometimes it is clear that the clusters you get are useless, that you
+are only clustering noise. You can see this in the map below:
+
+<p>
+<img src="img00.png">
+<p>
+But usually, the result looks quite acceptable, like in the following
+	map:
+<p>
+<img src="img01.png">
+<p>
+What you get not only depends on how many clusters you ask for.
+Different clustering methods give different results. And 
+clustering is highly sensitive to small amounts of noise.	
+Furthermore, you can't see the difference between major and minor
+cluster devisions. (Even dendrograms, that suggest a hierarchy, are not
+	realiable in this respect.)
+
+</div>
+
+<div>
+<h3>Validation with the help of multi-dimensional scaling</h3>
+
+An MDS plot in two dimension, using the same colours as those used in
+      the clustering, shows you how the major devisions of the data
+      are.<br>
+(Numbers indicate the most exceptional points in each cluster.)
+<p>
+<img src="img02.png">
+<p>
+You can see a clear devision between north and south. This plot also
+	shows that the dark blue cluster seems to belong partly to the
+	north group and partly to the south group. So this colour
+	actually is not a single cluster.
+
+</div>
+
+<div>
+Let's increase the number of clusters from seven to eleven:
+<p>
+<img src="img03.png">
+<p>
+</div>
+
+<div>
+Here are the map and the MDS plot of the devision in eleven clusters:
+<p>
+<img src="img04.png">
+<p>
+<img src="img05.png">
+<p>
+The previous dark blue cluster is now split in two, a yellow cluster that
+	belongs to the north, and a dark blue cluster that belongs to
+	the south.
+</div>
+
+<div>
+We have identified a north group and a south group. What about
+	the clusters within these groups? Are they valid?
+<p>
+First, let's have a closer look at the north. We remove all clusters
+from the south from the plot:
+<p>
+<img src="img04n.png">
+<p>
+<img src="img06.png">
+This gives MDS the chance to redistribute a smaller part of the data,
+	giving more room to clusters in the data to separate
+	themselves. Indeed, colours that in the previous plot
+	looked jumbled now appear spatially ordered:
+<p>
+<img src="img07.png">
+<p>
+However, are these really four distinct clusters?
+</div>
+
+<div>
+Here's is what the above plot looks like if you don't have colours:
+<p>
+<img src="img07a.png">
+<p>
+The cluster that was yellow seems alright as a real cluster, but it is
+	not possible to point to a distinct cluster in the other parts
+	of the plot.
+<p>
+So, what is happening here?
+<p>
+It seems (based on the data) that the north is not a region of separate dialects, but a
+	continuum, with language changing gradually over distance. Pink
+	is clearly at the west as one end of the continuum, and yellow
+	is the other end in the east. But borders within this continuum
+	are arbitrary, especially between pink and light blue, and
+	between light
+	blue and light purple.
+<p>
+</div>
+
+<div>
+Now, let's have a closer look at the south. There we have seven clusters
+      at the moment, but in the complete MDS plot, it all looks jumbled.
+<p>
+So we make an MDS plot with data from the north omitted:
+<p>
+<img src="img04s.png">
+<p>
+<img src="img09.png">
+<p>
+This shows another two major groups. One in the middle of Germany with
+	dark and light orange, dark purple and dark blue. And the other
+	group in southern Germany with red and dark and light green.
+<p>
+The location marked "28" is one of the exceptional locations in the dark
+	green
+	cluster, as you can see in both map and MDS plot.  It
+	doesn't belong to the south. The clustering algorithm got it wrong.
+</div>
+
+<div>
+Zooming in even more. In the previous MDS plot, red and green looked
+      like a single cluster mixed together. This is what it looks like
+      if we make an MDS plot of only these two clusters:
+<p>
+<img src="img10.png">
+<p>
+Red and green are no longer mixed, but the spatial distribution suggests
+	there is no real cluster border. (Imagine this plot without
+	colours.) So this is probably an area
+	with a gradual dialect transition from north to south.
+</div>
+
+<div>
+You can continue this process of zooming in on smaller parts of the map,
+      looking for, and checking sub-clusters.
+<p>
+A few words of caution.
+<p>
+MDS is much more stable than clustering, but it isn't perfect either.
+<p>
+The results you get are only as good as your data. You may miss dialects
+	because the data isn't detailed enough. You may also see
+	clusters that don't correspond to dialects, but to some artifact
+	in the data, for instance, multiple fieldworkers, or tiny
+	variations in the manner of data gathering, that show only in the final analysis.
+</div>
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

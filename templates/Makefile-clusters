@@ -1,0 +1,38 @@
+
+OK: target-{0[col]}
+
+target-col: ../diff/OK clu-cl.txt clu-ga.txt clu-wa.txt clu-wm.txt
+	rm -f OK
+	mapclust -o map{0[method]}{0[groups]}col.eps -u {0[appdir]}templates/palette12.txt ../map/map.cfg clu-{0[method]}.txt {0[groups]}
+	{0[python3]} {0[appdir]}util/smappost map{0[method]}{0[groups]}col.eps
+	den -c -e {0[exp]} -n {0[groups]} -o den{0[method]}{0[groups]}col.eps -L -s .8 -u {0[appdir]}templates/palette12.txt clu-{0[method]}.txt
+	den -C -e {0[exp]} -n {0[groups]} -o den{0[method]}{0[groups]}colalt.eps -p -u {0[appdir]}templates/palette12.txt clu-{0[method]}.txt
+	echo {0[method]} {0[groups]} col > current.txt
+	eps2png
+	touch OK
+
+target-bw: ../diff/OK clu-cl.txt clu-ga.txt clu-wa.txt clu-wm.txt map.cfg
+	rm -f OK
+	mapclust -b -s -o map{0[method]}{0[groups]}bw.eps map.cfg clu-{0[method]}.txt {0[groups]}
+	{0[python3]} {0[appdir]}util/smappost map{0[method]}{0[groups]}bw.eps
+	den -Q -e {0[exp]} -n {0[groups]} -o den{0[method]}{0[groups]}bw.eps clu-{0[method]}.txt
+	den -p -e {0[exp]} -o den{0[method]}1bwalt.eps clu-{0[method]}.txt
+	echo {0[method]} {0[groups]} bw > current.txt
+	eps2png
+	touch OK
+
+clu-cl.txt: ../diff/diff.txt
+	cluster -o clu-cl.txt -cl ../diff/diff.txt
+
+clu-ga.txt: ../diff/diff.txt
+	cluster -o clu-ga.txt -ga ../diff/diff.txt
+
+clu-wa.txt: ../diff/diff.txt
+	cluster -o clu-wa.txt -wa ../diff/diff.txt
+
+clu-wm.txt: ../diff/diff.txt
+	cluster -o clu-wm.txt -wm ../diff/diff.txt
+
+map.cfg: ../map/map.cfg
+	grep -v ^markers: ../map/map.cfg > map.cfg
+	echo borderwidth: 2 >> map.cfg

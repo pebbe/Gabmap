@@ -1,0 +1,6 @@
+OK: ../diff/OK
+	rm -f OK
+	PYTHONPATH={0[python3path]} ; {0[python3]} {0[appdir]}util/plotmds
+	eps2png
+	{0[python3]} {0[appdir]}util/mkmap
+	touch OK

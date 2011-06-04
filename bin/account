@@ -1,0 +1,7 @@
+#!/bin/sh
+source INIT.sh
+export PYTHON=$PYTHON3
+export PYTHONPATH=$PYTHON3PATH
+#echo Content-type: text/plain
+#echo
+$PYTHON account.py

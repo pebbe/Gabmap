@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Gabmap - tools - long/lat to kml</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="icon" href="../L04.ico" type="image/ico">
+  </head>
+  <body>
+
+    <div id="crumbs">
+      <a href="..">home</a>
+      &nbsp; <a href=".">tools</a>
+    </div>
+
+    <div class="main">
+
+      <h2>Convert list of locations to kml</h2>
+
+      <form action="../bin/ll2kml" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+
+	<input type="hidden" name="hebci_auml"   value="&auml;">
+	<input type="hidden" name="hebci_divide" value="&divide;">
+	<input type="hidden" name="hebci_euro"   value="&euro;">
+	<input type="hidden" name="hebci_middot" value="&middot;">
+	<input type="hidden" name="hebci_oelig"  value="&oelig;">
+	<input type="hidden" name="hebci_oslash" value="&oslash;">
+	<input type="hidden" name="hebci_Scaron" value="&Scaron;">
+	<input type="hidden" name="hebci_sect"   value="&sect;">
+	<input type="hidden" name="hebci_thorn"  value="&thorn;">
+
+	Upload file with list of coordinates:<br>
+	<input type="file" name="file" size="40">
+	<p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&mdash;&nbsp;or&nbsp;&mdash;
+	<p>
+	Enter list of coordinates in the box below:<br>
+	<textarea name="text" rows="16" cols="60"># Example:
+# longitude latitude placename
+  4.8909 52.3738 Amsterdam
+  6.5678 53.2149 Groningen
+-74.0060 40.7143 New York
+	</textarea>
+	<p>
+	  <input type="submit" value="Conver to kml">
+      </form>
+
+    </div>
+
+  </body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

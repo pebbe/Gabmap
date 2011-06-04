@@ -1,0 +1,429 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/09/28"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, re, sys
+
+#| globals
+
+psaxes1 = '''
+.5 .5 1 setrgbcolor
+.5 setlinewidth
+{0[0]} tr
+{0[1]} tr
+ahead moveto lineto
+stroke
+{0[2]} tr
+{0[3]} tr
+ahead 4 2 roll moveto lineto
+[ 6 ] 0 setdash
+stroke
+[ ] 0 setdash
+'''
+
+pshead = """%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: {} {} {} {}
+
+64 dict begin
+
+% `new-font-name' `encoding-vector' `old-font-name' RE -
+/RE {{
+    findfont
+    dup maxlength dict begin {{
+        1 index /FID ne {{ def }} {{ pop pop }} ifelse
+    }} forall
+    /Encoding exch def
+    dup /FontName exch def
+    currentdict end definefont pop
+}} bind def
+
+/ArrowHeadSize 16 def
+
+% Put an arrowhead at point x2 y2, pointing away from x1 y1
+% Replace x2 y2 with coordinates of arrowbase: the point to connect lines to
+% stack in:  x1 y1 x2  y2
+% stack out: x1 y1 x2' y2'
+/ahead {{
+    1 index 4 index sub
+    1 index 4 index sub
+    exch atan
+
+    ArrowHeadSize -.8 mul
+    dup
+    2 index cos mul 4 index add
+    exch
+    2 index sin mul 3 index add
+
+    5 2 roll
+
+    gsave
+        3 1 roll
+        translate
+        rotate
+        newpath
+        0 0 moveto
+        ArrowHeadSize dup neg exch .25 mul
+        2 copy lineto
+        ArrowHeadSize -.8 mul 0
+        2 copy
+        6 4 roll
+        neg curveto
+        closepath fill
+    grestore
+}} bind def
+
+/center {{
+    dup stringwidth
+    exch 2 div neg
+    exch 2 div neg
+    rmoveto
+}} bind def
+
+/tr {{
+      2 {{
+	r div
+	250 mul
+	exch
+    }} repeat
+}} bind def
+
+/p {{
+    pop pop pop
+    % setrgbcolor
+    tr
+    2 copy
+    exch 3 add exch moveto
+    3 0 360 arc
+    closepath
+    stroke
+}} bind def
+
+/s {{
+    tr
+    moveto
+    5 -3 rmoveto
+    gsave
+	1 setgray
+	dup false charpath stroke
+    grestore
+    show
+}} bind def
+
+/Font ISOLatin1Encoding /Helvetica RE
+/Font findfont 10 scalefont setfont
+
+/r {} def
+
+300 400 translate
+
+{}
+
+1 setlinewidth
+0 setgray
+"""
+
+ps2head = """%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: {} {} {} {}
+
+64 dict begin
+
+/tr {{
+      2 {{
+	r div
+	250 mul
+	exch
+    }} repeat
+}} bind def
+
+/p {{
+    tr
+    transform
+    exch
+    2 {{ round cvi s cvs f exch writestring f ( ) writestring }} repeat
+    f exch writestring
+    f (\n) writestring
+}} bind def
+
+/r {} def
+
+300 400 translate
+
+/f (image.coo) (w) file def
+/s 10 string def
+
+
+"""
+
+psfoot = '''
+1 0 0 setrgbcolor
+3 setlinewidth
+1 setlinecap
+1 setlinejoin
+
+end
+showpage
+%%EOF
+'''
+
+ps2foot = '''
+
+f closefile
+
+end
+showpage
+%%EOF
+'''
+
+#| functions
+
+def unquote(s):
+    if s[0] != '"' or s[-1] != '"':
+        return s
+    return re.sub('\\\\(.)', '\\1', s[1:-1])
+
+
+#| main
+
+places = []
+fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    places.append(line.split(None, 1)[1].strip())
+fp.close()
+
+coox1 = cooy1 = sys.float_info.max
+coox2 = cooy2 = -sys.float_info.max
+
+coos = {}
+fp = open('../map/map.coo', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    x, y, dx, dy, s = line.split(None, 4)
+    s = unquote(s)
+    x = float(x)
+    y = float(y)
+    coos[s] = (x, y)
+    if s in places:
+        if x < coox1:
+            coox1 = x
+        if x > coox2:
+            coox2 = x
+        if y < cooy1:
+            cooy1 = y
+        if y > cooy2:
+            cooy2 = y
+fp.close()
+
+cols = {}
+for lbl in places:
+    r = (coos[lbl][0] - coox1) / (coox2 - coox1)
+    g = (coos[lbl][1] - cooy1) / (cooy2 - cooy1)
+    b = 0.5
+    cols[lbl] = (r, g, b)
+    cols[lbl] = (1, .5, .5)
+
+os.system('mds -o diff.vec2 2 ../diff/diff.txt 2> mds.log')
+vec = {}
+state = 0
+fp = open('diff.vec2', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    if state == 0:
+        state = 1
+    elif state == 1:
+        lbl = line
+        state = 2
+    elif state == 2:
+        x = float(line)
+        state = 3
+    elif state == 3:
+        y = float(line)
+        vec[lbl] = (x, y)
+        state = 1
+fp.close()
+
+fp1 = open('map.vec2', 'wt', encoding='iso-8859-1')
+fp2 = open('diff.vec2', 'wt', encoding='iso-8859-1')
+fp1.write('2\n')
+fp2.write('2\n')
+for lbl in places:
+    fp1.write('{0}\n{1[0]}\n{1[1]}\n'.format(lbl, coos[lbl]))
+    fp2.write('{0}\n{1[0]}\n{1[1]}\n'.format(lbl, vec[lbl]))
+fp2.close()
+fp1.close()
+
+if os.access('dif3.vec2', os.F_OK):
+    os.remove('dif3.vec2')
+os.system('export PYTHONPATH=$PYTHON2PATH ; procrustes -a map.vec2 diff.vec2 dif3.vec2 > axes.txt')
+
+fp = open('axes.txt', 'rt')
+axes = fp.readlines()
+fp.close()
+if len(axes) >= 4:
+    axes1 = psaxes1.format(axes)
+else:
+    axes1 = ''
+
+vec = {}
+vecx1 = vecy1 = sys.float_info.max
+vecx2 = vecy2 = -sys.float_info.max
+state = 0
+fp = open('dif3.vec2', 'rt', encoding='iso-8859-1')
+for line in fp:
+    line = line.strip()
+    if not line or line[0] == '#':
+        continue
+    if state == 0:
+        state = 1
+    elif state == 1:
+        lbl = line
+        state = 2
+    elif state == 2:
+        x = float(line)
+        if x < vecx1:
+            vecx1 = x
+        if x > vecx2:
+            vecx2 = x
+        state = 3
+    elif state == 3:
+        y = float(line)
+        if y < vecy1:
+            vecy1 = y
+        if y > vecy2:
+            vecy2 = y
+        vec[lbl] = (x, y)
+        state = 1
+fp.close()
+
+m = max(abs(vecx1), abs(vecx2), abs(vecy1), abs(vecy2))
+bb1 = int(vecx1 / m * 250 - 6) + 300
+bb2 = int(vecy1 / m * 250 - 6) + 400
+bb3 = int(vecx2 / m * 250 + 6) + 300
+bb4 = int(vecy2 / m * 250 + 6) + 400
+fp = open('plot2d.eps', 'wt')
+fp2 = open('plot2di.eps', 'wt', encoding='iso-8859-1')
+fp.write(pshead.format(bb1, bb2, bb3, bb4, m, axes1))
+fp2.write(ps2head.format(bb1, bb2, bb3, bb4, m))
+for lbl in places:
+    fp.write('{0[0]:g} {0[1]:g} {1[0]:g} {1[1]:g} {1[2]:g} p\n'.format(vec[lbl], cols[lbl]))
+    fp2.write('({0}) {1[0]:g} {1[1]:g} p\n'.format(
+        lbl.replace('\\', '\\\\').replace('(', '\\(').replace(')', '\\)'),
+        vec[lbl]))
+fp.write(psfoot)
+fp2.write(ps2foot)
+fp.close()
+
+fp = open('map.rgb', 'wt', encoding='iso-8859-1')
+fp.write('3\n')
+for lbl in places:
+    fp.write('{0}\n{1[0]:g}\n{1[1]:g}\n{1[2]:g}\n'.format(lbl, cols[lbl]))
+fp.close()
+
+os.system('maprgb -r -o map.eps ../map/map.cfg map.rgb')
+
+# start map2.eps
+
+lines = []
+places = []
+state = 0
+fp = open('map.eps', 'rb')
+for line in fp:
+    if state == 0:
+        if line.startswith(b'%%BoundingBox:'):
+            x1, y1, x2, y2 = [int(i) for i in line.split()[1:]]
+            lines.append('%%BoundingBox: {} {} {} {}\n'.format(x1 - 100, y1 - 100, x2 + 100, y2 + 100).encode('iso-8859-1'))
+            state = 1
+        else:
+            lines.append(line)
+    elif state == 1:
+        if line.startswith(b'/Limit'):
+            lines.append(b'/Limit 30 def\n')
+            state = 2
+        else:
+            lines.append(line)
+    elif state == 2:
+        if line.startswith(b'/default'):
+            lines.append(b'/default 8 def\n')
+            state = 3
+        else:
+            lines.append(line)
+    elif state == 3:
+        lines.append(line)
+        if line.startswith(b'/PP ['):
+            state = 4
+    elif state == 4:
+        lines.append(line)
+        if line.startswith(b'] def'):
+            state = 5
+        else:
+            places.append(line.decode('iso-8859-1').split('(')[1].split(')')[0])
+    elif state == 5:
+        lines.append(line)
+        if line.startswith(b'/NR PP '):
+            lines.append(b'\n')
+            lines.append(b'/QQ [\n')
+            for lbl in places:
+                if lbl in vec:
+                    lines.append(' [ {:g} {:g} ]\n'.format(vec[lbl][0] / m * 70, vec[lbl][1] / m * 70).encode('iso-8859-1'))
+                else:
+                    lines.append(b' [ 0 0 ]\n')
+            lines.append(b'] def\n')
+            state = 6
+    elif state == 6:
+        if line.startswith(b'gsave eoclip newpath'):
+            lines.append(b'gsave newpath\n')
+            state = 7
+        else:
+            lines.append(line)
+    elif state == 7:
+        lines.append(line)
+        if line.startswith(b'/poly'):
+            state = 8
+    elif state == 8:
+        lines.append(line)
+        if line.strip().startswith(b'1 add index'):
+            lines.append(b'        dup QQ exch get aload pop translate\n')
+            state = 9
+    else:
+        lines.append(line)
+fp.close()
+
+fp = open('map2.eps', 'wb')
+for line in lines:
+    fp.write(line)
+fp.close()
+
+fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET map2.eps 2>&1', 'r')
+lines2 = fp.readlines()
+fp.close()
+for line in lines2:
+    if line.startswith('%%BoundingBox:'):
+        x1, y1, x2, y2 = line.split()[1:]
+for i in range(len(lines)):
+    if lines[i].startswith(b'%%BoundingBox:'):
+        lines[i] = '%%BoundingBox: {} {} {} {}\n'.format(int(x1) - 2, int(y1) - 2, int(x2) + 2, int(y2) + 2).encode('iso-8859-1')
+        break
+fp = open('map2.eps', 'wb')
+for line in lines:
+    fp.write(line)
+fp.close()
+
+# end map2.eps
+
+for i in 'map.vec2 diff.vec2'.split():
+    os.remove(i)

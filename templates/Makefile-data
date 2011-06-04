@@ -1,0 +1,8 @@
+
+OK: features.def _/*.data
+	rm -f OK
+	features -a -c -l -e errors-int.txt -t tokens-int.txt features.def _/*.data
+	mv features.table.out features-int.txt
+	features -T -g -a -c -l -e errors-float.txt -t tokens-float.txt features.def _/*.data
+	mv features.table.out features-float.txt
+	touch OK

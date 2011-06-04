@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/10/09"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os, sys
+
+#| globals
+
+pscode = r'''
+.5 setgray
+0 0 595 842 rectfill
+0 setgray
+1 setlinewidth
+
+/f (image.coo) (w) file def
+/s 10 string def
+0 1 PP length 1 sub {
+    PP exch get aload pop
+    /p exch def
+    pop pop
+    /lbl exch def
+    /y exch def
+    /x exch def
+    lbl length 0 ne p 0 ne and {
+	x 3 add y moveto
+	x y 3 0 360 arc closepath
+	gsave 1 1 .5 setrgbcolor fill grestore
+	stroke
+        x y
+        transform
+        exch
+        2 {	round cvi s cvs f exch writestring f ( ) writestring } repeat
+        f lbl writestring
+        f (\n) writestring
+    } if
+} for
+f closefile
+
+end
+showpage
+%%EOF
+'''
+
+#| main
+
+
+fpin = open('mapidx.eps', 'rt')
+fpout = open('mapcoo.eps', 'wt')
+fpout2 = open('mapover.eps', 'wt')
+state = 0
+for line in fpin:
+    if state == 0:
+        if line.startswith('/default'):
+            if line.startswith('/default 2'):
+                fpout.write('/default 9 def\n')
+                fpout2.write('/default 1 def\n')
+            else:
+                fpout.write(line)
+                fpout2.write(line)
+            state = 1
+        else:
+            fpout.write(line)
+            fpout2.write(line)
+    elif state == 1:
+        fpout.write(line)
+        fpout2.write(line)
+        if line.startswith('/PP'):
+            state = 2
+    elif state == 2:
+        if line.startswith('] def'):
+            fpout.write(line)
+            fpout2.write(line)
+            state = 3
+        else:
+            l = line.rstrip()
+            if l.endswith(' 2 ]'):
+                fpout.write(l[:-4] + ' 9 ]\n')
+                fpout2.write(l[:-4] + ' 1 ]\n')
+            else:
+                fpout.write(line)
+                fpout2.write(line)
+    elif state == 3:
+        if line.startswith('/poly'):
+            state = 4
+        fpout.write(line)
+    elif state == 4:
+        if line.strip() == 'stroke':
+            fpout.write('        .7 setgray\n')
+            state = 5
+        fpout.write(line)        
+    else:
+        fpout.write(line)
+
+fpout2.write(pscode)
+fpout2.close()
+fpout.close()
+fpin.close()
+        

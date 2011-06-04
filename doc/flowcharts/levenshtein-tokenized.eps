@@ -1,0 +1,365 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 81 175 804 605
+
+64 dict begin
+
+
+
+/rbox {
+    /s exch def
+    /y exch def
+    /x exch def
+    x 40 add y 10 sub moveto
+    x 40 add y 10 -90 90 arc
+    x 40 sub y 10 add lineto
+    x 40 sub y 10 90 270 arc
+    closepath
+    gsave 1 setgray fill grestore
+    stroke
+    x y 4 sub moveto s center show
+} bind def
+
+%
+% Assorted line, curve and arrow functions
+%
+
+
+/ArrowHeadSize 12 def
+
+/CurvePointAngle 0 def    % to be redefined by /curveposition
+
+% Return point on curve, given by t = [0, 1]
+% CurvePointAngle will be set by dyt/dxt (direction of curve at point)
+% stack in:  x1 y1 x2 y2 x3 y3 x4 y4 t
+% stack out: xt yt
+/curvepositiondict 15 dict def
+/curveposition {
+    curvepositiondict begin
+        /t exch def
+        /y4 exch def /x4 exch def
+        /y3 exch def /x3 exch def
+        /y2 exch def /x2 exch def
+        /y1 exch def /x1 exch def
+        /cx x2 x1 sub 3 mul def
+        /cy y2 y1 sub 3 mul def
+        /bx x3 x2 sub 3 mul cx sub def
+        /by y3 y2 sub 3 mul cy sub def
+        /ax x4 x1 sub cx sub bx sub def
+        /ay y4 y1 sub cy sub by sub def
+        ax t dup dup mul mul mul
+        bx t dup mul mul add
+        cx t mul add
+        x1 add
+        ay t dup dup mul mul mul
+        by t dup mul mul add
+        cy t mul add
+        y1 add
+        % calculate CurvePointAngle
+        3 ay mul t dup mul mul
+        2 by mul t mul add
+        cy add
+        3 ax mul t dup mul mul
+        2 bx mul t mul add
+        cx add
+        atan
+    end
+    /CurvePointAngle exch def
+} bind def
+
+% Return point on line, given by t = [0, 1]
+% stack in:  x1 y1 x2 y2 t
+% stack out: xt yt
+/linepositiondict 5 dict def
+/lineposition {
+    linepositiondict begin
+        /t exch def
+        /y2 exch def /x2 exch def
+        /y1 exch def /x1 exch def
+        x2 x1 sub t mul x1 add
+        y2 y1 sub t mul y1 add
+    end
+} bind def
+
+% Put an arrowhead at point x2 y2, pointing away from x1 y1
+% Replace x2 y2 with coordinates of arrowbase: the point to connect lines to
+% stack in:  x1 y1 x2  y2
+% stack out: x1 y1 x2' y2'
+/ahead {
+    1 index 4 index sub
+    1 index 4 index sub
+    exch atan
+
+    ArrowHeadSize -.8 mul
+    dup
+    2 index cos mul 4 index add
+    exch
+    2 index sin mul 3 index add
+
+    5 2 roll
+
+    gsave
+        3 1 roll
+        translate
+        rotate
+        newpath
+        0 0 moveto
+        ArrowHeadSize dup neg exch .25 mul
+        2 copy lineto
+        ArrowHeadSize -.8 mul 0
+        2 copy
+        6 4 roll
+        neg curveto
+        closepath fill
+    grestore
+} bind def
+
+% Draw a line with an arrowhead
+% stack in:  x1 y1 x2 y2
+% stack out: -
+/arrowline {
+    ahead
+    moveto
+    lineto
+    stroke
+} bind def
+
+% Draw a curve with an arrowhead
+% stack in:  x1 y1 x2 y2 x3 y3 x4 y4
+% stack out: -
+/arrowcurve {
+    ahead
+    8 6 roll
+    moveto
+    curveto
+    stroke
+} bind def
+
+% Draw a curve
+% f, between 0 and 1, indicates position along curve where point should be on after drawing
+% stack in:  f x1 y1 x2 y2 x3 y3 x4 y4
+% stack out: -
+/curvepoint {
+    8 copy
+    8 6 roll
+    moveto
+    curveto
+    stroke
+    
+    9 -1 roll
+    curveposition
+    moveto
+} bind def
+
+% Draw a curve with an arrowhead
+% f, between 0 and 1, indicates position along curve where point should be on after drawing
+% stack in:  f x1 y1 x2 y2 x3 y3 x4 y4
+% stack out: -
+/arrowcurvepoint {
+    ahead
+    curvepoint
+} bind def
+
+% Draw a line
+% f, between 0 and 1, indicates position along line where point should be on after drawing
+% stack in:  f x1 y1 x2 y2
+% stack out: -
+/linepoint {
+    4 copy
+    moveto
+    lineto
+    stroke
+    5 -1 roll
+    lineposition
+    moveto
+} bind def
+
+% Draw a line with an arrowhead
+% f, between 0 and 1, indicates position along line where point should be on after drawing
+% stack in:  f x1 y1 x2 y2
+% stack out: -
+/arrowlinepoint {
+    ahead
+    linepoint
+} bind def
+
+% Calculate points 2 and 3 for curve, given points 1 and 4, and angle alpha
+% alpha between -120 and 120, exclusive
+% stack in:  x1 y1 x4 y4 alpha
+% stack out: x1 y1 x2 y2 x3 y3 x4 y4
+/curveangledict 11 dict def
+/curveangle {
+    curveangledict begin
+        /alpha exch def
+        /y4 exch def /x4 exch def
+        /y1 exch def /x1 exch def
+        /ALPHA y4 y1 sub x4 x1 sub atan def
+        /LEN
+          x1 x4 sub dup mul y1 y4 sub dup mul add sqrt
+          1 2 alpha cos mul add
+          div
+        def
+        /x2 x1 LEN ALPHA alpha add cos mul add def
+        /y2 y1 LEN ALPHA alpha add sin mul add def
+        /x3 x4 LEN ALPHA 180 add alpha sub cos mul add def
+        /y3 y4 LEN ALPHA 180 add alpha sub sin mul add def
+        x1 y1 x2 y2 x3 y3 x4 y4
+    end
+} bind def
+
+% Replace point 2 with point p pixels in the direction of point 1
+% stack in:  x1 y1 x2  y2  p
+% stack out: x1 y1 x2' y2'
+/shortline {
+    3 index 2 index sub
+    5 index 4 index sub
+    atan
+    3 index
+    1 index cos
+    3 index mul
+    add
+    3 index
+    2 index sin
+    4 index mul
+    add
+    6 2 roll
+    pop pop pop pop
+} bind def
+
+% Replace both point, each p pixels in the other's direction
+% stack in:  x1  y1  x2  y2  p
+% stack out: x1' y1' x2' y2'
+/doubleshort {
+    dup 6 1 roll
+    shortline
+    4 2 roll
+    5 -1 roll
+    shortline
+    4 2 roll
+} bind def
+
+% Calculate endpoint of line
+% stack in:  x1 y1 len alpha
+% stack out: x1 y1 x2 y2
+/linefrom {
+    2 copy
+    cos mul 4 index add
+    3 1 roll
+    sin mul 2 index add
+} bind def
+
+
+/center {
+    dup stringwidth
+    exch 2 div neg
+    exch 2 div neg
+    rmoveto
+} bind def
+
+/Helvetica findfont 12 scalefont setfont
+
+
+100 300 100 100 rectstroke
+150 404 moveto
+(items) center show
+gsave
+    88 350 translate
+    -90 rotate
+    0 0 moveto
+    (places) center show
+grestore
+150 360 moveto (dialect) center show
+150 346 moveto (string) center show
+150 332 moveto (data) center show
+
+[ 4 ] 0 setdash
+175 304 12 92 rectstroke
+[ ] 0 setdash
+181 396 181 450 arrowline
+181 454 moveto (distribution maps) center show
+
+100 180 100 100 rectstroke
+150 247 moveto (tokenizer) center show
+150 233 moveto (and) center show
+150 219 moveto (feature) center show
+150 205 moveto (definition) center show
+200 230 moveto
+280 230
+180 350
+250 350 curveto
+stroke
+
+
+400 300 100 100 rectstroke
+450 404 moveto
+(items) center show
+gsave
+    388 350 translate
+    -90 rotate
+    0 0 moveto
+    (places) center show
+grestore
+450 367 moveto (tokenized) center show
+450 353 moveto (dialect) center show
+450 339 moveto (string) center show
+450 325 moveto (data) center show
+
+[ 4 ] 0 setdash
+480 304 12 92 rectstroke
+[ ] 0 setdash
+486 396 486 500 arrowline
+486 450 (levenshtein) rbox
+486 504 moveto (alignments) center show
+
+
+
+200 350 386 350 arrowline
+300 350 (tokenize) rbox
+
+350 350 380 350 350 230 400 230 arrowcurve 
+400 180 100 100 rectstroke
+450 233 moveto (segment-pair) center show
+450 219 moveto (differences) center show
+
+700 300 100 100 rectstroke
+750 360 moveto (table) center show
+750 346 moveto (of) center show
+750 332 moveto (differences) center show
+750 404 moveto
+(places) center show
+gsave
+    688 350 translate
+    -90 rotate
+    0 0 moveto
+    (places) center show
+grestore
+500 350 686 350 arrowline
+600 350 (levenshtein) rbox
+500 230 moveto
+580 230
+480 350
+550 350 curveto
+stroke
+650 350 680 350 650 230 700 230 arrowcurve 
+704 227 moveto (cronbach alpha) show
+
+
+100 500 100 100 rectstroke
+150 546 moveto (map) center show
+
+250 500 100 100 rectstroke
+300 553 moveto (geographic) center show
+300 539 moveto (distances) center show
+200 550 250 550 arrowline
+
+750 415 750 520 450 550 700 550 arrowcurve
+350 550 700 550 arrowline
+704 550 moveto (local incoherence) show
+
+500 230 moveto
+530 230 510 300 510 390 curveto
+510 420 486 420 486 440 curveto
+stroke
+
+end
+showpage
+%%EOF

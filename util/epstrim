@@ -1,0 +1,26 @@
+#!/usr/bin/env python2.6
+
+import os, sys
+
+x1 = 0
+y1 = 0
+x2 = 595
+y2 = 842
+
+fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET ' + sys.argv[1] + ' 2>&1', 'r')
+for line in fp:
+    if line.startswith('%%BoundingBox:'):
+        x1, y1, x2, y2 = [int(i) for i in line.split()[1:]]
+        x1 -= 4
+        y1 -= 4
+        x2 += 4
+        y2 += 4
+fp.close()
+
+fp = open(sys.argv[1], 'r')
+for line in fp:
+    if line.startswith('%%BoundingBox:'):
+        sys.stdout.write('%%%%BoundingBox: %i %i %i %i\n' % (x1, y1, x2, y2))
+    else:
+        sys.stdout.write(line)
+fp.close()

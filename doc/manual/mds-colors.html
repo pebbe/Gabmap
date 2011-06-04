@@ -1,0 +1,56 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+<h2>Color representation</h2>
+
+<p>
+The interpretation of the results of MDS is facilitated if the results can be viewed in relation to geography. This is done using the the RGB color model (<a href="references1.html#nerbonne-heeringa-kleiweg1999">Nerbonne, Heeringa and Kleiweg 1999</a>; <a href="references1.html#leinonen2010">Leinonen 2010</a>:207-208). By using the three-dimensional RGB color model all positions in the three-dimensional MDS space are translated to a distinct color. The amount of red represents the first dimension of the MDS, the amount of green the second dimension and the amount of blue the third dimension. The following figure shows the three-dimensional color spectrum created by the RGB color model:
+</p>
+
+<img src="images/rgb-3Dfig.jpg" alt="RGBcube"/>  <img src="images/kubus-new.gif" alt="RGBcube"/> 
+
+<p>
+In Gabmap a slightly modified RGB color spectrum is used, which corresponds better to the human color perception (the <a href="http://en.wikipedia.org/wiki/RGB_color_model" target="_top">RGB</a> colors have been translated to <a href="http://en.wikipedia.org/wiki/HSL_and_HSV" target="_top">HSV</a>, the V is squared and after that the colors are converted back to RGB). 
+</p>
+
+<p>
+The next plot shows the results of MDS in a two-dimensional plot as before, but in this plot the color of the dot of each dialect has been colored with the RGB colors according to the positions in the three-dimensional MDS analysis. The third dimension corresponds to the z-axis. It can clearly be seen that the color of the dot corresponds to the position in the plot: points close to each other have a similar color.
+</p>
+
+<img src="images/mdsplot_penn7_3dim.png" alt="MDSplot"/> 
+
+<p>
+In order to create a map that visualizes the results of MDS, the area surrounding each site in the map is colored by the color corresponding to the position assigned by MDS. This links the results of MDS to geography. In the map below, the area of each site has the same color as in the previous plot. In this map it is evident that the sites that are linguistically most similar are geographically close to each other, too. Only Berks seems to be an exception from this rule. Geographically Berks is very close to Chester and Montgomery, but it has a drastically different color and is linguistically very different.
+</p>
+
+<img src="images/rgbmap_penn7.png" alt="MDSmap"/>
+
+<p>
+In the small example with only seven sites the dialects form four clear groups that are linguistically different from each other. The ability of MDS to display gradual dialectal variation becomes more evident when working with a larger data set. The following map is based on MDS of the linguistic distances between 67 counties in Pennsylvania. In this map there are gradual transitions between dialects as well as some more abrupt dialect borders.
+</p>
+
+<img src="images/mdsmap-allpen.png" alt="MDSmap"/>
+
+
+<blockquote>
+<p class="center">
+<a href="mds-how.html">back</a>
+| <a href="index.htm" target="_top">Start</a>
+| <a href="mds-perdim.html">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>

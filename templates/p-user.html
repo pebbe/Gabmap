@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Gabmap - Userpage account</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+  </head>
+<body>
+
+<div class="pguser">
+
+Welcome {0[username]}
+
+<h2>Your projects</h2>
+
+{0[projects]}
+
+<h3>Create a new project</h3>
+
+<script language="JavaScript"><!--
+
+function trim(stringToTrim) {{
+  return stringToTrim.replace(/^\s+|\s+$/g,"");
+}}
+
+function formtest() {{
+  f = document.newproject;
+  i = f.datatype.selectedIndex;
+  valid = true;
+  if (valid && trim(f.description.value) == '') {{
+    alert ('Missing: description');
+    valid = false;
+  }}
+  if (valid && trim(f.data.value) == '') {{
+    alert ('Missing: data file');
+    valid = false;
+  }}
+  if (valid && i == 0) {{
+    alert ('Missing: type of data');
+    valid = false;
+  }}
+  if (valid && i == 1) {{
+    j = f.stringmethod.selectedIndex;
+    if (valid && j == 2 && trim(f.featdef.value) == '') {{
+      alert ('Missing: definition file');
+      valid = false;
+    }} 
+  }}
+
+  if (valid && trim(f.map.value) == '') {{
+    var answer = confirm('Missing: kmz or kml file\n\nDo you want to make a pseudomap?');
+    if (answer) {{
+      f.pseudo.value = '1';
+    }} else {{
+      valid = false;
+    }}
+  }}
+
+  if (valid) {{
+    if (i == 1) {{
+      f.allmethod.value = f.stringmethod.value;
+    }} else if (i == 2) {{
+      f.allmethod.value = f.nummethod.value;
+    }} else if (i == 3) {{
+      f.allmethod.value = f.binmethod.value;
+    }} else if (i == 4) {{
+      f.allmethod.value = 'dif';
+    }} else {{
+      valid = false;
+    }}
+  }}
+
+  return valid;
+}}
+
+function checkmethodstring() {{
+  s = document.getElementById('userdef').style;
+  if (document.newproject.stringmethod.selectedIndex == 2) {{
+    s.visibility = 'visible';
+    s.display = 'block';
+  }} else {{
+    s.visibility = 'hidden';
+    s.display = 'none';
+  }}
+}}
+
+function checktype() {{
+  f = document.newproject;
+  i = f.datatype.selectedIndex;
+
+  s2 = document.getElementById('userdef').style;
+
+  if (i == 0) {{
+    s2.visibility = 'hidden';
+    s2.display = 'none';
+  }}
+
+  s = document.getElementById('string').style;
+  if (i == 1) {{
+    s.visibility = 'visible';
+    s.display = 'block';
+    checkmethodstring();
+  }} else {{
+    s.visibility = 'hidden';
+    s.display = 'none';
+  }}
+
+  s = document.getElementById('num').style;
+  if (i == 2) {{
+    s.visibility = 'visible';
+    s.display = 'block';
+    s2.visibility = 'hidden';
+    s2.display = 'none';
+  }} else {{
+    s.visibility = 'hidden';
+    s.display = 'none';
+  }}
+
+  s = document.getElementById('bin').style;
+  if (i == 3) {{
+    s.visibility = 'visible';
+    s.display = 'block';
+    s2.visibility = 'hidden';
+    s2.display = 'none';
+  }} else {{
+    s.visibility = 'hidden';
+    s.display = 'none';
+  }}
+
+  if (i == 4) {{
+    s2.visibility = 'hidden';
+    s2.display = 'none';
+  }}
+
+  if (i == 5) {{
+    s2.visibility = 'hidden';
+    s2.display = 'none';
+  }}
+}}
+
+function show() {{
+  s = document.getElementById('advanced').style;
+  s.visibility = 'visible';
+  s.display = 'block';
+  s = document.getElementById('advshow').style;
+  s.visibility = 'hidden';
+  s.display = 'none';
+}}
+function hide() {{
+  s = document.getElementById('advshow').style;
+  s.visibility = 'visible';
+  s.display = 'block';
+  s = document.getElementById('advanced').style;
+  s.visibility = 'hidden';
+  s.display = 'none';
+}}
+
+
+//--></script>
+
+<form action="{0[appurl]}bin/project" method="post"
+	enctype="multipart/form-data" accept-charset="utf-8"
+	name="newproject" onsubmit="return formtest()">
+<input type="hidden" name="action" value="create">
+<input type="hidden" name="pseudo" value="">
+<input type="hidden" name="allmethod" value="">
+<fieldset>
+<legend>Description</legend>
+<input type="text" name="description" size="80">
+</fieldset>
+<p>
+<fieldset>
+<legend>Map</legend>
+Upload kml or kmz file:{0[helpmap]}<br>
+<input type="file" name="map" size="40"> (optional, but you really should){0[helppseudo]}
+<p>
+<input type="checkbox" name="shmap">
+Disperse places that are too close to each other{0[helpshmap]}
+</fieldset>
+<p>
+<fieldset>
+<legend>Data</legend>
+Upload data file:{0[helpdata]}<br>
+<input type="file" name="data" size="40">
+<p>
+Type of data:{0[helpdatatype]}<br>
+<select name="datatype" onchange="checktype()">
+<option value="0">-- please select one --</option>
+<option value="string">string data</option>
+<option value="num">numeric data</option>
+<option value="bin">categorical data</option>
+<option value="dif">difference data</option>
+</select>
+
+<div id="string" style="visibility:hidden;display:none">
+<p>
+Type of processing:{0[helpmtdstring]}<br> 
+<select name="stringmethod" onchange="checkmethodstring()">
+<option value="lev">string edit distance &mdash; plain</option>
+<option value="levfeat-tok" selected="selected">string edit distance &mdash; tokenized</option>
+<option value="levfeat-user">string edit distance &mdash; user defined</option>
+</select>
+</div>
+
+<div id="num" style="visibility:hidden;display:none">
+<p>
+Type of processing:{0[helpmtdnum]}<br> 
+<select name="nummethod">
+<option value="num" selected="selected">Numeric distance &mdash; not normalised</option>
+<option value="numnorm">Numeric distance &mdash; normalised by column</option>
+</select>
+</div>
+
+<div id="bin" style="visibility:hidden;display:none">
+<p>
+Type of processing:{0[helpmtdbin]}<br> 
+<select name="binmethod">
+<option value="bin" selected="selected">binary comparison</option>
+<option value="giw">Gewichteter Identitätswert</option>
+</select>
+</div>
+
+<div id="userdef" style="visibility:hidden;display:none">
+<p>
+Upload definition file:{0[helpuserdef]}<br>
+<input type="file" name="featdef" size="40">
+</div>
+
+</fieldset>
+
+<p>
+
+<a href="javascript:show()" id="advshow">show advanced options</a>
+<fieldset id="advanced" style="visibility:hidden;display:none">
+<legend>Advanced options</legend>
+<a href="javascript:hide()">hide advanced options</a><br>
+&nbsp;<br>
+Cronbach Alpha:{0[helpadvca]}<br>
+<select name="ca">
+<option value="no">Never</option>
+<option value="auto" selected="selected">Only for small and medium sized data sets</option>
+<option value="yes">Allways</option>
+</select>
+</fieldset>
+
+<p>
+<input type="submit" value="Create project">
+</form>
+</div>
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: html
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

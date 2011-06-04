@@ -1,0 +1,15 @@
+#!/bin/sh
+
+for PY in *.py
+do
+    SH=`basename $PY .py`
+    if [ ! -e $SH ]
+    then
+	echo '#!/bin/sh' > $SH
+	echo 'source INIT.sh' >> $SH
+	echo 'export PYTHON=$PYTHON3' >> $SH
+	echo 'export PYTHONPATH=$PYTHON3PATH' >> $SH
+	echo "\$PYTHON $PY" >> $SH
+	chmod 755 $SH
+    fi
+done

@@ -1,0 +1,6 @@
+# Example data file in X-Sampa
+	kippen	mijn	vriend	bloemen	spinnen	machines
+West-Terschelling	kip@n	miN	kA_+m@rA_+:t	blUm@	spIn@	m@sin@s / m@Sin@s
+Oost-Vlieland	kIp@	m@_~	vrInt	blum@	spIn@	m@si:\n@s
+Den Burg	kIp@	min	vrI_ont	blUm@	spIn@	m@s_-i:\n@s
+Hollum	hIn_=:	mi_~	fri:\@_Xnt_v	blum_=:	spIn@	m@sin@s

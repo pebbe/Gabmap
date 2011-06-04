@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+"""
+
+Usage: comments file1 file2
+
+Filters comments from the start of file1 and saves them to file2
+
+"""
+
+#| imports
+
+import sys
+
+#| main
+
+fpin = open(sys.argv[1], 'rb')
+fpout = open(sys.argv[2], 'wb')
+for line in fpin:
+    # second parts is weird, but works in python2 and python3
+    if not line.strip() or ord(line[:1]) == ord('#'):
+        fpout.write(line)
+    else:
+        break
+fpout.close()
+fpin.close()

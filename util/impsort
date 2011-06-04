@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import sys
+
+lines = []
+for line in sys.stdin:
+    a = line.split(None, 5)
+    if sys.argv[1] == '1':
+        lines.append((-float(a[0]), -float(a[1]), -float(a[2]), -float(a[3]), a[5], line))
+    else:
+        lines.append((-float(a[1]), -float(a[2]), -float(a[3]), a[5], line))
+lines.sort()
+for line in lines:
+    sys.stdout.write(line[-1])

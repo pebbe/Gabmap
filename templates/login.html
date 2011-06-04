@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Gabmap - Log in</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+  </head>
+<body>
+
+<div id="main" class="login">
+<form action="{0[appurls]}bin/account" method="post" accept-charset="utf-8" >
+<fieldset>
+<legend>Log in</legend>
+Username: <input type="text" name="username" size="20">
+<p>
+Password: <input type="password" name="password" size="20">
+<p>
+<input type="checkbox" name="remember"> stay logged in for 30 days
+<p>
+<input type="hidden" name="action" value="login">
+<input type="submit" value="Log in">
+</fieldset>
+</form>
+
+<form action="{0[appurls]}bin/account" method="post" accept-charset="utf-8" >
+<fieldset>
+<legend>Recover password</legend>
+Forgot your password?
+<p>
+Username or e-mail address: <input type="text" name="username" size="20">
+<p>
+<input type="hidden" name="action" value="recover">
+<input type="submit" value="Recover password">
+</fieldset>
+</form>
+
+<form action="{0[appurls]}bin/account" method="post" accept-charset="utf-8" >
+<fieldset>
+<legend>Create an account</legend>
+No account yet?
+<p>
+Your e-mail:  <input type="text" name="email" size="40">
+<p>
+Username: <input type="text" name="username" size="20"> (lower case
+	    letter, followed by lower case letters, numbers, underscores)
+<p>
+Password: <input type="password" name="password" size="20">
+<p>
+Password: <input type="password" name="password2" size="20"> (again)
+<p>
+<input type="hidden" name="action" value="create">
+<input type="submit" value="Create account">
+</fieldset>
+</form>
+
+</div>
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

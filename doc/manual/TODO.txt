@@ -1,0 +1,12 @@
+Hier is de lijst van dingen die nog ontbreken:
+
+- String edit distance: uitleg van 'user defined' + length normalization in SED
+- statistics and difference maps: Histogram - why squared differences?
+- Difference maps: what are the geograpfic limitations in the second map?
+- linguistic difference <-> geographic distance! Ontbreekt nog helemaal
+- reference point maps: what are the different methods and how are they useful?
+- Probabilistic dendrogram - what does the exponent mean?
+- Fuzzy cluster maps - which are the exact clustering settings?
+- Data mining! Ontbreekt nog helemaal
+
+Therese

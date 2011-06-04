@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""
+--documentation--
+"""
+
+__author__ = "Peter Kleiweg"
+__version__ = "0.1"
+__date__ = "2010/10/23"
+
+#| imports
+
+import cgitb; cgitb.enable(format="text")
+
+import os
+
+for fname in '../data/boxplot01.eps ../data/boxplot02.eps'.split():
+
+    if os.access(fname, os.F_OK):
+
+        fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET -g1224x792 -r72 {} 2>&1'.format(fname), 'r')
+        lines = fp.readlines()
+        fp.close()
+        for line in lines:
+            if line.startswith('%%BoundingBox:'):
+                y1 = str(int(line.split()[2]) - 6).encode('us-ascii')
+
+        fp = open(fname, 'rb')
+        lines = fp.readlines()
+        fp.close()
+        fp = open(fname, 'wb')
+        for line in lines:
+            if line.startswith(b'%%BoundingBox:'):
+                a = line.split()
+                a[2] = y1
+                line = b' '.join(a) + b'\n'
+            fp.write(line)
+        fp.close()

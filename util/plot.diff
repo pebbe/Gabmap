@@ -1,0 +1,11 @@
+--- plot.R	2010-06-25 11:45:15.000000000 +0200
++++ plot-giw.R	2010-06-25 11:44:55.000000000 +0200
+@@ -31,7 +31,7 @@
+ c <- as.numeric(m$m$getPars()[3])
+ 
+ xrange <- range(geo)
+-yrange <- c(0, max(max(dif), a + b))
++yrange <- c(a - b, max(max(dif), a + b))
+ 
+ x <- seq(xrange[1], xrange[2], length.out = 200)
+ 

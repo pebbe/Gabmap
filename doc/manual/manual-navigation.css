@@ -1,0 +1,19 @@
+
+body {
+    margin: 50 10;
+	background-color: #ffffff;
+    color: #000000;
+	font-family: Verdana, Arial, sans-serif;
+}
+	
+a         {text-decoration: none; }
+a:link    { color: #0000EE; }
+a:visited { color: #551A8B; }
+a:active  { color: #FF0000; }
+a:hover   { text-decoration: underline; }
+	
+
+
+
+
+

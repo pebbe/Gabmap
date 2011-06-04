@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Type of processing</title>
+</head>
+<body>
+
+How do you want the differences between two strings to be calculated? You
+    can select one of several methods.
+
+<h4>default</h4>
+
+<dl>
+<dt>automatic
+<dd>If your data looks more or less like IPA, this will select
+	<u>vowel/consonant alignments</u> (see below). If it doesn't
+	look like IPA, this will select <u>plain</u> (see below).
+</dl>
+
+<h4>string edit distance</h4>
+
+<dl>
+<dt>plain
+<dd>This is the simplest form of edit distance. An instance is considered to
+be just a string of characters, and the edit distance is just a
+sum of cost of substitutions, insertions and deletions to
+convert one string in another (normalised for string lengths).<br>
+<span class="todo">To do: details like normalisation function,
+	  substitutions versus indels.</span>
+
+<dt>tokenized
+<dd>Like vowel/consonant alignments below, but without forced alignments.
+
+<dt>vowel/consonant alignments
+<dd>In this case, the edit distance algorithm disallows substitution of
+	a vowel by a consonant <span class="todo">(more details: semi-vowels, other
+	characters)</span>. So vowels can only align with vowels (or semi-vowels)
+	and consonants can only align with consonants (or
+	semi-vowels).<br>
+To achieve this, diacritics are considered to be modifiers of the vowel
+	or consonant they follow. So there is a preprocessing step taking
+	place, where each unique combination of vowel or consonant (or
+	semi-vowel) and the following diacritics are combined into a
+	single unique token. String edit distance is then applied to
+	strings of these new tokens.<br>
+Combining groups of characters into a single token reduces information,
+	so this would lead to less accurate results. To prevent this,
+	the string edit substitution operation is weighted in such a
+	manner that two different vowels are more distinct than two
+	identical vowels, differing only in diacritics.<br>
+To decide what tokens are vowels, consonants, diacritics, etc, the data
+	must be in IPA or IPA-like encoding (APA, UPA...)
+<dt>vowel/consonant alignments — strict IPA
+<dd>This is like the previous method, but when an instance contains one
+	or more characters that are not valid IPA characters, an error
+	is raised, and the instance is not used.
+
+</dl>
+
+<h4>other distances</h4>
+
+<dl>
+<dt>binary comparison
+<dd>Two strings are either the same (distance zero) or different
+	(distance one).<br>
+   You can use this only for categorical data, like linguistic
+	variants. You can't use it to compare detailed data like
+	phonetic transcriptions, because there may not be many identical
+	variants in the data.
+
+<dt>Gewichteter Identitätswert
+<dd>See Goedl... Not for phonetic transcriptions. <span class="todo">To
+	  do: more</span>
+
+<dt>Hamming distance
+<dd>Strings in one column must all be of the same length. <span class="todo">To
+	  do: more</span>
+
+<dt>numeric distance
+<dd>A tabel consists of numeric values, one value in each cell, or
+	<em>NA</em> if the value is unavailable. Empty cells are not
+	allowed. Alternatives are not allowed.
+<span class="todo">To
+	  do: more</span>
+
+</dl>
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

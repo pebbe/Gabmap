@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Gabmap - tools - x-sampa to unicode</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="icon" href="../L04.ico" type="image/ico">
+  </head>
+  <body>
+
+    <div id="crumbs">
+      <a href="..">home</a>
+      &nbsp; <a href=".">tools</a>
+    </div>
+
+    <div class="main">
+
+      <h2>Convert x-sampa to unicode<br>(or any other conversion)</h2>
+      
+
+      <form action="../bin/xs2utf" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+
+	Upload data file:<br>
+	<input type="file" name="data" size="40">
+	(<a href="XSampa-Example.txt" target="_blank">example</a>)
+	<p>
+	  <b>Optional:</b> upload your own translation table:<br>
+	  <input type="file" name="trans" size="40">
+	  (<a href="XSampaTable.txt" target="_blank">example</a>)
+	<p>
+	  Output encoding:<br> 
+	  <select name="outenc">
+	    <option value="utf8" selected="selected">UTF-8</option>
+	    <option value="utf16">UTF-16</option>
+	  </select>
+	<p>
+	  <input type="submit" value="Convert">
+      </form>
+
+      <p>
+      <hr>
+      <p>
+	For more complex conversions and other output formats, go to
+	<a href="http://www.let.rug.nl/~kleiweg/xsampa/" target="_blank">this page</a>.
+      
+    </div>
+
+  </body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

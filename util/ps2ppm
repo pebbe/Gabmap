@@ -1,0 +1,196 @@
+#!/usr/bin/perl
+
+use vars qw(
+    $opt_1
+    $opt_f
+    $opt_g
+    $opt_h
+    $opt_m
+    $opt_o
+    $opt_O
+    $opt_r
+    $opt_t
+);
+use Getopt::Std;
+
+$progname = $0;
+$progname =~ s!.*/!!;
+
+getopts ('1f:ghm:oO:r:t');
+
+$level     = 2;
+$format    = $default = 'ppmraw';
+$margin    = 0;
+$overwrite = 0;
+$orient    = 'Portrait';
+$res       = 72;
+$gab       = '';
+$tab       = '';
+$values    = '';
+
+&syntax if $opt_h;
+&syntax if ($#ARGV != 0);
+
+$level     = 1      if $opt_1;
+$format    = $opt_f if $opt_f;
+$margin    = $opt_m if $opt_m;
+$overwrite = 1      if $opt_o;
+$res       = $opt_r if $opt_r;
+$gab       = '-dGraphicsAlphaBits=4' if $opt_g;
+$tab       = '-dTextAlphaBits=4'     if $opt_t;
+
+# If you have problems with anti-aliasing, try uncommenting this:
+
+# if ($opt_g or $opt_t) {
+#     $values = '-dRedValues=256 -dGreenValues=256 -dBlueValues=256 -dGrayValues=256';
+# }
+
+$file = $ARGV[0];
+$infile = $file;
+$file =~ s/\.[eE]?[Pp][Ss]$//;
+unless ($infile =~ /\.[eE]?[Pp][Ss]$/) {
+    $infile .= '.ps';
+}
+
+if ((-f "$file.01.$format") && (! $overwrite)) {
+    die "\nFile exists: $file.01.$format\n\n";
+}
+
+$found = 0;
+$level = 0;
+open INFILE, "$infile" or die "\nError opening $infile: $!\n\n";
+@postscript = <INFILE>;
+close INFILE;
+foreach $_ (@postscript) {
+    if ($level == 0 && /^%%BoundingBox:\s*(-?\d+)\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)/) {
+        $x1 = $1;
+        $y1 = $2;
+        $x2 = $3;
+        $y2 = $4;
+        $found = 1;
+    } elsif ($level == 0 && /^%%Orientation:\s*(\S+)/) {
+        $o = $1;
+        if ($o =~ /^portrait$/i) {
+            $orient = 'Portrait';
+        } elsif ($o =~ /^landscape$/i) {
+            $orient = 'Landscape';
+        } elsif ($o =~ /^upside-?down$/i) {
+            $orient = 'Upside-Down';
+        } elsif ($o =~ /^seascape$/i) {
+            $orient = 'Seascape';
+	}
+    } elsif (/^%%BeginDocument\b/) {
+        $level++;
+    } elsif (/^%%EndDocument\b/) {
+        $level--;
+    }
+}
+$found or die "\nBoundingBox not found in $file.ps\n\n";
+
+if ($opt_O) {
+    if ($opt_O =~ /^portrait/i) {
+        $orient = 'Portrait';
+    } elsif ($opt_O =~ /^landscape$/i) {
+        $orient = 'Landscape';
+    } elsif ($opt_O =~ /^upside-?down$/i) {
+        $orient = 'Upside-Down';
+    } elsif ($opt_O =~ /^seascape$/i) {
+        $orient = 'Seascape';
+    } else {
+        die "\nIllegal orientation: $opt_O\n\n";
+    }
+}
+
+$trans = '';
+
+if ($margin) {
+    $trans .= "$margin dup translate ";
+}
+
+if ($orient eq 'Portrait') {
+    $w = $x2 - $x1;
+    $h = $y2 - $y1;
+} elsif ($orient eq 'Landscape') {
+    $w = $y2 - $y1;
+    $h = $x2 - $x1;
+    $t = -$h;
+    $trans .= "-90 rotate $t 0 translate ";
+} elsif ($orient eq 'Upside-Down') {
+    $w = $x2 - $x1;
+    $h = $y2 - $y1;
+    $ww = -$w;
+    $hh = -$h;
+    $trans .= "180 rotate $ww $hh translate ";
+} elsif ($orient eq 'Seascape') {
+    $w = $y2 - $y1;
+    $h = $x2 - $x1;
+    $t = -$w;
+    $trans .= "90 rotate 0 $t translate ";
+}
+$w = int (($w + 2.0 * $margin) * $res / 72.0);
+$h = int (($h + 2.0 * $margin) * $res / 72.0);
+
+$x = -$x1;
+$y = -$y1;
+$trans .= "$x $y translate";
+
+print "$file.ps -> $file.%02d.$format\n";
+open GS,
+  "|gs $values $gab $tab -g${w}x${h} -r$res -sDEVICE=$format -sOutputFile=$file.%02d.$format -dNOPAUSE -"
+    or die "\nCan't fork: $!\n\n";
+$SIG{PIPE} = sub { die "\nSpooler pipe broke\n\n" };
+if ($level == 1) {
+    print GS <<"LEV1HEAD";
+/showpage {
+  showpage
+  $trans
+  (.) print flush
+} bind def
+$trans
+LEV1HEAD
+} else {
+    print GS <<"LEV2HEAD";
+<<
+    /BeginPage {
+        pop
+        $trans
+    }
+    /EndPage {
+        dup 0 eq {
+            pop
+            1 add 4 string cvs print ( ) print flush
+            true
+	} {
+            1 eq
+            exch pop
+	} ifelse
+    }
+>> setpagedevice
+LEV2HEAD
+}
+print GS @postscript;
+print GS "\nquit\n";
+close GS or die "\nBad spool: $! $?\n\n";
+print "\n";
+
+sub syntax {
+    die <<"EOS";
+
+PostScript to Pixelmap(s) Converter
+(C) P. Kleiweg 1996-1999
+
+Usage: $progname [-1ghot] [-f format] [-m margin] [-O orientation] [-r resolution] file[.[e]ps]
+
+  -1: old PostScript Level 1 method (unsafe?)
+  -f: format (default $default), for listing type: gs -h
+  -g: anti-alias graphics (try it)
+  -h: this help
+  -m: margin (default 0)
+  -O: orientation (overrides %%Orientation comment)
+      valid orientations are: Portrait Landscape Upside-Down Seascape
+  -o: force overwrite
+  -r: resolution (default 72)
+  -t: anti-alias text (recommended)
+
+EOS
+}

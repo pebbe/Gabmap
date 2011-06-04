@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+<h1>Data file</h1>
+
+<h2>String data and categorical data</h2>
+
+<p>
+The rows in the table represent the sites where the data was collected and the columns represent the linguistic variables.
+A cell may be empty for missing data. When more than one variant exists for one linguistic variable in one location, both variants are put in a single cell separated by the three characters: <u>space</u> <u>slash</u> <u>space</u>.
+</p>
+
+<p>
+<table cellpadding="4" border="1">
+<tr><td>variant B2i / variant B2j
+</table>
+
+<p>
+Note that all leading and trailing spaces are ignored.
+</p>
+
+<p><b>Example of string data:</b></p>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">bloemen</th><th bgcolor="yellow">machines
+<tr><td bgcolor="yellow">Amsterdam
+  <td>blʊmə
+  <td>məʃinəs
+<tr><td bgcolor="yellow">Groningen
+  <td>blɔˑŭm̩
+  <td>məsinəs
+<tr><td bgcolor="yellow">Utrecht
+  <td>blɔmə
+  <td>məsin
+</table>
+
+<p><b>Example of categorical data:</b></p>
+
+<table border="1" cellpadding="4">
+<tr><th><th bgcolor="yellow">shape</th><th bgcolor="yellow">color
+<tr><td bgcolor="yellow">Amsterdam
+  <td>round
+  <td>yellow
+<tr><td bgcolor="yellow">Groningen
+  <td>square
+  <td>red
+
+<tr><td bgcolor="yellow">Utrecht
+  <td>round
+  <td>grey / red
+</table>
+
+<p> </p>
+<h3><a name="transcriptions">Phonetic transcriptions</a></h3>
+
+<!--
+<p>
+All <a href="http://www.unicode.org/" target="_top">Unicode</a> characters are allowed in the transcriptions of dialect data. You should note, however, that if you use one of the <a href="processing.html" target="_top">processing types</a> <i>string edit distance - automatic</i>, <i>string edit distance - tokenized</i> or <i>string edit distances - vowel/consonant alignments</i>, the program will try to interpret your data as <a href ="http://www.langsci.ucl.ac.uk/ipa/ipachart.html" target="_top">IPA</a>. This means that certain rules apply to the use of diacritical marks. Instances in the data set that could not be interpreted as IPA-like transcriptions are listed in <i>Data inspection > data overview > errors</i> and will not be used in the further analysis of the data set. Under <i>Index > items</i> you can find out how many instances you supplied of each variable, and the number of instances that are actually used.
+</p>
+-->
+
+<p>
+Choose a Unicode-encoded font when you prepare your dialect data, in order to display the symbols correctly on your screen. Arial Unicode MS is a font distributed with Microsoft Office which covers a large set of the Unicode characters including the phonetic symbols. A large number of Unicode-encodd fonts for use in linguistics have been developed by <a href="http://www.sil.org/" target="_top">SIL international</a>.
+</p>
+
+<p>
+If the phonetic characters are not displayed correctly in Gabmap, please, check that your web browser is using Unicode encoding.
+</p>
+
+<blockquote>
+<p class="center">
+<a href="datafile1.html" target="showframe">previous</a>
+| <a href ="index.htm" target="_top">Start</a>
+| <a href="datafile-numeric.html">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>

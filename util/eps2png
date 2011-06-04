@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if [ "$1" = "-t" ]
+then
+    t="-transparent white"
+else
+    t=""
+fi
+
+for i in *.eps
+do
+    case $i in
+	*mapover.eps)
+	    tt="-transparent #7F7F7F"
+	    ;;
+	*)
+	    tt=""
+	    ;;
+    esac
+    b=`basename $i .eps`
+    if [ ! -f $b.png -o $b.eps -nt $b.png ]
+    then
+	echo "$b.eps -> $b.png"
+	ps2ppm -o -t -g -r 100 $b.eps
+	pnmtopng $t $tt $b.01.ppmraw > $b.png
+	rm -f $b.01.ppmraw
+    fi
+done

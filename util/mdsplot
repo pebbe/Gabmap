@@ -1,0 +1,916 @@
+#!/usr/bin/perl
+
+$f1 = '_t_m_p_1.tmp';
+$f2 = '_t_m_p_2.tmp';
+$f3 = '_t_m_p_3.tmp';
+$f4 = '_t_m_p_4.tmp';
+
+$progname = $0;
+$progname =~ s!.*/!!;
+
+if ($#ARGV != 0) {
+    die <<"EOT";
+
+Usage: $progname config_file
+
+EOT
+}
+
+# defaults
+%parm = (
+    outfile => 'mdsplot.eps',
+    cluster => 'wm',
+    mds => 'kruskal',
+    mdsKn => 50,
+    mdsSn => 100,
+    mdsSm => 0.2,
+    mdsSt => 0.0001,
+    groups => 4,
+    plot => 'all',
+    fixed => 'no',
+    swap => 'no',
+    rotate => 0,
+    border => 1,
+    bgcol => '.7 .7 .7',
+    colours => 'standard',
+    markers => 'dots',
+    dotsize => 8,
+    symbolsize => 8,
+    symbolline => 8,
+    numbersize => 8,
+    labelsize => 8,
+    clnumsize => 8,
+    font => 'Helvetica',
+    coofile => '',
+    aspect => 1.0,
+    script => 'procrustes'
+);
+
+sub unquote {
+    my (@args) = @_;
+    my ($s);
+    $s = $args[0];
+    $s =~ s/^\s*(.*?)\s*$/\1/g;
+    if ($s !~ /^\".*\"$/) {
+	return $s;
+    }
+    $s =~ s/\\(.)/\1/g;
+    $s =~ s/^\"(.*)\"$/\1/;
+    return $s;
+}
+
+sub valid {
+    my (@args) = @_;
+    my ($p, $key);
+    $p = shift @args;
+    foreach $key (@args) {
+        if ($parm{$p} eq $key) {
+            return;
+        }
+    }
+    die "\n$progname: invalid value for $p: $parm{$p}\n\n";
+}
+
+@stdcols = (
+  '0.65 0.81 0.89',
+  '0.12 0.47 0.71',
+  '0.70 0.87 0.54',
+  '0.20 0.63 0.17',
+  '0.98 0.60 0.60',
+  '0.89 0.10 0.11',
+  '0.99 0.75 0.44',
+  '1.00 0.50 0.00',
+  '0.79 0.70 0.84',
+  '0.42 0.24 0.60',
+  '1.00 1.00 0.60',
+  '0.50 0.50 0.50'
+);
+
+open (IN, "<$ARGV[0]") or die "\n$progname: opening file \"$ARGV[0]\": $!\n\n";
+while (<IN>) {
+    next if (/^\s*$/);
+    next if (/^\s*\#/);
+    s/\#.*//;
+    if (/^\s*(\S+):\s*(\S.*?)\s*$/) {
+        $parm{$1} = $2;
+    }
+}
+close IN;
+
+valid(qw(cluster sl cl ga wa uc wc wm idx));
+valid(qw(mds classical kruskal sammon sammonkruskal kruskalsammon));
+valid(qw(markers dots symbols numbers labels clnums));
+valid(qw(colours none standard rainbow1 rainbow2));
+valid(qw(script procrustes procrustes2));
+if ($parm{groups} < 2) {
+    die "\n$progname: invalid value for groups: $parm{groups}\n\n";
+}
+if ($parm{groups} > 19 && ($parm{markers} eq 'symbols' || $parm{colours} eq 'standard')) {
+    die "\n$progname: too many groups for 'markers: symbols' or 'colours: standard'\n\n";
+}
+if ($parm{aspect} < 1.0) {
+    die "\n$progname: invalid value for aspect: $parm{aspect}\n\n";
+}
+
+%mrkin = (
+    dot    => 1,
+    symbol => 2,
+    number => 3,
+    label  => 4,
+    clnum  => 5
+);
+%mrk = ();
+if ($parm{markfile} ne '') {
+    open (IN, "<$parm{markfile}") or die "\n$progname: opening file \"$parm{markfile}\": $!\n\n";
+    while (<IN>) {
+        s/\#.*//;
+        if (/^\s*(dot|symbol|number|label|clnum)\s+"(.*)"\s*$/) {
+            $mrk{$2} = $mrkin{$1};
+        } elsif  (/^\s*(dot|symbol|number|label|clnum)\s+(\S.*?)\s*$/) {
+            $mrk{$2} = $mrkin{$1};
+        }
+    }
+    close IN;
+}
+
+open (IN, "<$parm{lblfile}") or die "\n$progname: opening file \"$parm{lblfile}\": $!\n\n";
+while (<IN>) {
+    /^\s*(\d+)\s+(.*?)\s*$/;
+    $i = $1;
+    $j = $2;
+    $idx{unquote($j)} = $i;
+}
+close IN;
+
+if ($parm{cluster} eq 'idx') {
+    $ifile = $parm{idxfile};
+} else {
+    $ifile = $f2;
+    system('cluster', '-o', $f1, "-$parm{cluster}", $parm{diffile});
+    system('clgroup', '-o', $f2, '-i', '-n', $parm{groups}, $f1);
+    unlink $f1;
+}
+open (IN, "<$ifile") or die "\n$progname: opening file \"$ifile\": $!\n\n";
+while (<IN>) {
+    /^\s*(\d+)\s+(.*?)\s*$/;
+    $i = $1;
+    $j = $2;
+    $grp{unquote($j)} = $i;
+}
+close IN;
+if ($parm{cluster} ne 'idx') {
+    unlink $f2;
+}
+
+if ($parm{plot} eq 'all') {
+    $ifile = $parm{diffile};
+    for ($i = 1; $i <= $parm{groups}; $i++) {
+        $useit[$i] = 1;
+    }
+} else {
+    $ifile = $f3;
+    for ($i = 1; $i <= $parm{groups}; $i++) {
+        if ($parm{plot} =~ /\b$i\b/) {
+            $useit[$i] = 1;
+        } else {
+            $useit[$i] = 0;
+        }
+    }
+    open (OUT, ">$f1") or die "\n$progname: creating file \"$f1\": $!\n\n";
+    foreach $n (keys %grp) {
+        if ($useit[$grp{$n}]) {
+            print OUT ": $n\n- $n\n";
+        }
+    }
+    close OUT;
+    system('difmod', '-o', $f3, $parm{diffile}, $f1);
+    unlink $f1;
+}
+
+if ($parm{mds} eq 'classical') {
+    system('mds', '-o', $f1, 2, $ifile);
+} elsif ($parm{mds} eq 'kruskal') {
+    system("mds -o $f1 -K -n $parm{mdsKn} 2 $ifile 2> $f4");
+} elsif ($parm{mds} eq 'sammon') {
+    system("mds -o $f1 -S -n $parm{mdsSn} -m $parm{mdsSm} -t $parm{mdsSt} 2 $ifile 2> $f4");
+} elsif ($parm{mds} eq 'sammonkruskal') {
+    system("mds -o $f2 -S -n $parm{mdsSn} -m $parm{mdsSm} -t $parm{mdsSt} 2 $ifile 2> $f4");
+    system("mds -o $f1 -K -i $f2 2 $ifile 2>> $f4");
+    unlink $f2;
+} else { #'kruskalsammon'
+    system("mds -o $f2 -K -n $parm{mdsKn} 2 $ifile 2> $f4");
+    system("mds -o $f1 -S -n $parm{mdsSn} -m $parm{mdsSm} -t $parm{mdsSt} -i $f2 2 $ifile 2>> $f4");
+    unlink $f2;
+}
+if ($parm{mds} ne 'classical') {
+    $errors = 0;
+    open(IN, "<$f4");
+    @results = <IN>;
+    close(IN);
+    unlink $f4;
+    foreach $i (@results) {
+	if ($i =~ /Error mds/) {
+	    $errors = 1;
+	}
+    }
+    if ($errors > 0) {
+	$parm{mds} = 'classical';
+	system('mds', '-o', $f1, 2, $ifile);
+    } else {
+	print STDERR @results;
+    }
+}
+
+if ($parm{plot} ne 'all') {
+    unlink $f3;
+}
+
+$r1 = cos(-$parm{rotate} / 180.0 * 3.14159265);
+$r2 = sin(-$parm{rotate} / 180.0 * 3.14159265);
+
+$defmark = 1 if ($parm{markers} eq 'dots');
+$defmark = 2 if ($parm{markers} eq 'symbols');
+$defmark = 3 if ($parm{markers} eq 'numbers');
+$defmark = 4 if ($parm{markers} eq 'labels');
+$defmark = 5 if ($parm{markers} eq 'clnums');
+
+if ($parm{coofile} ne '') {
+    open (IN, "<$parm{coofile}") or die "\n$progname: opening file \"$parm{coofile}\": $!\n\n";
+    open (OUT, ">$f2");
+    print OUT "2\n";
+    while (<IN>) {
+	next if (/^\s*$/);
+	next if (/^\s*\#/);
+	if (/^\s*(\S+)\s+(\S+)\s+\S+\s+\S+\s+(.*?)\s*$/) {
+	    $s = unquote($3);
+	    $x = $1 / $parm{aspect};
+	    print OUT "$s\n$x\n$2\n";
+	}
+    }
+    close OUT;
+    system($parm{script}, $f2, $f1, $f3);
+    if (! -f $f3) {
+	die "\n$progname: procrustes failed\n\n";
+    }
+    system('mv', $f3, $f1);
+    unlink $f2;
+}
+
+open (IN, "<$f1") or die "\n$progname: opening file \"$f1\": $!\n\n";
+while (<IN>) {
+    last if (/^\s*\d+/);
+}
+while (<IN>) {
+    $lbl = $_;
+    $lbl =~ s/^\s+//;
+    $lbl =~ s/\s+$//;
+    $i = $grp{$lbl};
+    $n = $idx{$lbl};
+    $mark = $mrk{$lbl};
+    if ($mark < 1) { $mark = 'M'; }
+    $lbl =~ s/[\\()]/\\\&/g;
+    $lbl =~ s/[\200-\377]/sprintf("\\%03o",ord($&))/eg;
+    $line = "$mark ($lbl) ($n) $i ";
+    $X = <IN>;
+    chomp $X;
+    $Y = <IN>;
+    chomp $Y;
+    if ($parm{swap} eq 'yes') {
+        $t = $X;
+        $X = $Y;
+        $Y = $t;
+    }
+    if ($parm{rotate} != 0) {
+        $XX = $X * $r1 + $Y * $r2;
+        $YY = $Y * $r1 - $X * $r2;
+        $X = $XX;
+        $Y = $YY;
+    }
+    push @x, $X;
+    push @y, $Y;
+    $line .= "$X $Y a\n";
+    push @lines, $line;
+}
+close IN;
+unlink $f1;
+
+$xmin = $xmax = $x[0];
+$ymin = $ymax = $y[0];
+foreach $f (@x) {
+    $xmin = $f if ($f < $xmin);
+    $xmax = $f if ($f > $xmax);
+}
+foreach $f (@y) {
+    $ymin = $f if ($f < $ymin);
+    $ymax = $f if ($f > $ymax);
+}
+
+if ($xmin >= $xmax or $ymin >= $ymax) {
+    die "\nError $progname: not enough points\n\n"
+}
+
+$t = localtime;
+chomp($t);
+
+$size = 0;
+$size = $parm{dotsize}    if ($parm{dotsize}    > $size);
+$size = $parm{symbolsize} if ($parm{symbolsize} > $size);
+$size = $parm{numbersize} if ($parm{numbersize} > $size);
+$size = $parm{labelsize}  if ($parm{labelsize}  > $size);
+$size = $parm{clnumsize}  if ($parm{clnumsize}  > $size);
+
+$llx = 149 - $size;
+$lly = 249 - $size;
+$urx = 451 + $size;
+$ury = 551 + $size;
+
+$usecolours = ($parm{colours} eq 'none') ? 'false' : 'true';
+
+$fixed = ($parm{fixed} eq 'yes') ? 'true' : 'false';
+
+$swap = ($parm{swap} eq 'yes') ? 'swap' : '';
+$rotate = ($parm{rotate} == 0) ? '' : "$parm{rotate} degrees";
+$sr = '';
+if ($swap ne '' or $rotate ne '') {
+    $sr = ' || ';
+    if (swap ne '' and $rotate ne '') {
+	$sr .= "$swap | $rotate";
+    } else {
+	$sr .= "$swap$rotate";
+    }
+}
+
+$coo = '';
+if ($parm{coofile} ne '') {
+    $coo = " || $parm{coofile}";
+    if ($parm{aspect} > 1.0) {
+	$coo .= sprintf(" | %g", $parm{aspect});
+    }
+}
+
+if ($parm{cluster} eq 'idx') {
+    $clusline = $parm{idxfile};
+} else {
+    $clusline = "$parm{cluster} | $parm{groups}";
+}
+
+open (OUT, ">$parm{outfile}") or die "\n$progname: creating file \"$parm{outfile}\": $!\n\n";
+print OUT <<"EOT";
+\%!PS-Adobe-3.0 EPSF-3.0
+\%\%BoundingBox: $llx $lly $urx $ury
+\%\%Title: $parm{diffile} || $clusline | $parm{plot} || $parm{mds}$coo$sr
+\%\%Creator: $progname, (c) P. Kleiweg 2003
+\%\%CreationDate: $t
+\% diffile: $parm{diffile}
+\% lblfile: $parm{lblfile}
+EOT
+if ($parm{cluster} eq 'idx') {
+    print OUT "\% idxfile: $parm{idxfile}\n";
+} else {
+    print OUT <<"EOT";
+\% cluster: $parm{cluster}
+\% groups:  $parm{groups}
+EOT
+}
+print OUT <<"EOT";
+\% plot:    $parm{plot}
+\% mds:     $parm{mds}
+EOT
+if ($parm{mds} =~ /kruskal/) {
+    print OUT "\% mdsKn:   $parm{mdsKn}\n";
+}
+if ($parm{mds} =~ /sammon/) {
+    print OUT <<"EOT";
+\% mdsSn:   $parm{mdsSn}
+\% mdsSm:   $parm{mdsSm}
+\% mdsSt:   $parm{mdsSt}
+EOT
+}
+print OUT <<"EOT";
+\% swap:    $parm{swap}
+\% rotate:  $parm{rotate}
+\%\%EndComments
+
+64 dict begin
+
+/fixed $fixed def
+
+/useColour $usecolours def
+
+\% default marker 
+/M $defmark def
+
+/BGcol \[ $parm{bgcol} \] def
+
+/Size $size def
+
+/DotSize $parm{dotsize} def
+/SymbolSize $parm{symbolsize} def
+/SymbolLine $parm{symbolline} def
+/NumberSize $parm{numbersize} def
+/LabelSize $parm{labelsize} def
+/ClnumSize $parm{clnumsize} def
+
+/Fontname /$parm{font} def
+
+EOT
+
+if ($parm{colours} eq 'standard') {
+    print OUT "/cols \[\n";
+    for ($i = 0; $i < $parm{groups}; $i++) {
+        print OUT "    \[ $stdcols[$i] \]\n";
+    }
+    print OUT "\] def\n\n";
+} elsif ($parm{colours} eq 'rainbow1') {
+    print OUT  "/cols \[\n";
+    for ($i = 0; $i < $parm{groups}; $i++) {
+        printf OUT ("    \[ %.4f 1 ", $i / $parm{groups});
+        print OUT (($i % 2) == 1) ? ".6 \]\n" : "1 \]\n";
+    }
+    print OUT "\] def\n\n";
+} elsif ($parm{colours} eq 'rainbow2') {
+    print OUT  "/cols \[\n";
+    for ($i = 0; $i < $parm{groups}; $i++) {
+        printf OUT ("    \[ %.4f 1 1 \]\n", $i / $parm{groups});
+    }
+    print OUT "\] def\n\n";
+}
+
+print OUT "/symbols \[\n";
+for ($i = 1; $i <= $parm{groups}; $i++) {
+    print OUT "    /sym$i\n";
+}
+print OUT "\] def\n\n";
+
+print OUT <<'EOT';
+%%%%%%%% END OF USER OPTIONS %%%%%%%%
+
+% `new-font-name' `encoding-vector' `old-font-name' RE -
+/RE {
+    findfont
+    dup maxlength dict begin {
+        1 index /FID ne { def } { pop pop } ifelse
+    } forall
+    /Encoding exch def
+    dup /FontName exch def
+    currentdict end definefont pop
+} bind def
+
+/Font-ISOlat1 ISOLatin1Encoding Fontname RE
+/NumberFont Fontname      findfont NumberSize scalefont def
+/LabelFont  /Font-ISOlat1 findfont LabelSize  scalefont def
+/ClnumFont  Fontname      findfont ClnumSize  scalefont def
+
+/numbers false def
+/labels  false def
+/clnums  false def
+/Numbers {
+    numbers not {
+        NumberFont setfont
+        /numbers true def
+        /labels  false def
+        /clnums  false def
+    } if
+} bind def
+/Labels {
+    labels not {
+        LabelFont setfont
+        /numbers false def
+        /labels  true  def
+        /clnums  false def
+    } if
+} bind def
+/Clnums {
+    clnums not {
+        ClnumFont setfont
+        /numbers false def
+        /labels  false def
+        /clnums  true  def
+    } if
+} bind def
+
+Numbers
+gsave
+    newpath
+    0 0 moveto
+    (1) false charpath
+    pathbbox
+grestore
+2 div /NLower exch def
+pop pop pop
+
+Labels
+gsave
+    newpath
+    0 0 moveto
+    (o) false charpath
+    pathbbox
+grestore
+2 div /LLower exch def
+pop pop pop
+
+Clnums
+gsave
+    newpath
+    0 0 moveto
+    (1) false charpath
+    pathbbox
+grestore
+2 div /CLower exch def
+pop pop pop
+
+EOT
+
+print OUT <<"EOT";
+/X1 $xmin def
+/X2 $xmax def
+/Y1 $ymin def
+/Y2 $ymax def
+EOT
+
+print OUT <<'EOT';
+/X0 150 def
+/Y0 250 def
+/W 300 def
+/DX X2 X1 sub def
+/DY Y2 Y1 sub def
+/DM DX DY gt { DX } { DY } ifelse def
+
+EOT
+
+print OUT <<'EOT';
+/sym1 {
+    SymbolSize -2 div dup rmoveto
+    SymbolSize 0 rlineto
+    0 SymbolSize rlineto
+    SymbolSize neg 0 rlineto
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    stroke
+} bind def
+
+/sym2 {
+    currentpoint
+    SymbolSize 2 div 0 rmoveto
+    SymbolSize 2 div 0 360 arc
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    stroke
+} bind def
+
+EOT
+
+if ($parm{groups} > 2) {
+    print OUT <<'EOT';
+/sym3 {
+    SymbolSize -2 div dup rmoveto
+    SymbolSize 0 rlineto
+    SymbolSize -2 div SymbolSize rlineto
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 3) {
+    print OUT <<'EOT';
+/sym4 {
+    currentpoint
+    SymbolSize -2 div 0 rmoveto
+    SymbolSize 0 rlineto
+    SymbolSize 2 div sub moveto
+    0 SymbolSize rlineto
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 4) {
+    print OUT <<'EOT';
+/sym5 {
+    SymbolSize -2 div dup rmoveto
+    SymbolSize dup rlineto
+    0 SymbolSize neg rmoveto
+    SymbolSize neg SymbolSize rlineto
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 5) {
+    print OUT <<'EOT';
+/sym6 {
+    SymbolSize 2 div
+    dup neg 0 exch rmoveto
+    dup dup rlineto
+    dup dup neg exch rlineto
+    neg dup rlineto
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 6) {
+    print OUT <<'EOT';
+/sym7 {
+    SymbolSize 2 div dup rmoveto
+    SymbolSize neg 0 rlineto
+    SymbolSize 2 div SymbolSize neg rlineto
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 7) {
+    print OUT <<'EOT';
+/sym8 {
+    currentpoint
+    sym1
+    moveto
+    sym5
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 8) {
+    print OUT <<'EOT';
+/sym9 {
+    currentpoint
+    sym4
+    moveto
+    sym5
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 9) {
+    print OUT <<'EOT';
+/sym10 {
+    currentpoint
+    sym6
+    moveto
+    sym4
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 10) {
+    print OUT <<'EOT';
+/sym11 {
+    currentpoint
+    sym2
+    moveto
+    sym4
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 11) {
+    print OUT <<'EOT';
+/sym12 {
+    gsave
+        BGcol aload pop setrgbcolor
+        currentpoint
+        0 SymbolSize -2 div rmoveto
+        SymbolSize 2 div SymbolSize rlineto
+        SymbolSize neg 0 rlineto
+        closepath
+        fill
+        moveto
+        0 SymbolSize 2 div rmoveto
+        SymbolSize -2 div SymbolSize neg rlineto
+        SymbolSize 0 rlineto
+        closepath
+        fill
+    grestore
+    0 SymbolSize -2 div rmoveto
+    SymbolSize 2 div SymbolSize rlineto
+    SymbolSize neg 0 rlineto
+    SymbolSize 2 div SymbolSize neg rlineto
+    0 SymbolSize rmoveto
+    SymbolSize -2 div SymbolSize neg rlineto
+    SymbolSize 0 rlineto
+    SymbolSize -2 div SymbolSize rlineto
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 12) {
+    print OUT <<'EOT';
+/sym13 {
+    currentpoint
+    sym1
+    moveto
+    sym4
+} bind def
+
+
+EOT
+}
+
+if ($parm{groups} > 13) {
+    print OUT <<'EOT';
+/sym14 {
+    currentpoint
+    SymbolSize 2 div 0 rmoveto
+    2 copy SymbolSize 2 div 0 360 arc
+    closepath
+    gsave BGcol aload pop setrgbcolor fill grestore
+    moveto
+    gsave
+        clip
+        sym5
+    grestore
+    stroke
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 14) {
+    print OUT <<'EOT';
+/sym15 {
+    currentpoint
+    sym1
+    moveto
+    2 setlinejoin
+    sym3
+    0 setlinejoin
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 15) {
+    print OUT <<'EOT';
+/sym16 {
+    SymbolSize -2 div dup rmoveto
+    SymbolSize 0 rlineto
+    0 SymbolSize rlineto
+    SymbolSize neg 0 rlineto
+    closepath
+    fill
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 16) {
+    print OUT <<'EOT';
+/sym17 {
+    currentpoint
+    SymbolSize 2 div 0 rlineto
+    SymbolSize 2 div 0 360 arc
+    closepath
+    fill
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 17) {
+    print OUT <<'EOT';
+/sym18 {
+    SymbolSize -2 div dup rmoveto
+    SymbolSize 0 rlineto
+    SymbolSize -2 div SymbolSize rlineto
+    closepath
+    fill
+} bind def
+
+EOT
+}
+
+if ($parm{groups} > 18) {
+    print OUT <<'EOT';
+/sym19 {
+    SymbolSize 2 div
+    dup neg 0 exch rmoveto
+    dup dup rlineto
+    dup dup neg exch rlineto
+    neg dup rlineto
+    closepath
+    fill
+} bind def
+
+EOT
+}
+
+print OUT <<'EOT';
+/a {
+
+    fixed {
+        Y1 sub DM DY sub 2 div add DM div W mul Y0 add /y exch def
+        X1 sub DM DX sub 2 div add DM div W mul X0 add /x exch def
+    } {
+        Y1 sub DY div W mul Y0 add /y exch def
+        X1 sub DX div W mul X0 add /x exch def
+    } ifelse
+    1 sub /n exch def
+    /idx exch def
+    /lbl exch def
+
+EOT
+
+if ($parm{colours} =~ /rainbow/) {
+    print OUT "    useColour { cols n get aload pop sethsbcolor } if\n";
+} else {
+    print OUT "    useColour { cols n get aload pop setrgbcolor } if\n";
+}
+
+print OUT <<'EOT';
+
+    dup
+    1 eq { % dots
+        x DotSize SymbolLine add 2 div add y moveto
+        x y DotSize SymbolLine add 2 div 0 360 arc closepath stroke
+    } if
+
+    dup
+    2 eq { % symbols
+        x y moveto
+        symbols n get cvx exec
+    } if
+
+    dup
+    3 eq { % numbers
+        Numbers
+        x y NLower sub moveto
+        idx stringwidth pop 2 div neg 0 rmoveto
+        idx show
+    } if
+
+    dup
+    4 eq { % labels
+        Labels
+        x y LLower sub moveto
+        lbl stringwidth pop 2 div neg 0 rmoveto
+        lbl show
+    } if
+
+    5 eq { % clnums
+        Clnums
+        x y CLower sub moveto
+        n 1 add 10 string cvs
+        dup stringwidth pop 2 div neg 0 rmoveto
+        show
+    } if
+
+} bind def
+
+X0 Size sub Y0 Size sub moveto
+X0 Size add W add Y0 Size sub lineto
+X0 Size add W add Y0 Size add W add lineto
+X0 Size sub Y0 Size add W add lineto
+closepath
+EOT
+if ($parm{border} > 0) {
+    print OUT <<"EOT";
+gsave
+    BGcol aload pop setrgbcolor
+    fill
+grestore
+$parm{border} setlinewidth
+stroke
+SymbolLine setlinewidth
+
+EOT
+} else {
+    print OUT <<'EOT';
+BGcol aload pop setrgbcolor
+fill
+0 setgray
+SymbolLine setlinewidth
+
+EOT
+}
+
+foreach $l (@lines) {
+    print OUT $l;
+}
+
+print OUT <<'EOT';
+
+end
+showpage
+%%EOF
+EOT
+
+close OUT;
+print "\nResult written to \"$parm{outfile}\"\n\n";

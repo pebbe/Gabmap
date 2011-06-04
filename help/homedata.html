@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Upload data file</title>
+</head>
+<body>
+
+<h4>File format</h4>
+
+The data needs to be uploaded in a file with a single table. Each line
+in the file is a row in the table. Table cells are separated by a
+tab character. There are no quotes around the contents of a cell, and
+the contents does not contain escape characters. I.e.: the content of
+each cell is used at it is.
+<p>
+Lines starting with a hash (#) are considered comments, and ignored.
+<p>
+The first row in the table contains the labels for the items.
+<p>
+The first column in the table contains the names of the locations.
+<p>
+Each column (except column one) has all the variants of a single item
+      for all locations.
+<p>
+Each row (except row one) has the variants of all items for a single
+      locations.
+<p>
+<table cellpadding="4" border="1">
+<tr><td colspan="4"># this is a comment: ignored
+<tr><th><th bgcolor="yellow">item 1<th bgcolor="yellow">item 2<th bgcolor="yellow">item 3
+<tr><td bgcolor="yellow">place A<td>variant A1<td>variant A2<td>variant A3
+<tr><td bgcolor="yellow">place B<td>variant B1<td>variant B2<td>variant B3
+<tr><td bgcolor="yellow">place C<td>variant C1<td>variant C2<td>variant C3
+<tr><td bgcolor="yellow">place D<td>variant D1<td>variant D2<td>variant D3
+</table>
+<p>
+The first cell in the first row can be empty or missing. When missing,
+      the first line has one cell less than all the other rows.
+<p>
+A cell may be empty for missing data.
+<p>
+When more than one variant exists for one item and one location, put
+      both variants in a single cell, separated by these three
+      characters: <u>space</u> <u>slash</u> <u>space</u>.
+<p>
+<table cellpadding="4" border="1">
+<tr><td>variant B2i / variant B2j
+</table>
+<p>
+Note that all leading and trailing spaces are ignored.
+
+
+
+<h4>File encoding</h4>
+
+The following file encodings are recognised:
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Us-ascii">US-ASCII</a>
+<li><a href="http://en.wikipedia.org/wiki/Utf-8">UTF-8</a> with/without <a href="http://en.wikipedia.org/wiki/Byte_Order_Mark">BOM</a>
+<li><a href="http://en.wikipedia.org/wiki/Utf-16">UTF-16</a> with <a href="http://en.wikipedia.org/wiki/Byte_Order_Mark">BOM</a>
+</ul>
+
+All other encodings are assumed to be
+<a href="http://en.wikipedia.org/wiki/Iso-8859-1">ISO-8859-1</a>.
+<span class="todo">(or unspecified 8-bit?)</span>
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

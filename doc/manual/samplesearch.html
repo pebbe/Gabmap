@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <META NAME="ROBOTS" CONTENT="INDEX,FOLLOW">
+ <META NAME="revisit-after" CONTENT="7 days">
+ <META NAME="description" CONTENT="Gabmap manual">
+ <META NAME="keywords" CONTENT="Gabmap, dialectometry, L04, Adept, dialect, map">
+<title>Gabmap Manual</title>
+ <link rel="stylesheet" type="text/css" href="manual.css">
+</head>
+
+<body>
+
+<h2>Sample search</h2>
+
+<p>In the sample search, a regular expression can be filled in in order to search, for example, for a specific combination of characters. The <a href="http://docs.python.org/library/re#regular-expression-syntax" target="_top">Python syntax for regular expressions</a> is used. The search returns a distribution map and examples of the string.</p>
+
+<h3><a name="regex">Regular expressions</a></h3>
+
+<p>In regular expressions a number of characters have a special meaning. For example:</p>
+
+<table border="1" cellpadding="3">
+<tbody>
+<tr><td>.</td><td>matches any character
+        </td></tr>
+<tr><td>^</td><td>matches the beginning of a string
+        </td></tr>
+<tr><td>$</td><td>matches the end of a string
+		</td></tr>
+<tr><td>[]</td><td>indicates a set of characters
+		</td></tr>
+<tr><td>[^]</td><td>matches characters NOT within the set
+		</td></tr>
+</tbody></table>
+
+
+<p><b>Examples of regular expressions:</b></p>
+
+<table border="1" cellpadding="3">
+<tbody>
+<tr><td>n</td><td>finds all instances which contain the charcater 'n'
+        </td></tr>
+<tr><td>ng</td><td>finds all instances which contain 'ng'
+        </td></tr>
+<tr><td>^a</td><td>finds all instances of 'a' in the beginning of a string
+        </td></tr>
+<tr><td>a$</td><td>finds all instances of 'a' in the end of a string
+		</td></tr>
+<tr><td>^.a</td><td>finds all instances were 'a' is the second symbol
+		</td></tr>
+<tr><td>a.e</td><td>finds an 'a' followed by any single character followed by an 'e'
+		</td></tr>
+<tr><td>[ae]</td><td>all instances of either 'a' or 'e'
+		</td></tr>
+<tr><td>^[ae]</td><td>all instances beginning with either 'a' or 'e'
+		</td></tr>
+<tr><td>[^ae]</td><td>matches instances NOT containing 'a' or 'e'
+		</td></tr>
+<tr><td>[^a]$</td><td>matches all instances that do NOT end with an 'a'
+		</td></tr>
+<tr><td>t[ae]</td><td>'t' followed by either 'a' or 'e'
+		</td></tr>
+</tbody></table>
+
+
+<blockquote>
+<p class="center">
+<a href="characterlist.html">previous</a>
+| <a href="index.htm" target="_top">Start</a>
+| <a href="errors.html">next</a> 
+</p>
+</blockquote>
+
+</body>
+</html>
