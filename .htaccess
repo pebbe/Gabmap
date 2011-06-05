@@ -1,0 +1,4 @@
+AddCharset utf-8 .utxt
+AddCharset utf-16 .u16
+AddType text/plain .utxt
+AddType text/plain .u16

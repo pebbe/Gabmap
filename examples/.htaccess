@@ -1,0 +1,27 @@
+AddCharset utf-8 .kml
+AddCharset utf-8 .utxt
+AddCharset utf-16 .u16
+AddType text/plain .utxt
+AddType text/plain .u16
+AddType application/vnd.google-earth.kml+xml .kml
+AddType application/vnd.google-earth.kmz .kmz
+IndexIgnore HEADER.html .dc
+IndexOptions +FoldersFirst
+IndexOptions +ScanHTMLTitles
+IndexOptions +FancyIndexing +DescriptionWidth=60
+HeaderName HEADER.html
+AddDescription "Dutch dialect data (RND), encoding: UTF-16 " Nederlands-ipa.u16
+AddDescription "Dutch dialect data (RND), encoding: UTF-8 " Nederlands-ipa.utxt
+AddDescription "Dutch dialect data (RND), encoding: X-SAMPA " Nederlands-xsampa.txt
+AddDescription "Map for Dutch dialect data (RND)" Nederlands.kml
+AddDescription "Map for Dutch dialect data (RND) - without new polders" Nederlands2.kml
+AddDescription "Bantu dialect data, encoding: UTF-16 " Bantu.u16
+AddDescription "Bantu dialect data, encoding: UTF-8 " Bantu.utxt
+AddDescription "Map for Bantu dialect data" Bantu.kml
+AddDescription "Dutch dialect data (Meertens), encoding: UTF-16 " Dutch613.u16
+AddDescription "Dutch dialect data (Meertens), encoding: UTF-8 " Dutch613.utxt
+AddDescription "Map for Dutch dialect data (Meertens)" Dutch613.kml
+AddDescription "Pennsylvania, map, by county" Pennsylvania-67.kml
+AddDescription "Pennsylvania, map, by informant" Pennsylvania-158.kml
+AddDescription "Demo Pennsylvania, map" Demo-Pennsylvania.kml
+AddDescription "Demo Pennsylvania, data" Demo-Pennsylvania.utxt
