@@ -70,7 +70,7 @@ def makepage(path):
 
         sys.stdout.write(mt + '\n')
 
-        sys.stdout.write('Cronbach Alpha: {}\n<p>\n'.format(u.html.escape(ca)))
+        sys.stdout.write('Cronbach\'s alpha: {}{}\n<p>\n'.format(u.html.escape(ca), u.html.help('ca')))
                 
         sys.stdout.write('''
         Local incoherence: {0}
