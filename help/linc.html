@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Local incoherence</title>
+</head>
+<body>
+
+
+<u>Local incoherence</u> is a numerical score of <em>local stress</em>, assigned to a set of differences
+    between items, related to geographic distances between those items.
+    The optimal score is 0 (zero). Non-optimal scores are positive
+    values, with an undefined limit.
+<p>
+Comparing this score for different measurements on the same data gives you an idea what results are the
+      more reliable. Lower values for Local incoherence means the
+      results are better. You can also compare different measurements
+      over different sets of data, as long as they are for the same set
+      of locations.
+<p>
+Comparing the Local incoherence between data sets with different
+      locations is meaningless, even if those locations are from the
+      same geographic region.
+<p>
+The idea behind Local incoherence is that on average, locations that are
+      close should be less different than locations farther apart
+      (coherence), but any correlation between geographical distance and
+      dissimilarity is lost over larger geographical distances (hence:
+      local). 
+
+
+
+<h4>Definition</h4>
+
+<em>Local incoherence</em>, or <b>I<sub><i>L</i></sub></b> is defined as follows:
+<p>
+<img src="../img/linc-form.gif" width="236" height="240" alt="[formula]">
+<p>
+<table>
+<tr valign="top"><td><b><i>n</i></b>
+    <td>Number of locations.
+<tr valign="top"><td><b><i>d<sub>ij</sub></i></b>
+    <td>The <em>geographical</em> distance between locations <i>i</i> and <i>j</i>.
+	These distances are ordered such that the corresponding <em>dialectological</em> difference
+	between locations <i>i</i> and 1 is the smallest, between locations <i>i</i> and 2
+	the second smallest, etc.
+
+<tr valign="top"><td><b><i>d<big><sup>^</sup></big><sub>ij</sub></i></b>
+    <td>Like <i>d<sub>ij</sub></i>, but distances are ordered according to
+        <em>geographical</em> distance instead of according to
+        dialectological difference.
+        In other words:
+        <i>A</i><big><sup>^</sup></big><sub><i>i</i></sub>
+        is the optimal solution for <i>A<sub>i</sub></i>.
+
+<tr valign="top"><td><b><i>k</i></b>
+    <td>The upper limit for the number of dialectological neighbourhood
+        locations used. We use <i>k</i>=8.
+<tr valign="top"><td><b><i>p</i></b>
+    <td>A parameter. We use 0.5.
+</table>
+<p>
+Whenever there is a series of identical dialectological differences, the
+geographic distances are averaged for those pairs of locations.
+
+<h4>Reference</h4>
+
+<dl>
+<dt>John Nerbonne and Peter Kleiweg
+<dd><a href="http://www.let.rug.nl/nerbonne/papers/yardstick.pdf"
+	  target="_blank">Toward a Dialectological Yardstick.</a> In:
+	<em>Journal of Quantitative Linguistics</em> 14(2), 2007,
+	148-167.
+</dl>
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->
