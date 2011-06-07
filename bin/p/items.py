@@ -12,7 +12,7 @@ __date__ = "2010/04/10"
 #import locale
 import os, re, sys
 
-import u.path, u.html, u.config
+import u.path, u.html, u.config, u.distribute
 
 #| globals
 
@@ -37,7 +37,7 @@ def makepage(path):
     p = path.split('-', 1)[1]
     pnum =  path.split('-')[-2].split('_')[-1]
 
-    sys.stdout.write(u.html.head(ltitle))
+    sys.stdout.write(u.html.head(ltitle, tip=True, maptip=True))
     sys.stdout.write('''
     {}
     <div class="pgitems">
@@ -53,7 +53,9 @@ def makepage(path):
 
         sys.stdout.write('''
         <div class="info">
-        This is a list of all items &mdash; the column labels &mdash; in your data set.<br>
+        The map shows the total amount of data available for each location.
+        <br>&nbsp;<br>
+        Below the map is a list of all items &mdash; the column labels &mdash; in your data set.<br>
         The number says how many instances are available for each item.
         ''')
         if method.startswith('levfeat'):
@@ -64,10 +66,47 @@ def makepage(path):
             '''.format(u.html.more('items')))
         sys.stdout.write('''
         <br>&nbsp;<br>
-        Click on a number to get a data map.
+        Click on a number to get a data map for a single item.
         </div>
         ''')
 
+        if not os.access('datacount.txt', os.F_OK):
+            if method.startswith('levfeat'):
+                e = '.ftr'
+            else:
+                e = '.data'
+            p = {}
+            for filename in os.listdir('../data/_'):
+                if not filename.endswith(e):
+                    continue
+                fp = open('../data/_/' + filename, 'rb')
+                for line in fp:
+                    if line[:1] == b':':
+                        lbl = line[1:].decode('iso-8859-1').strip()
+                        if not lbl in p:
+                            p[lbl] = 0
+                    elif line[:1] == b'-' or line[:1] == b'+':
+                        p[lbl] += 1
+                fp.close()
+            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
+            for i in sorted(p):
+                fp.write('{:6d}\t{}\n'.format(p[i], i))
+            fp.close()
+            m = max(p.values())
+            pp = {}
+            for i in p:
+                pp[i] = m
+            os.chdir('..')
+            u.distribute.distmap(p, pp, 'items/datacount')
+            os.chdir('items')
+
+        p = path.split('-', 1)[1]
+        pnum =  path.split('-')[-2].split('_')[-1]
+        sys.stdout.write(u.html.img(p + '-datacount', usemap="map1", bw=True))
+        sys.stdout.write('''
+        &rarr; <a href="{}bin/getdatacount?{}" target="_blank">download as list</a>
+        <p>
+        '''.format(u.config.appurl, pnum))
 
         if not os.access('list2.utxt', os.F_OK):
             for filename in os.listdir('../data/_'):
@@ -102,7 +141,7 @@ def makepage(path):
         sys.stdout.write('<table class="items" cellspacing="0" cellpadding="0" border="0">\n')
         fp = open('list2.utxt', 'rt', encoding='utf-8')
         i = -1
-        if method.startswith('levfeat'):            
+        if method.startswith('levfeat'):
             for line in fp:
                 i += 1
                 n, m, item = line.split(None, 2)

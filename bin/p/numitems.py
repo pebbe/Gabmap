@@ -12,7 +12,7 @@ __date__ = "2010/04/10"
 #import locale
 import os, re, sys
 
-import u.path, u.html, u.config
+import u.path, u.html, u.config, u.distribute
 
 #| globals
 
@@ -40,7 +40,6 @@ def _iso2utf(s):
         return ''
     return re.sub('&#([0-9]+);', _num2chr, s)
 
-
 def makepage(path):
 
     u.path.chdir(path[:-9])
@@ -52,7 +51,7 @@ def makepage(path):
     p = path.split('-', 1)[1]
     pnum =  path.split('-')[-2].split('_')[-1]
 
-    sys.stdout.write(u.html.head(ltitle))
+    sys.stdout.write(u.html.head(ltitle, tip=True, maptip=True))
     sys.stdout.write('''
     {}
     <div class="pgitems">
@@ -63,13 +62,45 @@ def makepage(path):
 
         sys.stdout.write('''
         <div class="info">
-        This is a list of all items &mdash; the column labels &mdash; in your data set.<br>
+        The map shows the total amount of data available for each location.
+        <br>&nbsp;<br>
+        Below the map is a list of all items &mdash; the column labels &mdash; in your data set.<br>
         The number (if any) says how many values are missing for each item.
         <br>&nbsp;<br>
         Click on a number to get a map of missing values.
         </div>
         <table class="items" cellspacing="0" cellpadding="0" border="0">
         ''')
+
+        if not os.access('datacount.txt', os.F_OK):
+            p = {}
+            fp = open('table.txt', 'rt', encoding='iso-8859-1')
+            fp.readline()
+            for line in fp:
+                i, j = line.rsplit('"', 1)
+                lbl = re.sub('\\\\(.)', '\\1', i[1:])
+                n = len([True for i in j.split() if i != 'NA'])
+                p[lbl] = n
+            fp.close()
+            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
+            for i in sorted(p):
+                fp.write('{:6d}\t{}\n'.format(p[i], i))
+            fp.close()
+            m = max(p.values())
+            pp = {}
+            for i in p:
+                pp[i] = m
+            os.chdir('..')
+            u.distribute.distmap(p, pp, 'data/datacount')
+            os.chdir('data')
+
+        p = path.split('-', 1)[1].replace('numitems', 'data')
+        pnum =  path.split('-')[-2].split('_')[-1]
+        sys.stdout.write(u.html.img(p + '-datacount', usemap="map1", bw=True))
+        sys.stdout.write('''
+        &rarr; <a href="{}bin/getdatacount?{}" target="_blank">download as list</a>
+        <p>
+        '''.format(u.config.appurl, pnum))
 
         lines = []
         fp = open('NAs.txt', 'rt', encoding='utf-8')
@@ -80,12 +111,12 @@ def makepage(path):
             lines.append((a[1].strip(), int(a[0]), n))
         fp.close()
         lines.sort()
-        
+
         for item, i, n in lines:
             if i == 0:
                 i = ''
             else:
-                i = '<a href="namap?{}-{}" target="_blank">{}</a>'.format(pnum, n, i)                
+                i = '<a href="namap?{}-{}" target="_blank">{}</a>'.format(pnum, n, i)
             sys.stdout.write('<tr><td align="right">{}<td>{}\n'.format(i, u.html.escape(item.strip())))
         sys.stdout.write('</table>\n')
 
