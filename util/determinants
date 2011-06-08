@@ -154,7 +154,7 @@ if i + o == 0:
 RelOcc = i / (i + o)
 Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
 Repres = i / nPlaceIn
-Distinct > 0:
+if Distinct > 0:
     Importance = (Repres + Distinct) / 2.0
 else:
     Importance = 0
