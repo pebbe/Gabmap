@@ -58,7 +58,7 @@ def makepage(path):
     <h2>{}</h2>
     '''.format(crumbs, title))
 
-    if os.access('OK', os.F_OK):
+    if os.access('OK', os.F_OK) and os.access('../map/OK', os.F_OK):
 
         sys.stdout.write('''
         <div class="info">
@@ -121,10 +121,14 @@ def makepage(path):
         sys.stdout.write('</table>\n')
 
 
-    elif os.access('QUEUED', os.F_OK):
+    elif os.access('QUEUED', os.F_OK) or os.access('../map/QUEUED', os.F_OK):
         sys.stdout.write(u.html.busy())
     else:
-        sys.stdout.write(u.html.makeError(path.split('-', 1)[1].replace('numitems', 'data')))
+        if os.access('QUEUED', os.F_OK):
+            p = 'map'
+        else:
+            p = 'data'
+        sys.stdout.write(u.html.makeError(path.split('-', 1)[1].replace('numitems', p)))
 
     sys.stdout.write('\n</div>\n')
     sys.stdout.write(u.html.foot())

@@ -45,7 +45,7 @@ def makepage(path):
     '''.format(crumbs, title))
 
 
-    if os.access('../data/OK', os.F_OK):
+    if os.access('../data/OK', os.F_OK) and os.access('../map/OK', os.F_OK):
 
         items = []
 
@@ -162,11 +162,15 @@ def makepage(path):
         fp.close()
         sys.stdout.write('</table>\n')
 
-    elif os.access('../data/QUEUED', os.F_OK):
+    elif os.access('../data/QUEUED', os.F_OK) or os.access('../map/QUEUED', os.F_OK):
         os.chdir('../data/')
         sys.stdout.write(u.html.busy())
     else:
-        sys.stdout.write(u.html.makeError(path.split('-', 1)[1]).replace('items', 'data'))
+        if os.access('../data/QUEUED', os.F_OK):
+            p = 'map'
+        else:
+            p = 'data'
+        sys.stdout.write(u.html.makeError(path.split('-', 1)[1]).replace('items', p))
 
     sys.stdout.write('\n</div>\n')
     sys.stdout.write(u.html.foot())
