@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>F1 Score in Cluster Determinants</title>
+</head>
+<body>
+(This text needs clarification.)
+<p>
+The formula for F1 score is
+(<a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">Wikipedia</a>):
+<p>
+<pre>
+                    2 * true positive
+F1 = ---------------------------------------------------
+     2 * true positive + false negative + false positive
+</pre>
+<p>
+In Cluster Determinants, we introduce a small bias for larger files, by
+      increasing the counts used in the formula by 1:
+<p>
+<pre>
+                       2 * (true positive + 1)
+F1 = ---------------------------------------------------------------------
+     2 * (true positive + 1) + (false negative + 1) + (false positive + 1)
+</pre>
+<p>
+The effect is that items with very much data can have a maximum score
+      close to 1, and a minimum close to 0, but that items with less
+      data have a slightly lesser range.
+<p>
+The basis for the modification is based on the following. If we have two
+      counts, A and B, then the proportion of A in the total is A/(A+B). But
+      if A and B are based on small samples from a very large set, then the best
+      prediction of the proportion of A in the larger set is
+      (A+1)/(A+1+B+1), assuming a uniform distribution of chances for
+      all possible proportions.
+
+
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

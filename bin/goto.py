@@ -91,12 +91,9 @@ elif p0.startswith('clumaps'):
 elif p0.startswith('cludet'):
     import p.cludet
     p.cludet.makepage(path)
-elif p0.startswith('clu2det'):
-    import p.clu2det
-    p.clu2det.makepage(path)
-elif p0.startswith('clu3det'):
-    import p.clu3det
-    p.clu3det.makepage(path)
+elif p0.startswith('clu1det'):
+    import p.clu1det
+    p.clu1det.makepage(path)
 elif p0.startswith('prob'):
     import p.prob
     p.prob.makepage(path)

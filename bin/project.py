@@ -913,7 +913,7 @@ os.chdir('..')
 for i in 'cccmaps clusters clumaps diff mdsplots mdsmaps prob plot'.split():
     os.mkdir(i)
 if not method.startswith('num') and not method.startswith('dif'):
-    for i in 'cludet cludet/_ clu2det clu2det/_ clu3det clu3det/_'.split():
+    for i in 'cludet cludet/_ clu1det clu1det/_'.split():
         os.mkdir(i)
 
 if method.startswith('dif'):
@@ -1071,20 +1071,7 @@ if not method.startswith('num') and not method.startswith('dif'):
     u.queue.enqueue(path + '/cludet', make.format({'appdir': u.config.appdir,
                                                    'python3': u.config.python3,
                                                    'n': 6}))
-
-if not method.startswith('num') and not method.startswith('dif'):
-    fp = open('{}/templates/Makefile-clu2det'.format(u.config.appdir), 'r')
-    make = fp.read()
-    fp.close()
-    u.queue.enqueue(path + '/clu2det', make.format({'appdir': u.config.appdir,
-                                                    'python3': u.config.python3,
-                                                    'n': 6}))
-
-if not method.startswith('num') and not method.startswith('dif'):
-    fp = open('{}/templates/Makefile-clu3det'.format(u.config.appdir), 'r')
-    make = fp.read()
-    fp.close()
-    u.queue.enqueue(path + '/clu3det', make.format({'appdir': u.config.appdir,
+    u.queue.enqueue(path + '/clu1det', make.format({'appdir': u.config.appdir,
                                                     'python3': u.config.python3,
                                                     'n': 6}))
 

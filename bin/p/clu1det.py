@@ -15,7 +15,7 @@ import u.path, u.html, u.config, u.distribute, u.setChar
 
 #| globals
 
-title = 'cluster determinants'
+title = 'cluster determinants with F1 score'
 
 defaults = '''
 02B0  MODIFIER LETTER SMALL H
@@ -92,7 +92,7 @@ def makepage(path):
     sys.stdout.write('''
     {}
     <div class="pgcludet">
-    <h2>cluster determinants</h2>
+    <h2>cluster determinants with F1 score</h2>
     '''.format(crumbs))
 
     if os.access('OK', os.F_OK):
@@ -148,7 +148,7 @@ def makepage(path):
 
         sys.stdout.write('''
         <p>
-	<form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+	<form action="{}bin/clu1detform" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="p" value="{}">
 	<input type="hidden" name="action" value="number">
 	Number of clusters:
@@ -174,7 +174,7 @@ def makepage(path):
 
         sys.stdout.write('''
         <h3 id="s2">Step 2: select cluster</h3>
-	<form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+	<form action="{}bin/clu1detform" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="p" value="{}">
 	<input type="hidden" name="action" value="cluster">
         '''.format(u.config.appurl, project))
@@ -224,7 +224,7 @@ def makepage(path):
         <p>
         ''')
 
-        if os.access('important.txt', os.F_OK):
+        if os.access('f1score.txt', os.F_OK):
 
             if len(current) > 2:
                 curitem = current[2]
@@ -232,15 +232,14 @@ def makepage(path):
                 curitem = ''
 
             sys.stdout.write('''
-            <!-- <h3 id="s3">step 3: select important item</h3> -->
             <h3 id="s3">step 3: select relevant item</h3>
-            <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+            <form action="{}bin/clu1detform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
-            Items sorted by importance:
+            Items sorted by <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 Score</a>:
             <select name="item">
             '''.format(u.config.appurl, project))
-            fp = open('important.txt', 'rt')
+            fp = open('f1score.txt', 'rt')
             for line in fp:
                 a, b, c, d, e = line.split()
                 if d == '0':
@@ -257,8 +256,8 @@ def makepage(path):
             sys.stdout.write('''
             </select>
             <input type="submit" value="Select item">
-            <br>&rarr; <a href="cludetlist?p={}" target="_blank">download as list</a>
-            <br>&rarr; <a href="help?s=cludetscores" target="_blank">about importance</a> <!--(and why it is not working very well)-->
+            <br>&rarr; <a href="clu1detlist?p={}" target="_blank">download as list</a>
+            <br>&rarr; <a href="help?s=clu1detscores" target="_blank">about f1 score</a>
             </form>
             <p>
             '''.format(project))
@@ -311,11 +310,11 @@ def makepage(path):
                 sys.stdout.write('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
-                Current item: {0}<br>
+                Current item: {0}
                 <table cellspacing="0" celpadding="0" border="0">
-                <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
-                <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
-                <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
+                <tr><td>F1 Score:&nbsp;  <td>{1[0]:.2f}
+                <tr><td>Precision:&nbsp; <td>{1[1]:.2f}
+                <tr><td>Recall:&nbsp;    <td>{1[2]:.2f}
                 </table>
                 Patterns with forms:
                 <ul>
@@ -389,11 +388,11 @@ def makepage(path):
                             placeall[place] += 1
                     fp.close()
                     os.chdir('..')
-                    u.distribute.distmap(placen, placeall, 'cludet/distmap', exfile='cludet/distmap.ex', normalise=False)
-                    os.chdir('cludet')
+                    u.distribute.distmap(placen, placeall, 'clu1det/distmap', exfile='clu1det/distmap.ex', normalise=False)
+                    os.chdir('clu1det')
 
             if curitem:
-                sys.stdout.write(u.html.img('project_{}-cludet-distmap'.format(pnum), True, usemap="map1", idx=2))
+                sys.stdout.write(u.html.img('project_{}-clu1det-distmap'.format(pnum), True, usemap="map1", idx=2))
 
                 if os.access('currentregex.txt', os.F_OK):
                     fp = open('currentregex.txt', 'rt', encoding='utf-8')
@@ -404,7 +403,7 @@ def makepage(path):
 
                 sys.stdout.write('''
                 <h3 id="s4">Step 4: try for determinant feature</h3>
-                <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+                <form action="{}bin/clu1detform" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="hebci_auml"   value="&auml;">
                 <input type="hidden" name="hebci_divide" value="&divide;">
                 <input type="hidden" name="hebci_euro"   value="&euro;">
@@ -427,14 +426,11 @@ def makepage(path):
                     fp.close()
                     sys.stdout.write('''
                     &nbsp;<br>
-                    Current regular expression: <span class="ipa2">{0}</span>
-                    <!--
-                    Relevance: {1[0]:.2f}<br>
-                    -->
+                    Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" celpadding="0" border="0">
-                    <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
-                    <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
-                    <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
+                    <tr><td>F1 Score:&nbsp;  <td>{1[0]:.2f}
+                    <tr><td>Precision:&nbsp; <td>{1[1]:.2f}
+                    <tr><td>Recall:&nbsp;    <td>{1[2]:.2f}
                     </table>
                     Matching forms:
                     '''.format(regex, [float(x) for x in results]))
@@ -473,11 +469,11 @@ def makepage(path):
                             placeall[place] += 1
                     fp.close()
                     os.chdir('..')
-                    u.distribute.distmap(placen, placeall, 'cludet/redistmap', exfile='cludet/distmap.ex', normalise=False)
-                    os.chdir('cludet')
+                    u.distribute.distmap(placen, placeall, 'clu1det/redistmap', exfile='clu1det/distmap.ex', normalise=False)
+                    os.chdir('clu1det')
 
                 if regex:
-                    sys.stdout.write(u.html.img('project_{}-cludet-redistmap'.format(pnum), True, usemap="map1", idx=3))
+                    sys.stdout.write(u.html.img('project_{}-clu1det-redistmap'.format(pnum), True, usemap="map1", idx=3))
 
 
 
