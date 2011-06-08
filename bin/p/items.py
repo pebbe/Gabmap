@@ -70,34 +70,41 @@ def makepage(path):
         </div>
         ''')
 
-        if not os.access('datacount.txt', os.F_OK):
+        if not os.access('datacount2.txt', os.F_OK):
             if method.startswith('levfeat'):
                 e = '.ftr'
             else:
                 e = '.data'
             p = {}
+            pn = {}
             for filename in os.listdir('../data/_'):
                 if not filename.endswith(e):
                     continue
+                pseen = set()
                 fp = open('../data/_/' + filename, 'rb')
                 for line in fp:
                     if line[:1] == b':':
                         lbl = line[1:].decode('iso-8859-1').strip()
                         if not lbl in p:
                             p[lbl] = 0
+                        if not lbl in pn:
+                            pn[lbl] = 0
                     elif line[:1] == b'-' or line[:1] == b'+':
                         p[lbl] += 1
+                        if not lbl in pseen:
+                            pn[lbl] += 1
+                            pseen.add(lbl)
                 fp.close()
-            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
+            fp = open('datacount2.txt', 'wt', encoding='iso-8859-1')
             for i in sorted(p):
-                fp.write('{:6d}\t{}\n'.format(p[i], i))
+                fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], i))
             fp.close()
-            m = max(p.values())
+            m = max(pn.values())
             pp = {}
-            for i in p:
+            for i in pn:
                 pp[i] = m
             os.chdir('..')
-            u.distribute.distmap(p, pp, 'items/datacount')
+            u.distribute.distmap(pn, pp, 'items/datacount')
             os.chdir('items')
 
         p = path.split('-', 1)[1]

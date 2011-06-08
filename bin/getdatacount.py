@@ -30,15 +30,19 @@ p = int(os.environ['QUERY_STRING'])
 
 u.path.chdir('{}-project_{}-data'.format(username, p))
 
-m = open('Method', 'rt').read()
-if not m.startswith('num'):
-    os.chdir('../items')
-
 fp = sys.stdout.detach()
 fp.write(b'''Content-type: text/plain; charset=iso-8859-1
 Cache-Control: no-cache
 Pragma: no-cache
 
 ''')
-data = open('datacount.txt', 'rb').read()
+
+m = open('Method', 'rt').read()
+if m.startswith('num'):
+    data = open('datacount.txt', 'rb').read()
+else:
+    data = open('../items/datacount2.txt', 'rb').read()
+    fp.write(b'''# first column: number of items with data for place
+# second column: total data for place
+''')
 fp.write(data)
