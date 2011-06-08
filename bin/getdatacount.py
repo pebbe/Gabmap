@@ -41,7 +41,7 @@ m = open('Method', 'rt').read()
 if m.startswith('num'):
     data = open('datacount.txt', 'rb').read()
 else:
-    data = open('../items/datacount2.txt', 'rb').read()
+    data = open('../items/datacount.txt', 'rb').read()
     fp.write(b'''# first column: number of items with data for place
 # second column: total data for place
 ''')

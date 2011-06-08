@@ -70,7 +70,7 @@ def makepage(path):
         </div>
         ''')
 
-        if not os.access('datacount2.txt', os.F_OK):
+        if not os.access('datacount.txt', os.F_OK):
             if method.startswith('levfeat'):
                 e = '.ftr'
             else:
@@ -95,13 +95,15 @@ def makepage(path):
                             pn[lbl] += 1
                             pseen.add(lbl)
                 fp.close()
-            fp = open('datacount2.txt', 'wt', encoding='iso-8859-1')
+            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
             for i in sorted(p):
                 fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], i))
             fp.close()
             m = max(pn.values())
+            m *= m
             pp = {}
             for i in pn:
+                pn[i] *= pn[i]
                 pp[i] = m
             os.chdir('..')
             u.distribute.distmap(pn, pp, 'items/datacount')

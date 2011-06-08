@@ -87,8 +87,10 @@ def makepage(path):
                 fp.write('{:6d}\t{}\n'.format(p[i], i))
             fp.close()
             m = max(p.values())
+            m *= m
             pp = {}
             for i in p:
+                p[i] *= p[i]
                 pp[i] = m
             os.chdir('..')
             u.distribute.distmap(p, pp, 'data/datacount')
