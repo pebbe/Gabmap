@@ -91,6 +91,13 @@ End:
 
 #| functions
 
+def _iso2utf(m):
+    return '{:c}'.format(int(m.group(1)))
+
+def iso2utf(s):
+    return re.sub('&#([0-9]+);', _iso2utf, s)
+
+
 def escape(s):
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 

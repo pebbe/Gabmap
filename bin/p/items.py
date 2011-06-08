@@ -95,9 +95,9 @@ def makepage(path):
                             pn[lbl] += 1
                             pseen.add(lbl)
                 fp.close()
-            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
+            fp = open('datacount.txt', 'wt', encoding='utf-8')
             for i in sorted(p):
-                fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], i))
+                fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], u.html.iso2utf(i)))
             fp.close()
             m = max(pn.values())
             m *= m

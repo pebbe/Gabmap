@@ -82,9 +82,9 @@ def makepage(path):
                 n = len([True for i in j.split() if i != 'NA'])
                 p[lbl] = n
             fp.close()
-            fp = open('datacount.txt', 'wt', encoding='iso-8859-1')
+            fp = open('datacount.txt', 'wt', encoding='utf-8')
             for i in sorted(p):
-                fp.write('{:6d}\t{}\n'.format(p[i], i))
+                fp.write('{:6d}\t{}\n'.format(p[i], u.html.iso2utf(i)))
             fp.close()
             m = max(p.values())
             m *= m
