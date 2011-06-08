@@ -154,7 +154,9 @@ if i + o == 0:
 RelOcc = i / (i + o)
 Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
 Repres = i / nPlaceIn
-Importance = (Repres + Distinct) / 2.0
+Distinct > 0:
+    Importance = (Repres + Distinct) / 2.0
+else:
+    Importance = 0
 
 sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:5d}\n'.format(Importance, Distinct, Repres, i + o))
-

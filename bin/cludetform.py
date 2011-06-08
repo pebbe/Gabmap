@@ -71,7 +71,7 @@ def setCluster():
         fpin.close()        
     makes = 'OK: ../diff/OK\n'
     makes += '\tfor i in ../data/_/*.data; do determinants {} $$i > _/`basename $$i .data`.utxt; done\n'.format(c)
-    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | sort -r > important.txt\n'.format(c)
+    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | cdsort > important.txt\n'.format(c)
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/cludet', makes)
     u.queue.run()
