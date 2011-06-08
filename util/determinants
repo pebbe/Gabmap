@@ -133,7 +133,7 @@ for Imp, Dis, Rep, s, n, ip, op in sorted(variants):
         Import = (Repres + Distinct) / 2.0
     else:
         Import = 0
-    if Import > Importance and Dis > 0.0:
+    if Import > Importance and Dis < 0.0:
         Importance = Import
         sys.stdout.write('{:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(-Imp, -Dis, -Rep, _escape(s), n, ' | '.join(sorted(subst[s]))))
         allInPlaces = inplaces
