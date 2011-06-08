@@ -113,19 +113,18 @@ def setRegex():
     target, datafile = fp.read().split()[1:]
     fp.close()
 
-    partition = set()
+    inpart = {}
+    outpart = {}
 
     fp = open('clgroups.txt', 'rt', encoding='iso-8859-1')
     for line in fp:
         a, b = line.split(None, 1)
+        b = _unquote(b)
         if a == target:
-            partition.add(_unquote(b))
+            inpart[b] = False
+        else:
+            outpart[b] = False
     fp.close()
-
-    imatch = 0
-    omatch = 0
-    iother = 0
-    oother = 0
 
     matches = {}
 
@@ -140,30 +139,28 @@ def setRegex():
             item = line.decode(encoding)[1:].strip()
             if RE.search(item):
                 if not item in matches:
-                    matches[item] = 0
-                matches[item] += 1
-                if lbl in partition:
-                    imatch += 1
+                    matches[item] = set()
+                matches[item].add(lbl)
+                if lbl in inpart:
+                    inpart[lbl] = True
                 else:
-                    omatch += 1
-            else:
-                if lbl in partition:
-                    iother += 1
-                else:
-                    oother += 1
+                    outpart[lbl] = True
+
     fp.close()
 
     fp = open('reresults.txt', 'wt')
 
+    imatch = sum([1 for x in inpart if inpart[x]])
+    omatch = sum([1 for x in outpart if outpart[x]])
+    iother = len(inpart) - imatch
+    oother = len(outpart) - omatch
+
     if imatch + omatch == 0:
         fp.write('0.000 0.000 0.000\n')
     else:
-        #Repres = imatch / (imatch + iother)
-        Repres = (imatch + 1) / (imatch + iother + 2)
-        #RelOcc = imatch / (imatch + omatch)
-        RelOcc = (imatch + 1) / (imatch + omatch + 2)
-        #RelSize = (imatch + iother) /  (imatch + iother + omatch + oother)
-        RelSize = (imatch + iother + 1) /  (imatch + iother + omatch + oother + 2)
+        Repres = imatch / (imatch + iother)
+        RelOcc = imatch / (imatch + omatch)
+        RelSize = (imatch + iother) /  (imatch + iother + omatch + oother)
         Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
         Import = (Repres + Distinct) / 2.0
         if Distinct < 0.0:
@@ -174,7 +171,7 @@ def setRegex():
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):
-        fp.write('{}\t{}\n'.format(matches[i], i))
+        fp.write('{}\t{}\n'.format(len(matches[i]), i))
     fp.close()
                 
 

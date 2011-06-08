@@ -2,12 +2,11 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>Relevance</title>
+  <title>Importance</title>
 </head>
 <body>
 
-The measure of Relevance is a weighted version of the measure of Importance.
-Importance is described in:
+The measure of Importance is described in:
 
 <ul>
 <li>WIELING, Martijn & John NERBONNE (to appear)<br>
@@ -17,6 +16,38 @@ Importance is described in:
   doi:10.1016/j.csl.2010.05.004<br>
   Available online (<a href="http://www.sciencedirect.com/">http://www.sciencedirect.com/</a>) since May 21, 2010.
 </ul>
+
+The use of Importance in Gabmap necessarily deviates from the use in the above cited
+    paper. The paper applies Importance to data that consists of places
+    and sound correspondences. In Gabmap our data consists of responses
+    and variants, where each unique variant can represent one or more
+    linguistic features.
+<p>
+The second author of the paper allows that variants can be used instead
+    of sound correspondences, but insists that the formula for Importance can only be
+    applied to data of places. (Personal communication. No such
+    limitation is posed in the paper.)
+<p>
+So, instead of evaluating the raw data, we must reduce the data over places, into one
+      group of places where a wanted variant occurs (for each place, this can be sometimes or
+      always), and another group of places where no such variant occurs (whether
+      or not we even have any data for those places).
+<p>
+This method does not work well. Useful information is lost.
+Some uninteresting items get a high
+      score, just because they have many different variants in single
+      places. Some interesting items get a very low score, just because
+      they have data for less places than other items.    
+<p>
+<h4>Q&amp;A</h4>
+
+Q: Are there better methods?<br>A: Yes.
+<p>
+Q: Then why use this method?<br>A: Ask info@gabmap.nl
+<p>
+Q: Can I use a better method anyway?<br>A: Yes, you can. Contact support@gabmap.nl
+
+
 
 </body>
 </html>

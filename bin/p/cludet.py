@@ -237,8 +237,7 @@ def makepage(path):
             <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
-            <!-- Items sorted by importance: -->
-            Items sorted by relevance:
+            Items sorted by importance:
             <select name="item">
             '''.format(u.config.appurl, project))
             fp = open('important.txt', 'rt')
@@ -259,7 +258,7 @@ def makepage(path):
             </select>
             <input type="submit" value="Select item">
             <br>&rarr; <a href="cludetlist?p={}" target="_blank">download as list</a>
-            <br>&rarr; <a href="help?s=cludetscores" target="_blank">about relevance (weighted importance)</a>
+            <br>&rarr; <a href="help?s=cludetscores" target="_blank">about importance</a> (and why it is not working very well)
             </form>
             <p>
             '''.format(project))
@@ -314,9 +313,9 @@ def makepage(path):
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}<br>
                 <table cellspacing="0" celpadding="0" border="0">
-                <tr><td>Importance (weighted):&nbsp;  <td>{1[0]:.2f}
-                <tr><td>Distinctiveness (weighted):&nbsp; <td>{1[1]:.2f}
-                <tr><td>Representativeness (weighted):&nbsp;    <td>{1[2]:.2f}
+                <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
+                <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
+                <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
                 </table>
                 Patterns with forms:
                 <ul>
@@ -433,9 +432,9 @@ def makepage(path):
                     Relevance: {1[0]:.2f}<br>
                     -->
                     <table cellspacing="0" celpadding="0" border="0">
-                    <tr><td>Importance (weighted):&nbsp;  <td>{1[0]:.2f}
-                    <tr><td>Distinctiveness (weighted):&nbsp; <td>{1[1]:.2f}
-                    <tr><td>Representativeness (weighted):&nbsp;    <td>{1[2]:.2f}
+                    <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
+                    <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
+                    <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
                     </table>
                     Matching forms:
                     '''.format(regex, [float(x) for x in results]))

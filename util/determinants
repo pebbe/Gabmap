@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
---documentation--
+This is not the way to do it.
 """
 
 __author__ = "Peter Kleiweg"
@@ -45,28 +45,36 @@ def _unquote(s):
 #| main
 
 partition = set()
-
+nPlaceIn = 0
+nPlaceOut = 0
 fp = open(clufile, 'rt', encoding='iso-8859-1')
 for line in fp:
     a, b = line.split(None, 1)
     if int(a) == target:
         partition.add(_unquote(b))
+        nPlaceIn += 1
+    else:
+        nPlaceOut += 1
 fp.close()
-
-variants = {}
-subst = {}
+RelSize = nPlaceIn / (nPlaceIn + nPlaceOut)
 
 fp = open(datafile, 'rb')
+lines = fp.readlines()
+fp.close()
+
 encoding = 'iso-8859-1'
 ignore = re.compile('[^ a-zA-Z0-9]+')
-for line in fp:
+subst = {}
+datapat = {}
+lbl = ''
+for line in lines:
     if line.startswith(b'%utf8'):
         encoding = 'utf-8'
         ign = setChar.Vowel.union(setChar.Consonant).union(setChar.Semivowel)
         first = ''
         if os.access('accentscurrent.txt', os.F_OK):
-            fp1 = open('accentscurrent.txt', 'rt')
-            for line in fp1:
+            fp = open('accentscurrent.txt', 'rt')
+            for line in fp:
                 c = '{:c}'.format(int(line))
                 if c == '-':
                     first = '-'
@@ -74,74 +82,79 @@ for line in fp:
                     ign.add('\\' + c)
                 else:
                     ign.add(c)
-            fp1.close()
+            fp.close()
         ignore = re.compile('[^' + first + ''.join(ign) + ']+')
     elif line[:1] == b':':
         lbl = line.decode('iso-8859-1')[1:].strip()
     elif line[:1] == b'-':
-        variant1 = line.decode(encoding)[1:].strip()
-        variant = ignore.sub('', variant1).strip()
-        if not variant in variants:
-            variants[variant] = [0, 0]
-            subst[variant] = set()
-        subst[variant].add(_escape(variant1))
-        if lbl in partition:
-            variants[variant][0] += 1
+        wrd = line.decode(encoding)[1:].strip()
+        pat = ignore.sub('', wrd).strip()
+        if not pat in datapat:
+            datapat[pat] = set()
+            subst[pat] = set()
+        datapat[pat].add(lbl)
+        subst[pat].add(_escape(wrd))
+
+variants = []
+for variant in datapat:
+    outplaces = set()
+    inplaces = set()
+    for place in datapat[variant]:
+        if place in partition:
+            inplaces.add(place)
         else:
-            variants[variant][1] += 1
-fp.close()
-
-allinn = alln = 0
-for variant in variants:
-    inn, outn = variants[variant]
-    #if inn + outn >= minvar:
-    allinn += inn
-    alln += inn
-    alln += outn
-
-# if all data inside or all data outside then useless
-if allinn == alln or allinn == 0:
-    sys.exit()
-
-#RelSize = allinn / alln
-RelSize = (allinn + 1) / (alln + 2)
-
-lines = []
-rejected = set()
-usedvariants = set()
-
-for variant in variants:
-    inn, outn = variants[variant]
-    if inn + outn < minvar:
+            outplaces.add(place)
+    i = len(inplaces)
+    o = len(outplaces)
+    if i + o < minvar:
         continue
-    #RelOcc = inn / (inn + outn)
-    RelOcc = (inn + 1) / (inn + outn + 2)
+    RelOcc = i / (i + o)
     Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
-    #Repres = inn / allinn
-    Repres = (inn + 1) / (allinn + 2)
-    Import = (Repres + Distinct) / 2.0
-    #if Distinct >= 0:
-    if Distinct >= 0.3:
-        lines.append((-Import, -Distinct, -Repres, variant, inn + outn))
-        usedvariants.add(variant)
+    Repres = i / nPlaceIn
+    if Distinct > 0.0:
+        Import = (Repres + Distinct) / 2.0
     else:
-        rejected.add(variant)
+        Import = 0
+    variants.append((-Import, -Distinct, -Repres, variant, i + o, inplaces, outplaces))
 
-for a, b, c, d, e in sorted(lines):
-    sys.stdout.write('{:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(-a, -b, -c, _escape(d), e, ' | '.join(sorted(subst[d]))))
+Importance = 0
+allOutPlaces = set()
+allInPlaces = set()
+rejected = set()
+for Imp, Dis, Rep, s, n, ip, op in sorted(variants):
+    inplaces = allInPlaces.union(ip)
+    outplaces = allOutPlaces.union(op)
+    i = len(inplaces)
+    o = len(outplaces)
+    RelOcc = i / (i + o)
+    Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
+    Repres = i / nPlaceIn
+    if Distinct > 0.0:
+        Import = (Repres + Distinct) / 2.0
+    else:
+        Import = 0
+    if Import > Importance and Dis > 0.0:
+        Importance = Import
+        sys.stdout.write('{:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(-Imp, -Dis, -Rep, _escape(s), n, ' | '.join(sorted(subst[s]))))
+        allInPlaces = inplaces
+        allOutPlaces = outplaces
+    else:
+        rejected.add(s)
 
 for line in sorted(rejected):
     sys.stdout.write('[' + _escape(line) + ']\n')
 
-inn = outn = 0
-for variant in usedvariants:
-    inn += variants[variant][0]
-    outn += variants[variant][1]
-#RelOcc = inn / (inn + outn)
-RelOcc = (inn + 1) / (inn + outn + 2)
+i = len(allInPlaces)
+o = len(allOutPlaces)
+
+if i + o == 0:
+    sys.stdout.write('\n0.000 0.000 0.000 0\n')
+    sys.exit()
+
+RelOcc = i / (i + o)
 Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
-#Repres = inn / allinn
-Repres = (inn + 1) / (allinn + 2)
-Import = (Repres + Distinct) / 2.0
-sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:5d}\n'.format(Import, Distinct, Repres, inn + outn))
+Repres = i / nPlaceIn
+Importance = (Repres + Distinct) / 2.0
+
+sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:5d}\n'.format(Importance, Distinct, Repres, i + o))
 

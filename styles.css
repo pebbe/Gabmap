@@ -269,6 +269,12 @@ body.demo div {
     padding: 1em 2em;
 }
 
+body.demo div.warning {
+    margin: 1em 0px;
+    padding: 1em;
+    border: 4px dashed #ff0000;
+}
+
 body.demo img {
     padding: 0px 0px 0px .5em;
     margin: 1em 0px;
