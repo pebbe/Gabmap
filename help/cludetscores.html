@@ -6,7 +6,7 @@
 </head>
 <body>
 
-The measure of Importance is described in:
+The measure of <u>Importance</u> is described in:
 
 <ul>
 <li>WIELING, Martijn & John NERBONNE (to appear)<br>
@@ -25,28 +25,63 @@ The use of Importance in Gabmap necessarily deviates from the use in the above c
 <p>
 The second author of the paper allows that variants can be used instead
     of sound correspondences, but insists that the formula for Importance can only be
-    applied to data of places. (Personal communication. No such
-    limitation is posed in the paper.)
+    applied to data of places. (Personal communication.)
 <p>
 So, instead of evaluating the raw data, we must reduce the data over places, into one
       group of places where a wanted variant occurs (for each place, this can be sometimes or
       always), and another group of places where no such variant occurs (whether
       or not we even have any data for those places).
 <p>
-This method does not work well. Useful information is lost.
-Some uninteresting items get a high
-      score, just because they have many different variants in single
-      places. Some interesting items get a very low score, just because
-      they have data for less places than other items.    
-<p>
-<h4>Q&amp;A</h4>
+This method does not work well. In fact, a better method is available in
+      Gabmap. For who is interested, contact support@gabmap.nl
 
-Q: Are there better methods?<br>A: Yes.
-<p>
-Q: Then why use this method?<br>A: Ask info@gabmap.nl
-<p>
-Q: Can I use a better method anyway?<br>A: Yes, you can. Contact support@gabmap.nl
 
+<h3>The problem</h3>
+
+In Gabmap's <em>cluster determinants</em>, we select a linguistic item, we draw a set of word
+    patterns from it, and score it for its match to a predefined geographic
+    region. Then we take another linguistic item, draw a set of word
+    patterns, and score it for its match with the same predefined geographic
+    region.
+<p>
+We cannot compare these two scores, because they are of draws from
+different data collections. Those data collections can at times be very
+      different from each other in the way they cover the geographic
+      region.
+
+<h3>Some answers</h3>
+
+There are two ways to deal with the problem.
+
+<ol>
+
+<li>Use a method for scoring that is
+    reasonably robust in this situation, and just analyse the data as it
+    is. In Gabmap we don't need an accurate score. We only need a score
+    that is good enough to point us to linguistic items that merit
+    further inspection.
+
+<li>You can &quot;map&quot; the data onto the map, so instead of
+      responses with some features, we have locations with
+      some features. The locations are identical.
+</ol>
+
+Number 1 works quite effectively, as experiments in Gabmap have shown.
+However, it is not the way it is currently done.
+
+<p>
+Number 2 is the way it is now done in Gabmap. But the method for
+    mapping is very crude. As a result, the scores don't help us find
+    interesting features as well as they should. 
+<p>
+What is needed is an accurate way to map data onto the map. First, we
+      would have to use per location ratios of occurrences of desired
+      patterns, instead of a binary 1 (it occurs once or more) or 0 (it
+      does not occur). Second, we need to give a reasonable estimate for
+      locations without data, by interpolating, based on geographic
+      distribution, from locations that do have data. A best guess.
+      Currently, this is
+      not the way it is done in Gabmap.
 
 
 </body>
