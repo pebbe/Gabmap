@@ -11,7 +11,7 @@ __date__ = "2010/03/10"
 
 import cgitb; cgitb.enable(format="html")
 
-import codecs, cgi, glob, math, os, re, stat, sys, tempfile, time, urllib.request, zipfile
+import codecs, cgi, glob, math, os, pickle, re, stat, sys, tempfile, time, urllib.request, zipfile
 
 import xml.etree.cElementTree as ET
 
@@ -639,10 +639,10 @@ if method == 'dif':
     if nItems == 1:
         n = 0
         nPlaces = int(items[0])
-        places = []
+        lplaces = []
         for i in range(nPlaces):
             n += 1
-            places.append(lines[n].decode(enc).strip())
+            lplaces.append(lines[n].decode(enc).strip())
         data = []
         for i in range(nPlaces):
             s = ['0'] * nPlaces
@@ -652,13 +652,13 @@ if method == 'dif':
                 n += 1
                 data[i][j] = data[j][i] = lines[n].decode(enc).strip()
     else:
-        places = []
+        lplaces = []
         data = []
         for line in lines[1:]:
             a = [i.decode(enc).strip() for i in line.split(b'\t')]
-            places.append(a[0])
+            lplaces.append(a[0])
             data.append(a[1:])
-        nPlaces = len(places)
+        nPlaces = len(lplaces)
 
         errs = False
         for i in range(nPlaces):
@@ -683,7 +683,7 @@ if method == 'dif':
                 try:
                     assert float(data[i][j]) >= 0.0
                 except:
-                    u.html.exitMessage('Error', 'Invalid data for "{}" - "{}"'.format(u.html.escape(places[j]), u.html.escape(places[i])))
+                    u.html.exitMessage('Error', 'Invalid data for "{}" - "{}"'.format(u.html.escape(lplaces[j]), u.html.escape(lplaces[i])))
                 
 else:
     errs = ''
@@ -699,14 +699,14 @@ else:
     nVars= 0
     nChar = 0
     nChars = {}
-    places = []
+    lplaces = []
     data = []
     errs = ''
     for line in lines[1:]:
         a = [i.strip() for i in line.split(b'\t')]
         if len(a) != nItems + 1:
             errs += '<li>row {} &quot;{}&quot; : {} data cells\n'.format(len(data) + 1, u.html.escape(a[0].decode(enc)), len(a) - 1)
-        places.append(a[0].decode(enc))
+        lplaces.append(a[0].decode(enc))
         data.append(a[1:])
     if errs:
         u.html.exitMessage('Error', '''
@@ -720,7 +720,7 @@ else:
         '''.format(nItems, errs))
 
     errs = ''
-    for p in places:
+    for p in lplaces:
         if not p:
             u.html.exitMessage('Error', 'Empty data place(s)')
         if not p in dataplaces:
@@ -756,7 +756,7 @@ if method.startswith('num'):
             except:
                 u.html.exitMessage('Error', 'Missing or illegal data in column "{}", row "{}": "{}"'.format(
                     u.html.escape(items[i]),
-                    u.html.escape(latin1(places[j])),
+                    u.html.escape(latin1(lplaces[j])),
                     u.html.escape(dd)))
 
 #||| write data
@@ -794,7 +794,7 @@ if comments:
 n = 0
 fp = open('labels.txt', 'wt', encoding='iso-8859-1')
 fp2 = open('truelabels.txt', 'wt', encoding='utf-8')
-for p in places:
+for p in lplaces:
     n += 1
     fp.write('{:4d}\t{}\n'.format(n, latin1(p)))
     fp2.write(p + '\n')
@@ -809,7 +809,7 @@ if method.startswith('num'):
         t = '\t'
     fp.write('\n')
     for j in range(nPlaces):
-        fp.write(quote(latin1(places[j])))
+        fp.write(quote(latin1(lplaces[j])))
         for i in range(nItems):
             fp.write('\t' + data[j][i].decode(enc))
         fp.write('\n')
@@ -822,7 +822,7 @@ elif not method.startswith('dif'):
         for j in range(nPlaces):
             if not data[j][i]:
                 continue
-            fp.write(b': ' + places[j].encode('iso-8859-1', 'xmlcharrefreplace') + b'\n')
+            fp.write(b': ' + lplaces[j].encode('iso-8859-1', 'xmlcharrefreplace') + b'\n')
             for k in [re.sub(b'^(/ +)*(.*?)( +/)*$', b'\\2', x.strip()) for x in data[j][i].split(b' / ')]:
                 if k:
                     fp.write(b'- ' + k + b'\n')
@@ -913,17 +913,46 @@ os.chdir('..')
 for i in 'cccmaps clusters clumaps diff mdsplots mdsmaps prob plot'.split():
     os.mkdir(i)
 if not method.startswith('num') and not method.startswith('dif'):
-    for i in 'cludet cludet/_ clu1det clu1det/_'.split():
+    for i in 'cludet cludet/_ clu1det clu1det/_ clu2det clu2det/_'.split():
         os.mkdir(i)
 
 if method.startswith('dif'):
     fp = open('diff/diff.txt', 'wt', encoding='iso-8859-1')
     fp.write('{}\n'.format(nPlaces))
     for i in range(nPlaces):
-        fp.write('{}\n'.format(latin1(places[i])))
+        fp.write('{}\n'.format(latin1(lplaces[i])))
     for i in range(nPlaces):
         for j in range(i):
             fp.write(data[i][j] + '\n')
+    fp.close()
+
+
+if not pseudo and not method.startswith('num') and not method.startswith('dif'):
+    pi = {}
+    for i in range(len(places)):
+        pi[places[i][0]] = i
+    dst = []
+    for i in range(nPlaces):
+        dst.append([0.0] * nPlaces)
+    ff = 0
+    for i in range(1, nPlaces):
+        ii = pi[lplaces[i]]
+        for j in range(i):
+            jj = pi[lplaces[j]]
+            f = geod.inv(places [ii][1], places [ii][2], places [jj][1], places [jj][2])[2] / 1000.0
+            dst[i][j] = dst[j][i] = f
+            if f > ff:
+                ff = f
+    minval = ff / 1000.0
+    for i in range(1, nPlaces):
+        for j in range(i):
+            if dst[i][j] < minval:
+                dst[i][j] = dst[j][i] = minval
+    idx = {}
+    for i in range(nPlaces):
+        idx[latin1(lplaces[i])] = i
+    fp = open('clu2det/dst.pickle', 'wb')
+    pickle.dump(([latin1(x) for x in lplaces], idx, dst), fp)
     fp.close()
                 
 
@@ -1072,6 +1101,9 @@ if not method.startswith('num') and not method.startswith('dif'):
                                                    'python3': u.config.python3,
                                                    'n': 6}))
     u.queue.enqueue(path + '/clu1det', make.format({'appdir': u.config.appdir,
+                                                    'python3': u.config.python3,
+                                                    'n': 6}))
+    u.queue.enqueue(path + '/clu2det', make.format({'appdir': u.config.appdir,
                                                     'python3': u.config.python3,
                                                     'n': 6}))
 
