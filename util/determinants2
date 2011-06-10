@@ -17,7 +17,13 @@ import u.setChar as setChar
 
 #| globals
 
-Sep = 8
+Sep = 3
+
+if sys.argv[1] == '-d':
+    sys.argv.pop(1)
+    dump = True
+else:
+    dump = False
 
 clufile = 'clgroups.txt'
 target = int(sys.argv[1])
@@ -205,6 +211,7 @@ for f, v, p, r, imp, dist, pp in items:
         Reca = reca
         for i in range(nPlaces):
             ppp[i][0] = pp[i][0]
+            ppp[i][1] = pp[i][1]
         n = sum(variants[v].values())
         nnn += n
         sys.stdout.write('{:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(
@@ -220,3 +227,20 @@ if Dist > 0:
 else:
     Imp = 0.0
 sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnn))
+
+if dump:
+    fp1 = open('dump1.rgb', 'wt', encoding='iso-8859-1')
+    fp2 = open('dump2.rgb', 'wt', encoding='iso-8859-1')
+    fp1.write('3\n')
+    fp2.write('3\n')
+    for i in range(nPlaces):
+        fp1.write(labels[i] + '\n')
+        fp2.write(labels[i] + '\n')
+        f = ppp[i][0] / ppp[i][1]
+        if allvars[i] > 0:
+            fp1.write('{0}\n{0}\n{0}\n'.format(1 - f))
+        else:
+            fp1.write('1\n.5\n.5\n')
+        fp2.write('{0}\n{0}\n{0}\n'.format(1 - f))
+    fp2.close()
+    fp1.close()
