@@ -26,6 +26,13 @@ methods = {
 
 #| functions
 
+def _number(s):
+    try:
+        f = '{:.2f}'.format(float(s))
+    except:
+        f = u.html.escape(s)
+    return f
+
 def makepage(path):
     u.path.chdir(path)
     crumbs = u.path.breadcrumbs(path)
@@ -73,7 +80,7 @@ def makepage(path):
         current = current[2:]
         logfile = 'plot_{}_{}{}_{}.log'.format(method, n, bw, '_'.join(current))
         if os.access(logfile, os.F_OK):
-            corr = '<small><i>r</i> = ' + open(logfile, 'rt').read().strip().split()[-1] + '</small>'
+            corr = '<small><i>r</i> = ' + _number(open(logfile, 'rt').read().strip().split()[-1]) + '</small>'
         else:
             corr = ''
         sys.stdout.write('''

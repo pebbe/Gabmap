@@ -430,12 +430,12 @@ def makepage(path):
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" celpadding="0" border="0">
-                    <tr><td>F1 Score:&nbsp;  <td>{1[0]:.2f}
-                    <tr><td>Precision:&nbsp; <td>{1[1]:.2f}
-                    <tr><td>Recall:&nbsp;    <td>{1[2]:.2f}
+                    <tr><td>F1 Score:&nbsp;  <td>{1[0]}
+                    <tr><td>Precision:&nbsp; <td>{1[1]}
+                    <tr><td>Recall:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    '''.format(regex, [float(x) for x in results]))
+                    '''.format(regex, results))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:

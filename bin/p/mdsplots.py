@@ -19,6 +19,13 @@ title = 'mds plots'
 
 #| functions
 
+def _number(s):
+    try:
+        f = '{:.2f}'.format(float(s))
+    except:
+        f = u.html.escape(s)
+    return f
+
 def makepage(path):
     u.path.chdir(path)
     crumbs = u.path.breadcrumbs(path)
@@ -57,7 +64,7 @@ def makepage(path):
         fp.close()
         places.sort()
 
-        corr = '<small><i>r</i> = ' + open('mds.log', 'rt').read().split()[-1] + '</small>'
+        corr = '<small><i>r</i> = {}</small>'.format(_number(open('mds.log', 'rt').read().split()[-1]))
         sys.stdout.write('''
         {}
         {}

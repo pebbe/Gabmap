@@ -135,7 +135,7 @@ for Imp, Dis, Rep, s, n, ip, op in sorted(variants):
         Import = 0
     if Import > Importance and Dis < 0.0:
         Importance = Import
-        sys.stdout.write('{:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(-Imp, -Dis, -Rep, _escape(s), n, ' | '.join(sorted(subst[s]))))
+        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} ({}) [ {} ]\n'.format(-Imp, -Dis, -Rep, _escape(s), n, ' | '.join(sorted(subst[s]))))
         allInPlaces = inplaces
         allOutPlaces = outplaces
     else:
@@ -148,7 +148,7 @@ i = len(allInPlaces)
 o = len(allOutPlaces)
 
 if i + o == 0:
-    sys.stdout.write('\n0.000 0.000 0.000 0\n')
+    sys.stdout.write('\n0.0 0.0 0.0 0\n')
     sys.exit()
 
 RelOcc = i / (i + o)
@@ -159,4 +159,4 @@ if Distinct > 0:
 else:
     Importance = 0
 
-sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:5d}\n'.format(Importance, Distinct, Repres, i + o))
+sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {:1d}\n'.format(Importance, Distinct, Repres, i + o))

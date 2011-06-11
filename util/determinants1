@@ -105,8 +105,8 @@ for i, o, variant in vs:
     p = (i + 1) / (i + o + 2)
     r = (i + 1) / (allinn + 2)
     f1 = 2 * p * r / (p + r)
-    items.append((-f1, -p, -r, i, o, variant))
-items.sort()
+    items.append((f1, p, r, i, o, variant))
+items.sort(reverse=True)
 
 rejected = []
 
@@ -125,7 +125,7 @@ for f1, p, r, i, o, va in items:
         rejected.append(va)
     # threshold
     # to do: threshold as a parameter? other method?
-    elif -r < oldR * .2:
+    elif r < oldR * .2:
         rejected.append(va)
     else:
         oldF1 = sf1
@@ -133,11 +133,11 @@ for f1, p, r, i, o, va in items:
         oldR = sr
         oldI = inn
         oldO = outn
-        sys.stdout.write('{:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(
-            -f1, -p, -r, _escape(va), i + o, ' | '.join(sorted(subst[va]))))
+        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} ({}) [ {} ]\n'.format(
+            f1, p, r, _escape(va), i + o, ' | '.join(sorted(subst[va]))))
 
 rejected.sort()
 for r in rejected:
     sys.stdout.write('[' + _escape(r) + ']\n')
 
-sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {}\n'.format(oldF1, oldP, oldR, oldI + oldO))
+sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}\n'.format(oldF1, oldP, oldR, oldI + oldO))

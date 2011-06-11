@@ -22,12 +22,11 @@ title = 'mds maps'
 def _getcor(filename, varname='r'):
     if os.access(filename, os.F_OK):
         fp = open(filename, 'rt')
-        s = '<i>{}</i> = {:.3f}'.format(varname, float(fp.read()))
+        s = '<i>{}</i> = {:.2f}'.format(varname, float(fp.read()))
         fp.close()
         return s
     else:
         return ''
-
 
 def makepage(path):
     u.path.chdir(path)

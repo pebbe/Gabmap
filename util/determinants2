@@ -165,9 +165,9 @@ for variant in variants:
         imp = (dist + reca) / 2.0
     else:
         imp = 0.0
-    items.append((-f, variant, prec, reca, imp, dist, p))
+    items.append((f, prec, reca, imp, dist, variant, p))
 
-items.sort()
+items.sort(reverse=True)
 
 ppp = []
 for i in range(nPlaces):
@@ -178,7 +178,7 @@ Reca = 0
 
 nnn = 0
 
-for f, v, p, r, imp, dist, pp in items:
+for f, p, r, imp, dist, v, pp in items:
     for i in range(nPlaces):
         pp[i][0] += ppp[i][0]
     TP = FP = FN = TN = 0.0
@@ -214,8 +214,8 @@ for f, v, p, r, imp, dist, pp in items:
             ppp[i][1] = pp[i][1]
         n = sum(variants[v].values())
         nnn += n
-        sys.stdout.write('{:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {} ({}) [ {} ]\n'.format(
-            -f, p, r, imp, dist, _escape(v), n, ' | '.join(sorted(subst[v]))))
+        sys.stdout.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {} ({}) [ {} ]\n'.format(
+            f, p, r, imp, dist, _escape(v), n, ' | '.join(sorted(subst[v]))))
 
 rejected.sort()
 for r in rejected:
@@ -226,7 +226,7 @@ if Dist > 0:
     Imp = (Dist + Reca) / 2.0
 else:
     Imp = 0.0
-sys.stdout.write('\n{:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnn))
+sys.stdout.write('\n{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnn))
 
 if dump:
     fp1 = open('dump1.rgb', 'wt', encoding='iso-8859-1')

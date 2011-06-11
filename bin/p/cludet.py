@@ -250,10 +250,8 @@ def makepage(path):
                     sel = ' selected="selected"'
                 else:
                     sel = ''
-                sys.stdout.write('<option value="{}"{}>{:.2f} - {:.2f} - {:.2f} - {} ({})</option>\n'.format(
-                    f, sel, float(a), float(b), float(c), _toStrHtml(f), d))
-                #sys.stdout.write('<option value="{}"{}>{:.2f} - {} ({})</option>\n'.format(
-                #    f, sel, float(a), _toStrHtml(f), d))
+                sys.stdout.write('<option value="{}"{}>{} - {} - {} - {} ({})</option>\n'.format(
+                    f, sel, a, b, c, _toStrHtml(f), d))
             sys.stdout.write('''
             </select>
             <input type="submit" value="Select item">
@@ -313,22 +311,20 @@ def makepage(path):
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}<br>
                 <table cellspacing="0" celpadding="0" border="0">
-                <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
-                <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
-                <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
+                <tr><td>Importance:&nbsp;  <td>{1[0]}
+                <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
+                <tr><td>Representativeness:&nbsp;    <td>{1[2]}
                 </table>
                 Patterns with forms:
                 <ul>
-                '''.format(_toStrHtml(curitem), [float(x) for x in lines[-1].split()]))
+                '''.format(_toStrHtml(curitem), lines[-1].split()))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
                     if line.strip():
                         a, b, c, d, e, f = line.split(None, 5)
-                        sys.stdout.write('<li>{:.2f} - {:.2f} - {:.2f} - <span class="ipa2">{}</span> {}\n\n'.format(
-                            float(a), float(b), float(c), _toStrHtml(d, True), e))
-                        #sys.stdout.write('<li>{:.2f} - <span class="ipa2">{}</span> {}\n\n'.format(
-                        #    float(a), _toStrHtml(d, True), e))
+                        sys.stdout.write('<li>{} - {} - {} - <span class="ipa2">{}</span> {}\n\n'.format(
+                            a, b, c, _toStrHtml(d, True), e))
                         wrds = [re.sub('_([0-9]+)_', _num2chr, w) for w in f.split() if w != '[' and w != '|' and w != ']']
                         if len(wrds) > 1 or _toStrHtml(d) != u.html.escape(wrds[0]):
                             sys.stdout.write('<ul>\n')
@@ -428,16 +424,13 @@ def makepage(path):
                     sys.stdout.write('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span>
-                    <!--
-                    Relevance: {1[0]:.2f}<br>
-                    -->
                     <table cellspacing="0" celpadding="0" border="0">
-                    <tr><td>Importance:&nbsp;  <td>{1[0]:.2f}
-                    <tr><td>Distinctiveness:&nbsp; <td>{1[1]:.2f}
-                    <tr><td>Representativeness:&nbsp;    <td>{1[2]:.2f}
+                    <tr><td>Importance:&nbsp;  <td>{1[0]}
+                    <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
+                    <tr><td>Representativeness:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    '''.format(regex, [float(x) for x in results]))
+                    '''.format(regex, results))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:

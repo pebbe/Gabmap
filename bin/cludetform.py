@@ -165,7 +165,7 @@ def setRegex():
         Import = (Repres + Distinct) / 2.0
         if Distinct < 0.0:
             Import = 0
-        fp.write('{:.3f} {:.3f} {:.3f}\n'.format(Import, Distinct, Repres))
+        fp.write('{:.1f} {:.1f} {:.1f}\n'.format(Import, Distinct, Repres))
 
     fp.close()
 

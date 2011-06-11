@@ -30,6 +30,13 @@ _methods = {
 
 #| functions
 
+def _number(s):
+    try:
+        f = '{:.2f}'.format(float(s))
+    except:
+        f = u.html.escape(s)
+    return f
+
 def makepage(path):
     u.path.chdir(path)
     crumbs = u.path.breadcrumbs(path)
@@ -70,7 +77,7 @@ def makepage(path):
 
         sys.stdout.write(mt + '\n')
 
-        sys.stdout.write('Cronbach\'s alpha: {}{}\n<p>\n'.format(u.html.escape(ca), u.html.help('ca')))
+        sys.stdout.write('Cronbach\'s alpha: {}{}\n<p>\n'.format(_number(ca), u.html.help('ca')))
                 
         sys.stdout.write('''
         Local incoherence: {0}{1}
@@ -78,7 +85,7 @@ def makepage(path):
         &rarr; <a href="{2}bin/getdiff?p=project_{3}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
         <p>
         &rarr; <a href="{2}bin/getdiff?p=project_{3}&f=tab" target="_blank">download differences</a> (table format)
-        '''.format(linc, u.html.help('linc'), u.config.appurl, pnum))
+        '''.format(_number(linc), u.html.help('linc'), u.config.appurl, pnum))
 
         if m.startswith('levfeat'):
             sys.stdout.write('''

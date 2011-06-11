@@ -156,12 +156,12 @@ def setRegex():
     fp = open('reresults.txt', 'wt')
 
     if imatch + omatch == 0:
-        fp.write('0.000 0.000 0.000\n')
+        fp.write('0.0 0.0 0.0\n')
     else:
         p = (imatch + 1) / (imatch + omatch + 2)
         r = (imatch + 1) / (imatch + iother + 2)
         f1 = 2 * p * r / (p + r)
-        fp.write('{:.3f} {:.3f} {:.3f}\n'.format(f1, p, r))
+        fp.write('{:.1f} {:.1f} {:.1f}\n'.format(f1, p, r))
 
     fp.close()
 
