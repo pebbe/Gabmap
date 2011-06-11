@@ -69,8 +69,18 @@ def setCluster():
                 fpout.write(line)
         fpout.close()
         fpin.close()        
+
+    mm = getval('method')
+    if mm == 'fast':
+        m = 1
+    else:
+        m = 2
+    fp = open('version', 'wt')
+    fp.write(mm + '\n')
+    fp.close()
+
     makes = 'OK: ../diff/OK\n'
-    makes += '\tfor i in ../data/_/*.data; do determinants2 {} $$i > _/`basename $$i .data`.utxt; done\n'.format(c)
+    makes += '\tfor i in ../data/_/*.data; do determinants{} {} $$i > _/`basename $$i .data`.utxt; done\n'.format(m, c)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | cdsort > score.txt\n'.format(c)
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)

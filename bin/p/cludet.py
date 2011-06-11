@@ -310,7 +310,7 @@ def makepage(path):
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}<br>
-                <table cellspacing="0" celpadding="0" border="0">
+                <table cellspacing="0" cellpadding="0" border="0">
                 <tr><td>Importance:&nbsp;  <td>{1[0]}
                 <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
                 <tr><td>Representativeness:&nbsp;    <td>{1[2]}
@@ -424,7 +424,7 @@ def makepage(path):
                     sys.stdout.write('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span>
-                    <table cellspacing="0" celpadding="0" border="0">
+                    <table cellspacing="0" cellpadding="0" border="0">
                     <tr><td>Importance:&nbsp;  <td>{1[0]}
                     <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
                     <tr><td>Representativeness:&nbsp;    <td>{1[2]}

@@ -68,6 +68,12 @@ def _setup():
     if os.access('version', os.F_OK):
         return
 
+    if os.access('../map/PSEUDOMAP', os.F_OK):
+        fp = open('version', 'wt')
+        fp.write('fast\n')
+        fp.close()
+        return
+
     import pickle
 
     labels = []
@@ -167,9 +173,13 @@ def makepage(path):
 
     if os.access('OK', os.F_OK):
 
+        _setup()
+
         isPseudo = os.access('../map/PSEUDOMAP', os.F_OK)
-        if not isPseudo:
-            _setup()
+
+        fp = open('version', 'rt')
+        mtd = fp.read().strip()
+        fp.close()        
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
@@ -222,11 +232,11 @@ def makepage(path):
 
         sys.stdout.write('''
         <p>
-	<form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="p" value="{}">
-	<input type="hidden" name="action" value="number">
-	Number of clusters:
-	<select name="n">
+        <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="{}">
+        <input type="hidden" name="action" value="number">
+        Number of clusters:
+        <select name="n">
         '''.format(u.config.appurl, project))
         n = int(current[0])
         for i in range(2, 13):
@@ -236,8 +246,8 @@ def makepage(path):
                 sys.stdout.write('<option>{}</option>\n'.format(i))
         sys.stdout.write('''
         </select>
-	<input type="submit" value="Change number">
-	</form>
+        <input type="submit" value="Change number">
+        </form>
         <p>
         ''')
 
@@ -248,9 +258,9 @@ def makepage(path):
 
         sys.stdout.write('''
         <h3 id="s2">Step 2: select cluster</h3>
-	<form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="p" value="{}">
-	<input type="hidden" name="action" value="cluster">
+        <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="{}">
+        <input type="hidden" name="action" value="cluster">
         '''.format(u.config.appurl, project))
 
         if accents:
@@ -282,19 +292,40 @@ def makepage(path):
             &nbsp;<br>
             ''')
 
-        sys.stdout.write('''
-	Clusters in plot:
-        '''.format(u.config.appurl, project))
+        if isPseudo:
+            sys.stdout.write('''
+            <input type="hidden" name="method" value="fast">
+            ''')
+        else:
+            s1 = s2 = ''
+            s = ' selected="selected"'
+            i = open('version', 'rt').read().strip()
+            if i == 'fast':
+                s1 = s
+            else:
+                s2 = s
+            sys.stdout.write('''
+            Method:
+            <select name="method">
+            <option value="fast"{}>fast</option>
+            <option value="slow"{}>accurate</option>
+            </select>{}
+            <p>
+            '''.format(s1, s2, u.html.help('cludetfastslow')))
 
+        sys.stdout.write('''
+        Clusters in plot:
+        '''.format(u.config.appurl, project))
         for i in range(1, n + 1):
             if i == curclnum:
                 c = ' checked="checked"'
             else:
                 c = ''
             sys.stdout.write('<span class="s{0}"><input type="radio" name="c" value="{0}"{1}></span>\n'.format(i, c))
+
         sys.stdout.write('''
-	<input type="submit" value="Select cluster">
-	</form>
+        <input type="submit" value="Select cluster">
+        </form>
         <p>
         ''')
 
@@ -310,12 +341,15 @@ def makepage(path):
             <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
-            Items sorted by <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 Score</a>:
+            Items sorted by F1 score:
             <select name="item">
             '''.format(u.config.appurl, project))
             fp = open('score.txt', 'rt')
             for line in fp:
-                a, b, c, d, e, f, g = line.split()
+                if mtd == 'fast':
+                    a, b, c, f, g = line.split()
+                else:
+                    a, b, c, d, e, f, g = line.split()
                 if f == '0':
                     continue
                 gg = g[2:-5]
@@ -329,7 +363,6 @@ def makepage(path):
             </select>
             <input type="submit" value="Select item">
             <br>&rarr; <a href="clu2detlist?p={}" target="_blank">download as list</a>
-            <br>&rarr; <a href="help?s=clu2detscores" target="_blank">about f1 score</a>
             </form>
             <p>
             '''.format(project))
@@ -379,30 +412,40 @@ def makepage(path):
                 fp = open('_/' + curitem + '.utxt', 'rt')
                 lines = fp.readlines()
                 fp.close()
-                sys.stdout.write('''
+                if mtd == 'fast':
+                    e = ''
+                else:
+                    e = '''
+                    <tr><td>Importance:&nbsp;  <td>{{1[3]}}{}
+                    <tr><td>&mdash; Representativeness:&nbsp;    <td>{{1[2]}}
+                    <tr><td>&mdash; Distinctiveness:&nbsp; <td>{{1[4]}}                    
+                    '''.format(u.html.help('importance'))
+                sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
-                <table cellspacing="0" celpadding="0" border="0">
-                <tr><td>F1 Score:&nbsp;  <td>{1[0]}
+                <table cellspacing="0" cellpadding="0" border="0">
+                <tr><td>F1 Score:&nbsp;  <td>{1[0]}{2}
                 <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
                 <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
-                <tr><td>Importance:&nbsp;  <td>{1[3]}
-                <tr><td>&mdash; Representativeness:&nbsp;    <td>{1[2]}
-                <tr><td>&mdash; Distinctiveness:&nbsp; <td>{1[4]}
+                ''' + e + '''
                 </table>
                 Patterns with forms:
                 <ul>
-                '''.format(_toStrHtml(curitem), lines[-1].split()))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('f1score')))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
                     if line.strip():
-                        a, b, c, c2, c3, d, e, f = line.split(None, 7)
+                        if mtd == 'fast':
+                            a, b, c, d, e, f = line.split(None, 5)
+                        else:
+                            a, b, c, c2, c3, d, e, f = line.split(None, 7)
                         sys.stdout.write('''<li><span class="ipa2">{}</span> {}<br>
                         {} - {} - {}<br>
-                        {} - {} - {}<br>
-                        '''.format( _toStrHtml(d, True), e, a, b, c, c2, c, c3))
+                        '''.format( _toStrHtml(d, True), e, a, b, c))
+                        if mtd == 'slow':
+                            sys.stdout.write('{} - {} - {}<br>\n'.format(c2, c, c3))
                         wrds = [re.sub('_([0-9]+)_', _num2chr, w) for w in f.split() if w != '[' and w != '|' and w != ']']
                         if len(wrds) > 1 or _toStrHtml(d) != u.html.escape(wrds[0]):
                             sys.stdout.write('<ul>\n')
@@ -503,7 +546,7 @@ def makepage(path):
                     sys.stdout.write('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
-                    <table cellspacing="0" celpadding="0" border="0">
+                    <table cellspacing="0" cellpadding="0" border="0">
                     <tr><td>F1 Score:&nbsp;  <td>{1[0]}
                     <tr><td>Precision:&nbsp; <td>{1[1]}
                     <tr><td>Recall:&nbsp;    <td>{1[2]}
