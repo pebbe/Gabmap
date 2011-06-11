@@ -50,16 +50,16 @@ def makepage(path):
     '''.format(crumbs))
 
     if not os.access('items.txt', os.F_OK):
-        items = {}
+        items = []
         for filename in os.listdir('../data/_'):
             if not filename.endswith('.data'):
                 continue
             fname = filename.replace('.data', '')
             iname = re.sub('_([0-9]+)_', _num2chr, fname)
-            items[fname] = iname
+            items.append((iname.lower(), fname, iname))
         fp = open('items.txt', 'wt', encoding='utf-8')
-        for i in sorted(items):
-            fp.write('{}\t{}\n'.format(i, items[i]))
+        for i, j, k in sorted(items):
+            fp.write('{}\t{}\n'.format(j, k))
         fp.close()
 
     if not os.access('current.txt', os.F_OK):

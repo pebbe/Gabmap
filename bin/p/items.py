@@ -135,15 +135,15 @@ def makepage(path):
                         if line[:1] == b'+':
                             m += 1
                     fp.close()
-                    items.append((item, n, m))
+                    items.append((item.lower(), item, n, m))
                 else:
-                    items.append((item, n))
+                    items.append((item.lower(), item, n))
             fp = open('list2.utxt', 'wt', encoding='utf-8')
             if method.startswith('levfeat'):
-                for item, n, m in sorted(items):
+                for k, item, n, m in sorted(items):
                     fp.write('{}\t{}\t{}\n'.format(n, m, item))
             else:
-                for item, n in sorted(items):
+                for k, item, n in sorted(items):
                     fp.write('{}\t{}\n'.format(n, item))
             fp.close()
 
