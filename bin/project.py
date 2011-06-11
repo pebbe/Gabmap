@@ -11,7 +11,7 @@ __date__ = "2010/03/10"
 
 import cgitb; cgitb.enable(format="html")
 
-import codecs, cgi, glob, math, os, pickle, re, stat, sys, tempfile, time, urllib.request, zipfile
+import codecs, cgi, glob, math, os, re, stat, sys, tempfile, time, urllib.request, zipfile
 
 import xml.etree.cElementTree as ET
 
@@ -684,7 +684,7 @@ if method == 'dif':
                     assert float(data[i][j]) >= 0.0
                 except:
                     u.html.exitMessage('Error', 'Invalid data for "{}" - "{}"'.format(u.html.escape(lplaces[j]), u.html.escape(lplaces[i])))
-                
+
 else:
     errs = ''
     for i in range(nItems):
@@ -925,36 +925,6 @@ if method.startswith('dif'):
         for j in range(i):
             fp.write(data[i][j] + '\n')
     fp.close()
-
-
-if not pseudo and not method.startswith('num') and not method.startswith('dif'):
-    pi = {}
-    for i in range(len(places)):
-        pi[places[i][0]] = i
-    dst = []
-    for i in range(nPlaces):
-        dst.append([0.0] * nPlaces)
-    ff = 0
-    for i in range(1, nPlaces):
-        ii = pi[lplaces[i]]
-        for j in range(i):
-            jj = pi[lplaces[j]]
-            f = geod.inv(places [ii][1], places [ii][2], places [jj][1], places [jj][2])[2] / 1000.0
-            dst[i][j] = dst[j][i] = f
-            if f > ff:
-                ff = f
-    minval = ff / 1000.0
-    for i in range(1, nPlaces):
-        for j in range(i):
-            if dst[i][j] < minval:
-                dst[i][j] = dst[j][i] = minval
-    idx = {}
-    for i in range(nPlaces):
-        idx[latin1(lplaces[i])] = i
-    fp = open('clu2det/dst.pickle', 'wb')
-    pickle.dump(([latin1(x) for x in lplaces], idx, dst), fp)
-    fp.close()
-                
 
 fp = open('{}templates/plot_wm_6_all.cfg'.format(u.config.appdir), 'rb')
 d = fp.read()

@@ -64,6 +64,76 @@ def _toStrHtml(s, em=False):
             return ''
     return u.html.escape(re.sub('_([0-9]+)_', _num2chr, s))
 
+def _setup():
+    if os.access('version', os.F_OK):
+        return
+
+    import pickle
+
+    labels = []
+    idx = {}
+    nLabels = 0
+
+    fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+    for line in fp:
+        labels.append(line.split(None, 1)[1].strip())
+        idx[labels[nLabels]] = nLabels
+        nLabels += 1
+    fp.close()
+
+    fp = open('../map/map.geo', 'rt', encoding='iso-8859-1')
+    while True:
+        line = fp.readline().strip()
+        if line[0] != '#':
+            break
+    nMap = int(line)
+
+    mapidx = []
+    for i in range(nMap):
+        while True:
+            line = fp.readline().strip()
+            if line[0] != '#':
+                break
+        if line in idx:
+            mapidx.append(idx[line])
+        else:
+            mapidx.append(-1)
+
+    dst = []
+    for i in range(nLabels):
+        dst.append([0] * nLabels)
+
+    for i in range(1, nMap):
+        for j in range(i):
+            while True:
+                line = fp.readline().strip()
+                if line[0] != '#':
+                    break
+            if mapidx[i] < 0 or mapidx[j] < 0:
+                continue
+            dst[mapidx[i]][mapidx[j]] = dst[mapidx[j]][mapidx[i]] = float(line)
+    fp.close()
+
+    fp = open('dst.pickle', 'wb')
+    pickle.dump((labels, idx, dst), fp)
+    fp.close()
+
+    c = open('current', 'rt').read().split()[0]
+    fp = open('current', 'wt')
+    fp.write(c + '\n')
+    fp.close()
+
+    for i in 'score.txt important.txt'.split():
+        try:
+            os.remove(i)
+        except:
+            pass
+
+    fp = open('version', 'wt')
+    fp.write('fast\n')
+    fp.close()
+
+
 def makepage(path):
     u.path.chdir(path)
     crumbs = u.path.breadcrumbs(path)
@@ -73,6 +143,8 @@ def makepage(path):
     project = path.split('-')[1]
 
     pnum =  path.split('-')[-2].split('_')[-1]
+
+    _setup()
 
     if not os.access('items.txt', os.F_OK):
         items = {}
@@ -87,7 +159,7 @@ def makepage(path):
             fp.write('{}\t{}\n'.format(i, items[i]))
         fp.close()
 
-        
+
     sys.stdout.write(u.html.head(ltitle, tip=True, maptip=True))
     sys.stdout.write('''
     {}
@@ -138,7 +210,7 @@ def makepage(path):
             for line in fp:
                 accents[int(line)] = True
             fp.close
-        
+
         sys.stdout.write('<h3 id="s1">Step 1: select number of clusters</h3>\n' + u.html.img(p + '-clmap', usemap="map1", idx=1, pseudoforce=True) + '\n')
 
 
