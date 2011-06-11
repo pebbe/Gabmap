@@ -144,8 +144,6 @@ def makepage(path):
 
     pnum =  path.split('-')[-2].split('_')[-1]
 
-    _setup()
-
     if not os.access('items.txt', os.F_OK):
         items = {}
         for filename in os.listdir('../data/_'):
@@ -168,6 +166,10 @@ def makepage(path):
     '''.format(crumbs))
 
     if os.access('OK', os.F_OK):
+
+        isPseudo = os.access('../map/PSEUDOMAP', os.F_OK)
+        if not isPseudo:
+            _setup()
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
