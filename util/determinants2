@@ -109,6 +109,15 @@ for line in fp:
         allvars[idx[lbl]] += 1
 fp.close()
 
+n = 0
+for i in range(nPlaces):
+    if allvars[i] > 0 and labels[i] in partition:
+        n += 1
+if n < 2:
+    sys.stdout.write('\n0.00 0.00 0.00 0.00 0.00 0\n')
+    sys.exit()
+
+
 items = []
 
 rejected = []
