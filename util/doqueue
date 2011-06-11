@@ -86,7 +86,7 @@ try:
 
         try:
             os.chdir(s)
-            os.system('make -k > make.log 2>&1')
+            os.system('( time make -k ) > make.log 2>&1')
             os.remove('QUEUED')
         except:
             pass
