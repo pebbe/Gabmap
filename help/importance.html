@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Importance</title>
+</head>
+<body>
+
+The measure of <b>Importance</b> is a recent, minor variation of the
+well known <a href="help?s=f1score" target="_blank">F1 score</a>.
+<p>
+Importance introduces a correction for expected outcome on F1's
+      <em>Precision</em>, and calls it <b>Distinctiveness</b>. But
+      F1's <em>Recall</em> is renamed to <b>Representativeness</b>
+      without such correction for expected outcome. This turns a
+      symmetric measure into an asymmetric measure. (A further variation
+      is to use the arithmetic mean instead of the harmonic
+      mean, because you can't use the latter with negative fractions.)
+<p>
+Unlike the F1 score, Importance depends on the amount of <em>false
+	negatives</em> in the data retrieval. This makes it more error
+	prone in a situation where various amounts of data are unavailable.
+This is the reason why, in Gabmap, it can't be used in the
+<a href="help?s=cludetfast" target="_blank">fast method</a>.
+<p>
+One author of Importance tells they wanted to introduce more
+      weight to one part of the equation over the other part. Of course,
+      the right way to do this is to use a known variant of the F1
+      score, for example the F2 score or the F0.5 score.
+<p>
+No tests are available that show that the measure of Importance has any
+      advantage over the F1 score (or over any other known measure used in
+      information retrieval).
+
+<h4>Reference</h4>
+Martijn Wieling &amp; John Nerbonne.
+‘Bipartite spectral graph partitioning for clustering dialect varieties and detecting their
+linguistic features’. <em>Computer Speech and Language</em> 25, 2011, pp 700-715.
+<a href="http://www.let.rug.nl/nerbonne/papers/Wieling-Nerbonne-2009-CSL.pdf"
+  target="_blank">PDF</a>
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->
