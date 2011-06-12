@@ -68,7 +68,7 @@ def setCluster():
             if getval('chr{}'.format(line.strip())):
                 fpout.write(line)
         fpout.close()
-        fpin.close()        
+        fpin.close()
 
     mm = getval('method')
     if mm == 'fast':
@@ -132,54 +132,137 @@ def setRegex():
             partition.add(_unquote(b))
     fp.close()
 
-    imatch = 0
-    omatch = 0
-    iother = 0
-    oother = 0
-
     matches = {}
 
-    fp = open('../data/_/' + datafile + '.data', 'rb')
-    encoding = 'iso-8859-1'
-    for line in fp:
-        if line.startswith(b'%utf8'):
-            encoding = 'utf-8'
-        elif line[:1] == b':':
-            lbl = line.decode('iso-8859-1')[1:].strip()
-        elif line[:1] == b'-':
-            item = line.decode(encoding)[1:].strip()
-            if RE.search(item):
-                if not item in matches:
-                    matches[item] = 0
-                matches[item] += 1
-                if lbl in partition:
-                    imatch += 1
-                else:
-                    omatch += 1
-            else:
-                if lbl in partition:
-                    iother += 1
-                else:
-                    oother += 1
-    fp.close()
+    mtd = open('version', 'rt').read().strip()
+    if mtd == 'fast':
 
-    fp = open('reresults.txt', 'wt')
+        imatch = 0
+        omatch = 0
+        iother = 0
+        oother = 0
 
-    if imatch + omatch == 0:
-        fp.write('0.000 0.000 0.000\n')
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = line.decode('iso-8859-1')[1:].strip()
+            elif line[:1] == b'-':
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    if not item in matches:
+                        matches[item] = 0
+                    matches[item] += 1
+                    if lbl in partition:
+                        imatch += 1
+                    else:
+                        omatch += 1
+                else:
+                    if lbl in partition:
+                        iother += 1
+                    else:
+                        oother += 1
+        fp.close()
+
+        fp = open('reresults.txt', 'wt')
+
+        if imatch + omatch == 0:
+            fp.write('0.0 0.0 0.0\n')
+        else:
+            p = (imatch + 1) / (imatch + omatch + 2)
+            r = (imatch + 1) / (imatch + iother + 2)
+            f1 = 2 * p * r / (p + r)
+            fp.write('{:.1f} {:.1f} {:.1f}\n'.format(f1, p, r))
+
+        fp.close()
+
     else:
-        p = (imatch + 1) / (imatch + omatch + 2)
-        r = (imatch + 1) / (imatch + iother + 2)
-        f1 = 2 * p * r / (p + r)
-        fp.write('{:.3f} {:.3f} {:.3f}\n'.format(f1, p, r))
 
-    fp.close()
+        import math, pickle
+        from p.cludetparm import Sep
+
+        fp = open('dst.pickle', 'rb')
+        labels, idx, dst = pickle.load(fp)
+        fp.close()
+
+        nPlaces = len(labels)
+        nPlacesIn = len(partition)
+
+        RelSize = nPlacesIn / nPlaces
+
+        Counts = []
+        for i in range(nPlaces):
+            Counts.append([0, 0])
+
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = idx[line.decode('iso-8859-1')[1:].strip()]
+            elif line[:1] == b'-':
+                Counts[lbl][1] += 1
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    Counts[lbl][0] += 1
+                    if not item in matches:
+                        matches[item] = 0
+                    matches[item] += 1
+        fp.close()
+
+        missing = [False] * nPlaces
+        for i in range(nPlaces):
+            if Counts[i][1] == 0:
+                missing[i] = True
+
+        for i in range(nPlaces):
+            if missing[i]:
+                sum0 = 0
+                sum1 = 0
+                for j in range(nPlaces):
+                    if not missing[j]:
+                        d = math.pow(dst[i][j], Sep)
+                        sum0 += Counts[j][0] / d
+                        sum1 += Counts[j][1] / d
+                Counts[i][0] = sum0
+                Counts[i][1] = sum1
+
+        TP = FP = FN = TN = 0.0
+        for i in range(nPlaces):
+            lbl = labels[i]
+            if lbl in partition:
+                tp = Counts[i][0] / Counts[i][1]
+                TP += tp
+                FN += 1 - tp
+            else:
+                fp = Counts[i][0] / Counts[i][1]
+                FP += fp
+                TN += 1 - fp
+
+        Prec = TP / (TP + FP)
+        Reca = TP / (TP + FN)
+        if Prec + Reca > 0:
+            F1 = 2 * Prec * Reca / (Prec + Reca)
+        else:
+            F1 = 0
+        Dist = (Prec - RelSize) / (1 - RelSize)
+        if Dist > 0:
+            Imp = (Dist + Reca) / 2.0
+        else:
+            Imp = 0.0
+
+        fp = open('reresults.txt', 'wt')
+        fp.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f}\n'.format(F1, Prec, Reca, Imp, Dist))
+        fp.close()
+
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):
         fp.write('{}\t{}\n'.format(matches[i], i))
     fp.close()
-                
 
 
 #| main

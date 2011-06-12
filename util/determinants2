@@ -15,9 +15,9 @@ import os, pickle, re ,math, sys
 
 import u.setChar as setChar
 
-#| globals
+from p.cludetparm import Sep
 
-Sep = 3
+#| globals
 
 if sys.argv[1] == '-d':
     sys.argv.pop(1)

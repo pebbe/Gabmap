@@ -179,7 +179,7 @@ def makepage(path):
 
         fp = open('version', 'rt')
         mtd = fp.read().strip()
-        fp.close()        
+        fp.close()
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
@@ -341,7 +341,7 @@ def makepage(path):
             <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
-            Items sorted by F1 score:
+            Items sorted by value:
             <select name="item">
             '''.format(u.config.appurl, project))
             fp = open('score.txt', 'rt')
@@ -418,7 +418,7 @@ def makepage(path):
                     e = '''
                     <tr><td>Importance:&nbsp;  <td>{{1[3]}}{}
                     <tr><td>&mdash; Representativeness:&nbsp;    <td>{{1[2]}}
-                    <tr><td>&mdash; Distinctiveness:&nbsp; <td>{{1[4]}}                    
+                    <tr><td>&mdash; Distinctiveness:&nbsp; <td>{{1[4]}}
                     '''.format(u.html.help('importance'))
                 sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
@@ -521,7 +521,6 @@ def makepage(path):
 
                 sys.stdout.write('''
                 <h3 id="s4">Step 4: try for determinant feature</h3>
-                <div class="warn">Dit moet ik nog doen, geeft nu nog de oude maat</div>
                 <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="hebci_auml"   value="&auml;">
                 <input type="hidden" name="hebci_divide" value="&divide;">
@@ -543,16 +542,25 @@ def makepage(path):
                     fp = open('reresults.txt', 'rt')
                     results = fp.read().split()
                     fp.close()
-                    sys.stdout.write('''
+                    if mtd == 'fast':
+                        e = ''
+                    else:
+                        e = '''
+                        <tr><td>Importance:&nbsp;  <td>{1[3]}
+                        <tr><td>&mdash; Representativeness:&nbsp;    <td>{1[2]}
+                        <tr><td>&mdash; Distinctiveness:&nbsp; <td>{1[4]}
+                        '''
+                    sys.stdout.write(('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
                     <tr><td>F1 Score:&nbsp;  <td>{1[0]}
-                    <tr><td>Precision:&nbsp; <td>{1[1]}
-                    <tr><td>Recall:&nbsp;    <td>{1[2]}
+                    <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
+                    <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
+                    ''' + e + '''
                     </table>
                     Matching forms:
-                    '''.format(regex, results))
+                    ''').format(regex, results))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:
