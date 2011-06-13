@@ -23,7 +23,7 @@ username = ''
 def mkString(user, passwd):
     # TO DO: Better to drop the REMOTE_IP and HTTP_X_FORWARDED_FOR altogether?
     addr = ''
-    if _c.tryxforwardedfor == 'yes':
+    if _c.tryxforwardedfor:
         addr = os.environ.get('HTTP_X_FORWARDED_FOR', '')
         if addr.startswith("'") and addr.endswith("'"):
             addr = addr[1:-1]
