@@ -11,6 +11,7 @@ python2path = os.environ.get('PYTHON2PATH', '')
 python3path = os.environ.get('PYTHON3PATH', '')
 
 secret = os.environ['SECRET']
+tryxforwardedfor = os.environ.get('TRY_X_FORWARDED_FOR', 'no')
 
 datadir   = os.environ['DATADIR']
 appdir    = os.environ['APPDIR']

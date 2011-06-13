@@ -21,14 +21,15 @@ username = ''
 #| functions
 
 def mkString(user, passwd):
-    addr = os.environ.get('HTTP_X_FORWARDED_FOR', '')
+    # TO DO: Better to drop the REMOTE_IP and HTTP_X_FORWARDED_FOR altogether?
+    addr = ''
+    if _c.tryxforwardedfor == 'yes':
+        addr = os.environ.get('HTTP_X_FORWARDED_FOR', '')
+        if addr.startswith("'") and addr.endswith("'"):
+            addr = addr[1:-1]
+            addr = addr.split()[-1]
     if not addr:
         addr = os.environ.get('REMOTE_ADDR', '')
-    # for things like this, that can differ for http and https:
-    # HTTP_X_FORWARDED_FOR='1.1.1.1, 2.2.2.2, 3.3.3.3'
-    if addr.startswith("'") and addr.endswith("'"):
-        addr = addr[1:-1]
-        addr = addr.split()[-1]
     data = passwd + addr + _c.secret
     hashed = hashlib.sha224(data.encode('utf-8')).hexdigest()
     return user + '-' + hashed
