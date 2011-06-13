@@ -156,7 +156,7 @@ def setRegex():
     oother = len(outpart) - omatch
 
     if imatch + omatch == 0:
-        fp.write('0.000 0.000 0.000\n')
+        fp.write('0.00 0.00 0.00\n')
     else:
         Repres = imatch / (imatch + iother)
         RelOcc = imatch / (imatch + omatch)
@@ -165,7 +165,7 @@ def setRegex():
         Import = (Repres + Distinct) / 2.0
         if Distinct < 0.0:
             Import = 0
-        fp.write('{:.1f} {:.1f} {:.1f}\n'.format(Import, Distinct, Repres))
+        fp.write('{:.2f} {:.2f} {:.2f}\n'.format(Import, Distinct, Repres))
 
     fp.close()
 
