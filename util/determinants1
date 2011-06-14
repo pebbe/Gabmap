@@ -15,6 +15,9 @@ import os, re ,math, sys
 
 import u.setChar as setChar
 
+from p.cludetparms import FastBeta2 as B2
+from p.cludetparms import Limit
+
 #| globals
 
 clufile = 'clgroups.txt'
@@ -104,7 +107,7 @@ items = []
 for i, o, variant in vs:
     p = (i + 1) / (i + o + 2)
     r = (i + 1) / (allinn + 2)
-    f1 = 2 * p * r / (p + r)
+    f1 = (1 + B2) * p * r / (B2 * p + r)
     items.append((f1, p, r, i, o, variant))
 items.sort(reverse=True)
 
@@ -120,12 +123,8 @@ for f1, p, r, i, o, va in items:
     outn = oldO + o
     sp = (inn + 1) / (inn + outn + 2)
     sr = (inn + 1) / (allinn + 2)
-    sf1 = 2 * sp * sr / (sp + sr)
-    if sf1 < oldF1:
-        rejected.append(va)
-    # threshold
-    # to do: threshold as a parameter? other method?
-    elif r < oldR * .2:
+    sf1 = (1 + B2) * sp * sr / (B2 * sp + sr)
+    if sf1 < oldF1 * Limit:
         rejected.append(va)
     else:
         oldF1 = sf1
@@ -133,11 +132,11 @@ for f1, p, r, i, o, va in items:
         oldR = sr
         oldI = inn
         oldO = outn
-        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} ({}) [ {} ]\n'.format(
-            f1, p, r, _escape(va), i + o, ' | '.join(sorted(subst[va]))))
+        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} ({}/{}) [ {} ]\n'.format(
+            f1, p, r, _escape(va), i, i + o, ' | '.join(sorted(subst[va]))))
 
 rejected.sort()
 for r in rejected:
     sys.stdout.write('[' + _escape(r) + ']\n')
 
-sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}\n'.format(oldF1, oldP, oldR, oldI + oldO))
+sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}/{}\n'.format(oldF1, oldP, oldR, oldI, oldI + oldO))

@@ -15,7 +15,8 @@ import os, pickle, re ,math, sys
 
 import u.setChar as setChar
 
-from p.cludetparm import Sep
+from p.cludetparms import SlowBeta2 as B2
+from p.cludetparms import Sep, Limit
 
 #| globals
 
@@ -114,7 +115,7 @@ for i in range(nPlaces):
     if allvars[i] > 0 and labels[i] in partition:
         n += 1
 if n < 2:
-    sys.stdout.write('\n0.00 0.00 0.00 0.00 0.00 0\n')
+    sys.stdout.write('\n0.00 0.00 0.00 0.00 0.00 0/0\n')
     sys.exit()
 
 
@@ -168,7 +169,7 @@ for variant in variants:
 
     prec = TP / (TP + FP)
     reca = TP / (TP + FN)
-    f = 2 * prec * reca / (prec + reca)
+    f = (1 + B2) * prec * reca / (B2 * prec + reca)
     dist = (prec - RelSize) / (1 - RelSize)
     if dist > 0:
         imp = (dist + reca) / 2.0
@@ -186,7 +187,7 @@ Prec = 0
 Reca = 0
 
 nnn = 0
-
+nnnp = 0
 for f, p, r, imp, dist, v, pp in items:
     for i in range(nPlaces):
         pp[i][0] += ppp[i][0]
@@ -206,13 +207,9 @@ for f, p, r, imp, dist, v, pp in items:
         continue
     prec = TP / (TP + FP)
     reca = TP / (TP + FN)
-    ff = 2 * prec * reca / (prec + reca)
+    ff = (1 + B2) * prec * reca / (B2 * prec + reca)
 
-    if ff < Fscore:
-        rejected.append(v)
-    # threshold
-    # to do: threshold as a parameter? other method?
-    elif r < Reca * .1:
+    if ff < Fscore * Limit:
         rejected.append(v)
     else:
         Fscore = ff
@@ -222,9 +219,11 @@ for f, p, r, imp, dist, v, pp in items:
             ppp[i][0] = pp[i][0]
             ppp[i][1] = pp[i][1]
         n = sum(variants[v].values())
+        np = sum([variants[v][lbl] for lbl in variants[v] if lbl in partition])
         nnn += n
-        sys.stdout.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {} ({}) [ {} ]\n'.format(
-            f, p, r, imp, dist, _escape(v), n, ' | '.join(sorted(subst[v]))))
+        nnnp += np
+        sys.stdout.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {} ({}/{}) [ {} ]\n'.format(
+            f, p, r, imp, dist, _escape(v), np, n, ' | '.join(sorted(subst[v]))))
 
 rejected.sort()
 for r in rejected:
@@ -235,7 +234,7 @@ if Dist > 0:
     Imp = (Dist + Reca) / 2.0
 else:
     Imp = 0.0
-sys.stdout.write('\n{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnn))
+sys.stdout.write('\n{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {}/{}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnnp, nnn))
 
 if dump:
     fp1 = open('dump1.rgb', 'wt', encoding='iso-8859-1')

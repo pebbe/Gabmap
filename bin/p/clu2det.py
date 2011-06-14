@@ -53,6 +53,14 @@ defaults = '''
 
 #| functions
 
+def _unquote(s):
+    s = s.strip()
+    if len(s) < 2:
+        return s
+    if s[0] != '"' or s[-1] != '"':
+        return s
+    return re.sub(r'\\(.)', r'\1', s[1:-1]).strip()
+
 def _num2chr(m):
     return '{:c}'.format(int(m.group(1)))
 
@@ -180,6 +188,12 @@ def makepage(path):
         fp = open('version', 'rt')
         mtd = fp.read().strip()
         fp.close()
+
+        if mtd == 'fast':
+            from p.cludetparms import FastBeta as Beta
+        else:
+            from p.cludetparms import SlowBeta as Beta
+
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
@@ -350,7 +364,7 @@ def makepage(path):
                     a, b, c, f, g = line.split()
                 else:
                     a, b, c, d, e, f, g = line.split()
-                if f == '0':
+                if f.split('/')[0] == '0':
                     continue
                 gg = g[2:-5]
                 if gg == curitem:
@@ -369,18 +383,34 @@ def makepage(path):
 
             if curitem:
                 if not os.access('currentlist.txt', os.F_OK):
+
+                    partition = set()
+                    fp = open('clgroups.txt', 'rt', encoding='iso-8859-1')
+                    for line in fp:
+                        a, b = line.split(None, 1)
+                        if int(a) == curclnum:
+                            partition.add(_unquote(b))
+                    fp.close()
+
                     variants = {}
+                    variantsin = {}
                     fp = open('../data/_/' + curitem + '.data', 'rb')
                     for line in fp:
-                        if line[:1] == b'-':
+                        if line[:1] == b':':
+                            lbl = line[1:].strip().decode('iso-8859-1')
+                        elif line[:1] == b'-':
                             v = line[1:].strip().decode(encoding)
                             if not v in variants:
                                 variants[v] = 0
+                                variantsin[v] = 0
                             variants[v] += 1
+                            if lbl in partition:
+                                variantsin[v] += 1
+
                     fp.close()
                     fp = open('currentlist.txt', 'wt', encoding='utf-8')
                     for v in sorted(variants):
-                        fp.write('{}\t{}\n'.format(variants[v], v))
+                        fp.write('{}/{}\t{}\n'.format(variantsin[v], variants[v], v))
                     fp.close()
 
             if curitem:
@@ -425,14 +455,14 @@ def makepage(path):
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>F1 Score:&nbsp;  <td>{1[0]}{2}
+                <tr><td>F<sub>{3:g}</sub> Score:&nbsp;  <td>{1[0]}{2}
                 <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
                 <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
                 ''' + e + '''
                 </table>
                 Patterns with forms:
                 <ul>
-                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('f1score')))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('f1score'), Beta))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
@@ -554,13 +584,13 @@ def makepage(path):
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>F1 Score:&nbsp;  <td>{1[0]}
+                    <tr><td>F<sub>{2:g}</sub> Score:&nbsp;  <td>{1[0]}
                     <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
                     <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
                     ''' + e + '''
                     </table>
                     Matching forms:
-                    ''').format(regex, results))
+                    ''').format(regex, results, Beta))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:

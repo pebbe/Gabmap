@@ -133,9 +133,12 @@ def setRegex():
     fp.close()
 
     matches = {}
+    matchesin = {}
 
     mtd = open('version', 'rt').read().strip()
     if mtd == 'fast':
+
+        from p.cludetparms import FastBeta2 as B2
 
         imatch = 0
         omatch = 0
@@ -154,8 +157,10 @@ def setRegex():
                 if RE.search(item):
                     if not item in matches:
                         matches[item] = 0
+                        matchesin[item] = 0
                     matches[item] += 1
                     if lbl in partition:
+                        matchesin[item] += 1
                         imatch += 1
                     else:
                         omatch += 1
@@ -173,7 +178,7 @@ def setRegex():
         else:
             p = (imatch + 1) / (imatch + omatch + 2)
             r = (imatch + 1) / (imatch + iother + 2)
-            f1 = 2 * p * r / (p + r)
+            f1 = (1 + B2) * p * r / (B2 * p + r)
             fp.write('{:.1f} {:.1f} {:.1f}\n'.format(f1, p, r))
 
         fp.close()
@@ -181,7 +186,8 @@ def setRegex():
     else:
 
         import math, pickle
-        from p.cludetparm import Sep
+        from p.cludetparms import Sep
+        from p.cludetparms import SlowBeta2 as B2
 
         fp = open('dst.pickle', 'rb')
         labels, idx, dst = pickle.load(fp)
@@ -210,7 +216,10 @@ def setRegex():
                     Counts[lbl][0] += 1
                     if not item in matches:
                         matches[item] = 0
+                        matchesin[item] = 0
                     matches[item] += 1
+                    if labels[lbl] in partition:
+                        matchesin[item] += 1
         fp.close()
 
         missing = [False] * nPlaces
@@ -245,7 +254,7 @@ def setRegex():
         Prec = TP / (TP + FP)
         Reca = TP / (TP + FN)
         if Prec + Reca > 0:
-            F1 = 2 * Prec * Reca / (Prec + Reca)
+            F1 = (1 + B2) * Prec * Reca / (B2 * Prec + Reca)
         else:
             F1 = 0
         Dist = (Prec - RelSize) / (1 - RelSize)
@@ -261,7 +270,7 @@ def setRegex():
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):
-        fp.write('{}\t{}\n'.format(matches[i], i))
+        fp.write('{}/{}\t{}\n'.format(matchesin[i], matches[i], i))
     fp.close()
 
 
