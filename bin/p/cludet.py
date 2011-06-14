@@ -233,7 +233,7 @@ def makepage(path):
 
             sys.stdout.write('''
             <!-- <h3 id="s3">step 3: select important item</h3> -->
-            <h3 id="s3">step 3: select relevant item</h3>
+            <h3 id="s3">step 3: select item</h3>
             <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">

@@ -351,7 +351,7 @@ def makepage(path):
                 curitem = ''
 
             sys.stdout.write('''
-            <h3 id="s3">step 3: select relevant item</h3>
+            <h3 id="s3">step 3: select item</h3>
             <form action="{}bin/clu2detform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
