@@ -1,5 +1,18 @@
 
+'''
+Configuration variables
+'''
+
+
 import os
+
+def _istrue(s):
+    try:
+        i = int(s)
+        return i != 0
+    except:
+        pass
+    return s.lower() in ['y', 'yes', 't', 'true']
 
 maxprojects = int(os.environ['MAXPROJECTS'])
 maxdays = int(os.environ['MAXDAYS'])
@@ -11,7 +24,7 @@ python2path = os.environ.get('PYTHON2PATH', '')
 python3path = os.environ.get('PYTHON3PATH', '')
 
 secret = os.environ['SECRET']
-tryxforwardedfor = os.environ.get('TRY_X_FORWARDED_FOR', '')
+tryxforwardedfor = _istrue(os.environ.get('TRY_X_FORWARDED_FOR', ''))
 
 datadir   = os.environ['DATADIR']
 appdir    = os.environ['APPDIR']

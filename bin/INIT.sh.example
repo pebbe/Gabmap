@@ -40,8 +40,7 @@ export R_LIBS_USER=/home/yourname/.Rlib
 export SECRET='gasheyri iorhyer fjdfjlui dfpe8'
 
 # if the webapp is served through a proxy, try to find the real ip of the user
-# empty (=no) or non-empty (=yes)
-export TRY_X_FORWARDED_FOR=''
+export TRY_X_FORWARDED_FOR=no
 
 # Where the webapp stores its data, including trailing slash
 export DATADIR=/home/yourname/.gabmap/
