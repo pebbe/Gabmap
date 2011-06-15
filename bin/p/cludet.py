@@ -87,7 +87,7 @@ def makepage(path):
             fp.write('{}\t{}\n'.format(i, items[i]))
         fp.close()
 
-        
+
     sys.stdout.write(u.html.head(ltitle, tip=True, maptip=True))
     sys.stdout.write('''
     {}
@@ -101,6 +101,17 @@ def makepage(path):
             encoding = 'utf-8'
         else:
             encoding = 'iso-8859-1'
+
+        sys.stdout.write('''<div style="padding:1em;margin:1em 0px;border:3px dashed #e00000">
+        <b>Warning:</b> Due to recent changes in Gabmap, this part is currently not working well.
+        The results it gives may be poorly.<br>
+        &nbsp;<br>
+        At the moment we are working on an improved version of this part. Are you interested
+        in test-driving the new version, and giving us some feedback? Then please contact:
+        support@gabmap.nl
+        </div>
+        ''')
+
 
         sys.stdout.write('''<div class="info">
         Here you can discover what linguistic features are characteristic for certain areas.<br>
@@ -138,9 +149,9 @@ def makepage(path):
             for line in fp:
                 accents[int(line)] = True
             fp.close
-        
-        sys.stdout.write('<h3 id="s1">Step 1: select number of clusters</h3>\n' + u.html.img(p + '-clmap', usemap="map1", idx=1, pseudoforce=True) + '\n')
 
+        sys.stdout.write('<h3 id="s1">Step 1: select number of clusters</h3>\n' + u.html.img(
+            p + '-clmap', usemap="map1", idx=1, pseudoforce=True) + '\n')
 
         fp = open('current', 'rt')
         current = fp.read().split()
@@ -256,7 +267,7 @@ def makepage(path):
             </select>
             <input type="submit" value="Select item">
             <br>&rarr; <a href="cludetlist?p={}" target="_blank">download as list</a>
-            <br>&rarr; <a href="help?s=cludetscores" target="_blank">about importance</a> <!--(and why it is not working very well)-->
+            <!-- <br>&rarr; <a href="help?s=cludetscores" target="_blank">about importance</a> -->
             </form>
             <p>
             '''.format(project))
