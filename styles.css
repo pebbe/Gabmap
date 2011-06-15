@@ -269,7 +269,8 @@ body.demo div {
     padding: 1em 2em;
 }
 
-body.demo div.warning {
+body.demo div.warning,
+div.alert {
     margin: 1em 0px;
     padding: 1em;
     border: 4px dashed #ff0000;

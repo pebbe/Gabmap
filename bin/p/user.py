@@ -31,6 +31,15 @@ def makepage(user):
 
     projects, count = p.project.getProjects()
 
+    warning = ''
+    if user.startswith('guest'):
+        warning = '''
+        <div class="alert">
+        Warning: Any data you upload to this guest account will be removed two days after the last time this account was used.
+        If you want to save your data for a longer time, you can create a personal account.
+        </div>
+        '''
+
     if user.startswith('demo'):
         template = 'p-user-demo.html'
     elif count >= _c.maxprojects:
@@ -40,6 +49,7 @@ def makepage(user):
 
     sys.stdout.write(_h.head())
     sys.stdout.write(_h.getBody(template).format({
+        'warning':warning,
         'projects':projects,
         'username':user,
         'appurl':_c.appurl,
