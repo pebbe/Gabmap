@@ -132,11 +132,11 @@ for f1, p, r, i, o, va in items:
         oldR = sr
         oldI = inn
         oldO = outn
-        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} ({}/{}) [ {} ]\n'.format(
+        sys.stdout.write('{:.1f} {:.1f} {:.1f} {} {}:{} [ {} ]\n'.format(
             f1, p, r, _escape(va), i, i + o, ' | '.join(sorted(subst[va]))))
 
 rejected.sort()
 for r in rejected:
     sys.stdout.write('[' + _escape(r) + ']\n')
 
-sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}/{}\n'.format(oldF1, oldP, oldR, oldI, oldI + oldO))
+sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}:{}\n'.format(oldF1, oldP, oldR, oldI, oldI + oldO))

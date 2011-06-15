@@ -270,7 +270,7 @@ def setRegex():
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):
-        fp.write('{}/{}\t{}\n'.format(matchesin[i], matches[i], i))
+        fp.write('{}:{}\t{}\n'.format(matchesin[i], matches[i], i))
     fp.close()
 
 

@@ -115,7 +115,7 @@ for i in range(nPlaces):
     if allvars[i] > 0 and labels[i] in partition:
         n += 1
 if n < 3:
-    sys.stdout.write('\n0.00 0.00 0.00 0.00 0.00 0/0\n')
+    sys.stdout.write('\n0.00 0.00 0.00 0.00 0.00 0:0\n')
     sys.exit()
 
 
@@ -222,7 +222,7 @@ for f, p, r, imp, dist, v, pp in items:
         np = sum([variants[v][lbl] for lbl in variants[v] if lbl in partition])
         nnn += n
         nnnp += np
-        sys.stdout.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {} ({}/{}) [ {} ]\n'.format(
+        sys.stdout.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {} {}:{} [ {} ]\n'.format(
             f, p, r, imp, dist, _escape(v), np, n, ' | '.join(sorted(subst[v]))))
 
 rejected.sort()
@@ -234,7 +234,7 @@ if Dist > 0:
     Imp = (Dist + Reca) / 2.0
 else:
     Imp = 0.0
-sys.stdout.write('\n{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {}/{}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnnp, nnn))
+sys.stdout.write('\n{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {}:{}\n'.format(Fscore, Prec, Reca, Imp, Dist, nnnp, nnn))
 
 if dump:
     fp1 = open('dump1.rgb', 'wt', encoding='iso-8859-1')

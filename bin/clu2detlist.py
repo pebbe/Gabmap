@@ -48,10 +48,10 @@ fp = open('score.txt', 'rt')
 for line in fp:
     if mtd == 'fast':
         a, b, c, d, e = line.split()
-        sys.stdout.write('{} - {} - {}  |  {}  ({})\n'.format(a, b, c, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
+        sys.stdout.write('{} - {} - {}  |  {}  {}\n'.format(a, b, c, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
     else:
         a, b, c, c1, c2, d, e = line.split()
-        sys.stdout.write('{} - {} - {}  |  {} - {} - {}  |  {}  ({})\n'.format(a, b, c, c1, c, c2, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
+        sys.stdout.write('{} - {} - {}  |  {} - {} - {}  |  {}  {}\n'.format(a, b, c, c1, c, c2, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
         
 fp.close()
 

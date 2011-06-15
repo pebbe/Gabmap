@@ -364,14 +364,14 @@ def makepage(path):
                     a, b, c, f, g = line.split()
                 else:
                     a, b, c, d, e, f, g = line.split()
-                if f.split('/')[0] == '0':
+                if f.split(':')[0] == '0':
                     continue
                 gg = g[2:-5]
                 if gg == curitem:
                     sel = ' selected="selected"'
                 else:
                     sel = ''
-                sys.stdout.write('<option value="{}"{}>{} - {} ({})</option>\n'.format(
+                sys.stdout.write('<option value="{}"{}>{} &nbsp; {} &nbsp; {}</option>\n'.format(
                     gg, sel, a, _toStrHtml(gg), f))
             sys.stdout.write('''
             </select>
@@ -410,7 +410,7 @@ def makepage(path):
                     fp.close()
                     fp = open('currentlist.txt', 'wt', encoding='utf-8')
                     for v in sorted(variants):
-                        fp.write('{}/{}\t{}\n'.format(variantsin[v], variants[v], v))
+                        fp.write('{}:{}\t{}\n'.format(variantsin[v], variants[v], v))
                     fp.close()
 
             if curitem:
@@ -471,7 +471,7 @@ def makepage(path):
                             a, b, c, d, e, f = line.split(None, 5)
                         else:
                             a, b, c, c2, c3, d, e, f = line.split(None, 7)
-                        sys.stdout.write('''<li><span class="ipa2">{}</span> {}<br>
+                        sys.stdout.write('''<li><span class="ipa2">{}</span> &nbsp; {}<br>
                         {} - {} - {}<br>
                         '''.format( _toStrHtml(d, True), e, a, b, c))
                         if mtd == 'slow':
@@ -480,7 +480,7 @@ def makepage(path):
                         if len(wrds) > 1 or _toStrHtml(d) != u.html.escape(wrds[0]):
                             sys.stdout.write('<ul>\n')
                             for wrd in sorted(wrds):
-                                sys.stdout.write('<li><span class="ipa2">{}</span> ({})\n'.format(
+                                sys.stdout.write('<li><span class="ipa2">{}</span> &nbsp; {}\n'.format(
                                     u.html.escape(wrd), wrdcount[wrd]))
                             sys.stdout.write('</ul>\n')
                 sys.stdout.write('''
@@ -598,7 +598,7 @@ def makepage(path):
                             sys.stdout.write('<ul>\n')
                             found = True
                         a, b = line.split(None, 1)
-                        sys.stdout.write('<li><span class="ipa2">{}</span> ({})\n'.format(u.html.escape(b.strip()), a))
+                        sys.stdout.write('<li><span class="ipa2">{}</span> &nbsp; {}\n'.format(u.html.escape(b.strip()), a))
                     fp.close()
                     if found:
                         sys.stdout.write('</ul>\n')
