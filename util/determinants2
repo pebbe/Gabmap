@@ -227,7 +227,18 @@ for f, p, r, imp, dist, v, pp in items:
 
 rejected.sort()
 for r in rejected:
-    sys.stdout.write('[' + _escape(r) + ']\n')
+    i = o = 0
+    for lbl in range(nPlaces):
+        if allvars[lbl] > 0:
+            if labels[lbl] in variants[r]:
+                n = variants[r][labels[lbl]]
+            else:
+                n = 0
+            if labels[lbl] in partition:
+                i += n
+            else:
+                o += n
+    sys.stdout.write('[{}  {}:{}]\n'.format(_escape(r), i, i + o))
 
 Dist = (Prec - RelSize) / (1 - RelSize)
 if Dist > 0:

@@ -117,7 +117,7 @@ oldF1 = oldP = oldR = 0.0
 oldI = oldO = 0
 for f1, p, r, i, o, va in items:
     if i == 0:
-        rejected.append(va)
+        rejected.append('{}  {}:{}'.format(va, i, i + o))
         continue
     inn = oldI + i
     outn = oldO + o
@@ -125,7 +125,7 @@ for f1, p, r, i, o, va in items:
     sr = (inn + 1) / (allinn + 2)
     sf1 = (1 + B2) * sp * sr / (B2 * sp + sr)
     if sf1 < oldF1 * Limit:
-        rejected.append(va)
+        rejected.append('{}  {}:{}'.format(va, i, i + o))
     else:
         oldF1 = sf1
         oldP = sp

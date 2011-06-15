@@ -495,7 +495,9 @@ def makepage(path):
                     ''')
                     fp = open('currentreject.txt', 'rt')
                     for line in fp:
-                        sys.stdout.write('<span class="ipa2">' + _toStrHtml(line.strip(), True) + '</span><br>\n')
+                        line = line.strip()
+                        a, b = line.rsplit(None, 1)
+                        sys.stdout.write('<span class="ipa2">{}</span> &nbsp; {}<br>\n'.format(_toStrHtml(a, True), b))
                     fp.close()
                     sys.stdout.write('</td>\n')
                 sys.stdout.write('</tr>\n</table>\n')
