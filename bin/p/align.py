@@ -135,10 +135,18 @@ def makepage(path):
         <option value="0"> -- random places --</option>
         ''')
         lines = []
+        truelabels = {}
+        pseudolabels = {}
         fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+        fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
         for line in fp:
             a, b = line.split(None, 1)
-            lines.append('{}\t{}'.format(b.strip(), a))
+            b = b.strip()
+            lines.append('{}\t{}'.format(b, a))
+            l = fp2.readline().strip()
+            truelabels[b] = l
+            pseudolabels[l.encode('iso-8859-1', 'xmlcharrefreplace').decode('iso-8859-1')] = l
+        fp2.close()
         fp.close()
         lines.sort()
         for line in lines:
@@ -147,7 +155,7 @@ def makepage(path):
                 sel = ' selected="selected"'
             else:
                 sel = ''
-            sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(a, sel, u.html.escape(re.sub('&#([0-9]+);', _toChar, b))))
+            sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(a, sel, u.html.escape(truelabels[b])))
 
         sys.stdout.write('</select>\n<br>&nbsp;<br>\n<input type="submit" value="Show alignments">\n</fieldset>\n</form>\n')
 
@@ -192,8 +200,8 @@ def makepage(path):
                         sys.stdout.write('</table>\n')
                         intab = False
                 elif line[:1] == b'[':
-                    line = re.sub('&#([0-9]+);', _toChar, line.decode('iso-8859-1'))
-                    lbl = line.partition(']')[2]
+                    line = line.decode('iso-8859-1')
+                    lbl = pseudolabels[line.partition(']')[2].strip()]
                     if inItem:
                         sys.stdout.write(' &mdash; ')
                         inItem = False

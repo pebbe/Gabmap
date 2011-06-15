@@ -71,6 +71,14 @@ def makepage(path):
         ''')
 
         if not os.access('datacount.txt', os.F_OK):
+            truelabels = {}
+            fp1 = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+            fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
+            for line in fp1:
+                lbl = line.split(None, 1)[1].strip()
+                truelabels[lbl] = fp2.readline().strip()
+            fp2.close()
+            fp1.close()
             if method.startswith('levfeat'):
                 e = '.ftr'
             else:
@@ -97,7 +105,7 @@ def makepage(path):
                 fp.close()
             fp = open('datacount.txt', 'wt', encoding='utf-8')
             for i in sorted(p):
-                fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], u.html.iso2utf(i)))
+                fp.write('{:6d}\t{:6d}\t{}\n'.format(pn[i], p[i], truelabels[i]))
             fp.close()
             m = max(pn.values())
             m *= m

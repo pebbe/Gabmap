@@ -157,10 +157,17 @@ def makepage(path):
             _colors.reverse()
 
         places = {}
+        truelabels = {}
+        truelbl = []
         fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+        fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
         for line in fp:
             a, b = line.strip().split(None, 1)
             places[b] = int(a)
+            l = fp2.readline().strip()
+            truelabels[b] = l
+            truelbl.append(l)
+        fp2.close()
         fp.close()
 
         sys.stdout.write('''
@@ -179,7 +186,7 @@ def makepage(path):
                 sel = ''
             sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(places[place],
                                                                          sel,
-                                                                         u.html.escape(re.sub('&#([0-9]+);', _toChar, place))))
+                                                                         u.html.escape(truelabels[place])))
         sel = [''] * 4
         sel[curmethod] = ' selected="selected"'
         if currev:
@@ -246,7 +253,7 @@ def makepage(path):
                         fp.write('{} {}\n'.format(geo[idx][i], dif[idx][i]))
                     fp.close()
                     fp = open('curplace.txt', 'wt', encoding='utf-8')
-                    fp.write(re.sub('&#([0-9]+);', _toChar, placename) + '\n')
+                    fp.write(truelabels[placename] + '\n')
                     fp.close()
                     os.system('R --no-save < {}util/refplot.R > plot.log 2>&1'.format(u.config.appdir))
                     state = 0
@@ -288,11 +295,11 @@ def makepage(path):
                     lines = fp.readlines()
                     fp.close()
                     i = 0
-                    fp = open('image.coo', 'wt')
+                    fp = open('image.coo', 'wt', encoding='iso-8859-1')
                     for line in lines:
                         if i == idx:
                             i += 1
-                        fp.write(line.strip() + ' ' + lbls2[i] + '\n')
+                        fp.write(line.strip() + ' ' + truelbl[i].encode('iso-8859-1', 'xmlcharrefreplace').decode('iso-8859-1') + '\n')
                         i += 1
                     fp.close()
                     os.system('mkmap map2')

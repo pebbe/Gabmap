@@ -120,6 +120,13 @@ Pragma: no-cache
 ''')
 
 n, lbls, dif = difread('diff.txt')
+
+lbls = []
+fp = open('../data/truelabels.txt', 'rt', encoding='utf-8')
+for line in fp:
+    lbls.append(line.strip())
+fp.close()
+
 sys.stdout.write('\t' + '\t'.join(lbls) + '\n')
 for i in range(n):
     sys.stdout.write(lbls[i] + '\t' + '\t'.join(['{:g}'.format(x) for x in dif[i]]) + '\n')

@@ -14,16 +14,9 @@ import cgitb; cgitb.enable(format="text")
 
 import re, sys
 
+import u.html
+
 #| globals
-
-#| functions
-
-def num2chr(m):
-    return '{:c}'.format(int(m.group(1)))
-
-def iso2html(s):
-    return re.sub('&#([0-9]+);', num2chr, s).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
-
 
 #| main
 
@@ -34,12 +27,21 @@ else:
     prefix = 'c'
 
 
+truelabels = {}
+fp1 = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
+for line in fp1:
+    lbl = line.split(None, 1)[1].strip()
+    truelabels[lbl] = fp2.readline().strip()
+fp2.close()
+fp1.close()
+
 items = []
 fp = open('image.coo', 'rt', encoding='iso-8859-1')
 for line in fp:
     line = line.strip()
     x, y, s = line.split(None, 2)
-    s = iso2html(s)
+    s = u.html.escape(truelabels.get(s, s))
     items.append((x, y, s))
 fp.close()
 

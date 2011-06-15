@@ -80,15 +80,21 @@ def makepage(path):
         lines = []
         sys.stdout.write('<table width="100%"><tr><td><pre>\n')
         labels = set()
+        truelabels = {}
         fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+        fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
         for line in fp:
-            labels.add(line.strip().split(None, 1)[1])
+            lbl = line.strip().split(None, 1)[1]
+            labels.add(lbl)
+            truelabels[lbl] = fp2.readline().strip()
+        fp2.close()
         fp.close()
         fp = open('map.lbl', 'rt', encoding='iso-8859-1')
         for line in fp:
             a, b = line.strip().split(None, 1)
             b = _unquote(b)
             if b in labels:
+                b = u.html.escape(truelabels[b])
                 lines.append((b, a))
                 sys.stdout.write('{:8d}    {}\n'.format(int(a), b))
         fp.close()
