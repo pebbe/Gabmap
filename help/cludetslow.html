@@ -2,10 +2,45 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>Accurate method</title>
+  <title>Cluster determinants: Accurate method</title>
 </head>
 <body>
 
+Needs rewriting to make it understandable for the average user.
+<p>
+This methods does not work on the individual responses in the data.
+      Instead, counts of patterns are averaged at each location, and
+      the score is based on the values of the locations. This
+      means that counts like <em>true positives</em> are not actual 
+      counts, but the sum of a series of values, each value between 0 and 1.
+<p>
+Of course, when an item has no response at all for a location, we can't
+      calculate the average occurrence of a pattern in that location. We
+      cannot simple assign all these location the value 0. That would potentially lead
+      to huge errors, depending on the geographic distribution of the
+      locations with no data. The same happens when we use any other
+      fixed value, like 0.5
+      or 1.
+<p>
+Instead, we make a guess for each separate
+      location without data, using interpolation 
+      on the values for places that have data and are geographically
+      near. 
+This is demonstrated in the map below. In the map on the
+      left, light red indicates locations without data. The map on the
+      right shows also the interpolated values. (The blue areas are not
+      used, since in this example, there is no data at all available for those areas, for
+      none of the items.)      
+<p>
+Our interpolated guess for one location may be completely wrong. But on
+average, the values are much better than if we'd use a fixed value.
+And it's the average we use in scoring.
+<p>
+The use of interpolation is the main reason for the accurate method being
+      so slow. The more complete your data is, the less locations without
+      data, the faster the method becomes, nearing the speed of the fast
+      method.
+<p>
 <img src="../img/West_Virginia-with-sep3.png">
 
 </body>
