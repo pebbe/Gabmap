@@ -68,7 +68,7 @@ if (m == 'numnorm') {
 }
 
 con = file("../data/table.txt", open="rt", encoding="iso-8859-1")
-a <- read.table(con)
+a <- read.table(con, allowEscapes=TRUE)
 close(con)
 
 width <- max(6, min(16, 1 + .2 * length(a[1,])))
