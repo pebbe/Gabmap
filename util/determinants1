@@ -117,7 +117,7 @@ oldF1 = oldP = oldR = 0.0
 oldI = oldO = 0
 for f1, p, r, i, o, va in items:
     if i == 0:
-        rejected.append('{}  {}:{}'.format(va, i, i + o))
+        rejected.append('{}  {}:{}'.format(_escape(va), i, i + o))
         continue
     inn = oldI + i
     outn = oldO + o
@@ -125,7 +125,7 @@ for f1, p, r, i, o, va in items:
     sr = (inn + 1) / (allinn + 2)
     sf1 = (1 + B2) * sp * sr / (B2 * sp + sr)
     if sf1 < oldF1 * Limit:
-        rejected.append('{}  {}:{}'.format(va, i, i + o))
+        rejected.append('{}  {}:{}'.format(_escape(va), i, i + o))
     else:
         oldF1 = sf1
         oldP = sp
@@ -137,6 +137,6 @@ for f1, p, r, i, o, va in items:
 
 rejected.sort()
 for r in rejected:
-    sys.stdout.write('[' + _escape(r) + ']\n')
+    sys.stdout.write('[' + r + ']\n')
 
 sys.stdout.write('\n{:.1f} {:.1f} {:.1f} {}:{}\n'.format(oldF1, oldP, oldR, oldI, oldI + oldO))
