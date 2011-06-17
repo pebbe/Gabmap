@@ -16,7 +16,7 @@
 			</Polygon>
 		</Placemark>
 		<Placemark>
-			<name>Philadelphia &amp;"&lt;&gt;ä€&amp;amp;&amp;#33;</name>
+			<name>Philadelphia (\)&amp;"'&lt;&gt;ä€ &amp;amp; &amp;#33;</name>
 			<Point>
 				<coordinates>-75.14490000000001,39.9972,0</coordinates>
 			</Point>
