@@ -77,15 +77,15 @@ def makepage(path):
 
         sys.stdout.write(mt + '\n')
 
+        sys.stdout.write('Local incoherence: {}{}\n<p>\n'.format(_number(linc), u.html.help('linc')))
+
         sys.stdout.write('Cronbach\'s alpha: {}{}\n<p>\n'.format(_number(ca), u.html.help('ca')))
                 
         sys.stdout.write('''
-        Local incoherence: {0}{1}
+        &rarr; <a href="{0}bin/getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
         <p>
-        &rarr; <a href="{2}bin/getdiff?p=project_{3}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
-        <p>
-        &rarr; <a href="{2}bin/getdiff?p=project_{3}&f=tab" target="_blank">download differences</a> (table format)
-        '''.format(_number(linc), u.html.help('linc'), u.config.appurl, pnum))
+        &rarr; <a href="{0}bin/getdiff?p=project_{1}&f=tab" target="_blank">download differences</a> (table format)
+        '''.format(u.config.appurl, pnum))
 
         if m.startswith('levfeat'):
             sys.stdout.write('''
