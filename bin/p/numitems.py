@@ -58,7 +58,7 @@ def makepage(path):
     <h2>{}</h2>
     '''.format(crumbs, title))
 
-    if os.access('OK', os.F_OK) and os.access('../map/OK', os.F_OK):
+    if os.access('OK', os.F_OK) and os.access('../map/OK', os.F_OK) and os.access('../diff/OK', os.F_OK):
 
         sys.stdout.write('''
         <div class="info">
@@ -74,8 +74,8 @@ def makepage(path):
 
         if not os.access('datacount.txt', os.F_OK):
             truelabels = {}
-            fp1 = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
-            fp2 = open('../data/truelabels.txt', 'rt', encoding='utf-8')
+            fp1 = open('labels.txt', 'rt', encoding='iso-8859-1')
+            fp2 = open('truelabels.txt', 'rt', encoding='utf-8')
             for line in fp1:
                 lbl = line.split(None, 1)[1].strip()
                 truelabels[lbl] = fp2.readline().strip()
@@ -131,13 +131,14 @@ def makepage(path):
         sys.stdout.write('</table>\n')
 
 
-    elif os.access('QUEUED', os.F_OK) or os.access('../map/QUEUED', os.F_OK):
+    elif os.access('../diff/QUEUED', os.F_OK) or os.access('../map/QUEUED', os.F_OK):
+        os.chdir('../diff')
         sys.stdout.write(u.html.busy())
     else:
-        if os.access('QUEUED', os.F_OK):
+        if os.access('../diff/QUEUED', os.F_OK):
             p = 'map'
         else:
-            p = 'data'
+            p = 'diff'
         sys.stdout.write(u.html.makeError(path.split('-', 1)[1].replace('numitems', p)))
 
     sys.stdout.write('\n</div>\n')
