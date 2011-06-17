@@ -121,13 +121,16 @@ def makepage(path):
         <option>--</option>
         '''.format(u.config.appurl, pnum))
         filenames = [x[:-5] for x in os.listdir('../data/_') if x.endswith('.data')]
+        lines = []
         for filename in sorted(filenames):
             itemname = re.sub('_([0-9]+)_', _num2chr, filename)
             if itemname == current:
                 sel = ' selected="selected"'
             else:
                 sel = ''
-            sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(filename, sel, u.html.escape(itemname)))
+            lines.append((itemname.lower(), '<option value="{}"{}>{}</option>\n'.format(filename, sel, u.html.escape(itemname))))
+        for a, b in sorted(lines):
+            sys.stdout.write(b)
         sys.stdout.write('''
         </select><br>
         &nbsp;<br>
