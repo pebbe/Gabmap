@@ -402,21 +402,11 @@ int GetLine ()
 	    return 0;
 
         i = strlen (buffer);
-        while (i > 0 && isspace ((unsigned char) buffer [i - 1]))
+        while (i > 0 && (buffer [i - 1] == '\n' || buffer [i - 1] == '\r'))
             buffer [--i] = '\0';
-        i = 0;
-        while (buffer [i] && isspace ((unsigned char) buffer [i]))
-            i++;
-        if (i)
-            memmove (buffer, buffer + i, strlen (buffer + i) + 1);
-        if (buffer [0] == '#')
-	    continue;
 
-	/* we need lines that contain just a space! */
-        if (buffer [0] == '\0') {
-	    buffer [0] = ' ';
-	    buffer [1] = '\0';
-	}
+        if (buffer [0] == '\0')
+	    continue;
 
         return 1;
     }
