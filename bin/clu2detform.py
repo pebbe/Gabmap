@@ -80,7 +80,7 @@ def setCluster():
     fp.close()
 
     makes = 'OK: ../diff/OK\n'
-    makes += '\tfor i in ../data/_/*.data; do determinants{} {} $$i > _/`basename $$i .data`.utxt; done\n'.format(m, c)
+    makes += '\tfor i in ../data/_/*.data; do determinants{}.py {} $$i > _/`basename $$i .data`.utxt; done\n'.format(m, c)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | cdsort > score.txt\n'.format(c)
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)
