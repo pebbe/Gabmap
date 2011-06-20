@@ -15,6 +15,7 @@ import os, re, sys, time
 
 import u.html, u.config, u.path, u.queue, u.myCgi, u.hebci
 from u.login import username
+from p.cludetparms import *
 
 #| globals
 
@@ -80,8 +81,12 @@ def setCluster():
     fp.close()
 
     makes = 'OK: ../diff/OK\n'
-    makes += '\tfor i in ../data/_/*.data; do determinants{}.py {} $$i > _/`basename $$i .data`.utxt; done\n'.format(m, c)
-    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | cdsort > score.txt\n'.format(c)
+    if m == 1:
+        makes += '\tdetpre.py\n'
+        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} {} > _/`basename $$i .data`.utxt; done\n'.format(FastBeta, Limit)
+    else:
+        makes += '\tfor i in ../data/_/*.data; do determinants2.py {} $$i > _/`basename $$i .data`.utxt; done\n'.format(c)
+    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)
     u.queue.run()
