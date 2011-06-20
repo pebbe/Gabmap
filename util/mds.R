@@ -46,81 +46,69 @@ if (k >= attributes(d)$Size) {
   k <- attributes(d)$Size - 1
 }
 
-#if (any(d == 0.0)) {
-  sets <- c(FALSE)
-#} else {
-#  sets <- c(FALSE, TRUE)
-#}
-
 rvals = rep(NA, length.out=k)
 rvals1 = rep(NA, length.out=k)
 svals = rep(NA, length.out=k+1)
 names(rvals) <- 1:k
 
-for (kruskal in sets) {
+prefix <- 'standard'
+i <- cmdscale(d, k=k, eig=TRUE)
+mds <- i$points
+eig <- i$eig
 
-  if (kruskal) {
-    prefix <- 'kruskal'
-    mds <- ISOMDS(d, k)
-  } else {
-    prefix <- 'standard'
-    mds <- MDS(d, k)
-  }
+for (i in 1:k) {
 
-  for (i in 1:k) {
-
-    if (! any(is.na(mds[,i]))) {
+  if (eig[i] > 0) {
     
-      dd <- dist(mds[,1:i])
-      stopifnot(all(labels(d) == labels(dd)))
-      con <- file(sprintf('%s%02ic.cor', prefix, i), open="wt")
-      allcor <- cor(d, dd)
-      cat(allcor, '\n', file=con, sep='')
-      close(con)
+    dd <- dist(mds[,1:i])
+    stopifnot(all(labels(d) == labels(dd)))
+    con <- file(sprintf('%s%02ic.cor', prefix, i), open="wt")
+    allcor <- cor(d, dd)
+    cat(allcor, '\n', file=con, sep='')
+    close(con)
 
-      rvals[i] <- allcor
+    rvals[i] <- allcor
     
-      con <- file(sprintf('%s%02i.stress', prefix, i), open="wt")
-      d2 <- (dd - mean(dd)) / sd(dd)
-      stress <- sqrt(sum((d1 - d2) ^ 2) / sum(d1^2))
-      cat(stress, '\n', file=con, sep='')
-      close(con)
+    con <- file(sprintf('%s%02i.stress', prefix, i), open="wt")
+    d2 <- (dd - mean(dd)) / sd(dd)
+    stress <- sqrt(sum((d1 - d2) ^ 2) / sum(d1^2))
+    cat(stress, '\n', file=con, sep='')
+    close(con)
 
-      svals[i+1] <- stress
+    svals[i+1] <- stress
+    
+    dd <- dist(mds[,i])
+    stopifnot(all(labels(d) == labels(dd)))
+    con <- file(sprintf('%s%02i.cor', prefix, i), open="wt")
+    allcor <- cor(d, dd)
+    cat(allcor, '\n', file=con, sep='')
+    close(con)
 
-      dd <- dist(mds[,i])
-      stopifnot(all(labels(d) == labels(dd)))
-      con <- file(sprintf('%s%02i.cor', prefix, i), open="wt")
-      allcor <- cor(d, dd)
-      cat(allcor, '\n', file=con, sep='')
-      close(con)
-
-      rvals1[i] <- allcor
-    }
+    rvals1[i] <- allcor
   }
+}
   
-  n <- length(mds[,1])
+n <- length(mds[,1])
 
-  con <- file(sprintf('%s.tmp', prefix), open='wt', encoding='iso-8859-1')
-  write.vec(mds[,1:3], con)
-  close(con)
+con <- file(sprintf('%s.tmp', prefix), open='wt', encoding='iso-8859-1')
+write.vec(mds[,1:3], con)
+close(con)
 
-  for (i in 1:k) {
-    if (! any(is.na(mds[,i]))) {
-      fmin <- min(mds[,i])
-      fmax <- max(mds[,i])
-      con <- file(sprintf('%s%02i.rgb', prefix, i), open='wt', encoding='iso-8859-1')
-      cat('3\n', file=con)
-      for (j in 1:n) {
-        cat(rownames(mds)[j], '\n', sep='', file=con)
-        f <- as.integer((mds[j, i] - fmin) / (fmax - fmin) * ncolors)
-        if (f > ncolors - 1) {
-          f <- ncolors - 1
-        }
-        cat(colors[f + 1], '\n', sep='', file=con)
+for (i in 1:k) {
+  if (eig[i] > 0) {
+    fmin <- min(mds[,i])
+    fmax <- max(mds[,i])
+    con <- file(sprintf('%s%02i.rgb', prefix, i), open='wt', encoding='iso-8859-1')
+    cat('3\n', file=con)
+    for (j in 1:n) {
+      cat(rownames(mds)[j], '\n', sep='', file=con)
+      f <- as.integer((mds[j, i] - fmin) / (fmax - fmin) * ncolors)
+      if (f > ncolors - 1) {
+        f <- ncolors - 1
       }
-      close(con)
+      cat(colors[f + 1], '\n', sep='', file=con)
     }
+    close(con)
   }
 }
 
