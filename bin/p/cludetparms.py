@@ -12,7 +12,7 @@ Parameters used by:
 Sep = 3
 
 # Parameter for F-beta score
-FastBeta = 1.5
+FastBeta = 1.4
 SlowBeta = FastBeta
 
 FastBeta2 = FastBeta * FastBeta
