@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.01"
+#define my_VERSION "0.9"
 
 #define __NO_MATH_INLINES
 
@@ -43,40 +43,39 @@
 
 typedef struct {
     char
-        *s,
-        **forms;
+        *s,         /*  pattern                                   */
+        **forms;    /*  original forms                            */
     int
-	n_forms,
-	max_forms,
-	ii,
-	oo,
+        n_forms,    /*  number of different forms                 */
+	max_forms,  /*  space avaiable for forms                  */
+	ii,         /*  response count inside                     */
+	oo,         /*  response count outside                    */
 	rejected,
 	used;
     double
-	*i,        /* counts per place */
-	*all,
-        IN,
-	OUT,
-        F,
-	P,
-	R,
-	DST,
-	IMP;
+	*i,         /*  counts per place, possibly interpolated   */
+        F,          /*  F[beta] score                             */
+	P,          /*  precision                                 */
+	R,          /*  recall                                    */
+	DST,        /*  distinctiveness                           */
+	IMP;        /*  importance                                */
 } PATTERN_;
 
 typedef struct {
     char
-        *s;
+        *s;    /*  label  */
     int
-        i;
+        i;     /*  index  */
 } LBLI_;
 
 typedef struct {
     char
-        *s;
+        *s;       /*  label */
     int
-	inside,
-	n;
+        inside,   /*  is this location within the target area?  */
+	n;        /*  total response count for this location */
+    double
+        ni;       /*  if n > 0 then n else interpolated */
 } LBLS_;
 
 PATTERN_
@@ -98,9 +97,9 @@ double
 int
     nPlaces,
     nPlacesIn = 0,
-    *allplaces,
     minvar = 2,
     utf = 0,
+    dump = 0,
     n_patterns = 0,
     max_patterns = 0,
     n_valchars = 0,
@@ -120,7 +119,9 @@ char
     out_of_memory [] = "Out of memory";
 
 FILE
-    *fp;
+    *fp,
+    *fp1,
+    *fp2;
 
 void
     insert(int),
@@ -153,8 +154,6 @@ int main (int argc, char *argv [])
 	j,
 	k,
 	n,
-	n1,
-	n2,
 	target,
 	oldI,
 	oldO;
@@ -163,8 +162,6 @@ int main (int argc, char *argv [])
 	b2,
 	sum1,
 	sum2,
-	t_p,
-	f_p,
 	TP,
 	FP,
 	FN,
@@ -187,10 +184,26 @@ int main (int argc, char *argv [])
 
     get_programname (argv [0]);
 
+
+    /* process args */
+
+    if (argc > 1) {
+	if (! strcmp (argv [1], "-d")) {
+	    dump = 1;
+	    argc--;
+	    argv++;
+	}
+    }
+
+    if (argc != 5)
+	syntax ();
+
     beta = atof (argv [2]);
     Limit = atof (argv [3]);
     Sep = atof (argv [4]);
 
+
+    /* read data */
 
     openread ("data-1.txt");
     GetLine ();
@@ -240,8 +253,6 @@ int main (int argc, char *argv [])
     }
     fclose (fp);
 
-    RelSize = ((double) nPlacesIn) / (double) nPlaces;
-
     if (utf)
 	openread ("currentchars-u.txt");
     else
@@ -273,7 +284,12 @@ int main (int argc, char *argv [])
     fclose (fp);
 
 
+    /* process data */
+
     fp = stdout;
+
+
+    /* skip file with data in too few places in target area */
 
     n = 0;
     for (i = 0; i < nPlaces; i++)
@@ -284,44 +300,63 @@ int main (int argc, char *argv [])
 	return 0;
     }
 
+
+    /* interpolate the total counts */
+
+    for (i = 0; i < nPlaces; i++) {
+	if (lbls [i].n) {
+	    lbls [i].ni = lbls [i].n;
+	    continue;
+	}
+	sum2 = 0;
+	for (j = 0; j < nPlaces; j++)
+	    if (lbls [j].n)
+		sum2 += ((double) lbls [j].n) / pow (dst [i][j], Sep);
+	lbls [i].ni = sum2;
+    }
+
+
+    /* score all patterens */
+
     b2 = beta * beta;
+    RelSize = ((double) nPlacesIn) / (double) nPlaces;
     for (i = 0; i < n_patterns; i++) {
+
+	/* skip it if pattern is too rare */
+
 	n = 0;
 	for (j = 0; j < nPlaces; j++)
 	    n += patterns [i].i [j];
 	if (n < minvar)
 	    continue;
+
 	patterns [i].used = 1;
-	for (j = 0; j < nPlaces; j++)
-	    patterns [i].all [j] = lbls [j].n;
+
+
+	/* interpolate for this pattern */
 
 	for (j = 0; j < nPlaces; j++) {
 	    if (lbls [j].n)
 		continue;
 	    sum1 = 0;
-	    sum2 = 0;
 	    for (k = 0; k < nPlaces; k++)
-		if (lbls [k].n) {
-		    n1 = patterns [i].i [k];
-		    n2 = lbls [k].n;
-		    d = pow (dst [j][k], Sep);
-		    sum1 += ((double) n1) / (double) d;
-		    sum2 += ((double) n2) / (double) d;
-		}
+		if (lbls [k].n)
+		    sum1 += patterns [i].i [k] / pow (dst [j][k], Sep);
 	    patterns [i].i [j] = sum1;
-	    patterns [i].all [j] = sum2;
 	}
+
+
+	/* calculate scores for this pattern */
 
 	TP = FP = FN = TN = 0.0;
 	for (j = 0; j < nPlaces; j++) {
+	    d = patterns [i].i [j] / lbls [j].ni;
 	    if (lbls [j].inside) {
-		t_p = ((double) patterns [i].i [j]) / (double) patterns [i].all [j];
-		TP += t_p;
-		FN += 1.0 - t_p;
+		TP += d;
+		FN += 1.0 - d;
 	    } else {
-		f_p = ((double) patterns [i].i [j]) / (double) patterns [i].all [j];
-		FP += f_p;
-		TN += 1.0 - f_p;
+		FP += d;
+		TN += 1.0 - d;
 	    }
 	}
 	if (! TP) {
@@ -344,45 +379,50 @@ int main (int argc, char *argv [])
 	patterns [i].DST = DST;
 
     }
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat);
 
+
+    /* see what patterns will be used, print them, and sum up values for total score */
+
+    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat);
 
     ppp = (double *) s_malloc (nPlaces * sizeof (double));
     for (i = 0; i < nPlaces; i++)
 	ppp[i] = 0.0;
 
-
     oldF = oldP = oldR = 0.0;
     oldIMP = oldDST = 0.0;
-    oldI = oldO = 0.0;
+    oldI = oldO = 0;
     for (i = 0; i < n_patterns; i++) {
 	if (! patterns [i].used)
 	    continue;
+
+	/* add the counts of the patterns that are already accepted to the new candidate */
 	for (j = 0; j < nPlaces; j++)
 	    patterns [i].i [j] += ppp [j];
+
+	/* calculate what the score with the new candidate would be */
 	TP = FP = FN = TN = 0.0;
 	for (j = 0; j < nPlaces; j++) {
+	    d = patterns [i].i [j] / lbls [j].ni;
 	    if (lbls[j].inside) {
-		t_p = patterns [i].i [j] / patterns [i].all [j];
-		TP += t_p;
-		FN += 1 - t_p;
+		TP += d;
+		FN += 1 - d;
 	    } else {
-		f_p = patterns [i].i [j] / patterns [i].all [j];
-		FP += f_p;
-		TN += 1 - f_p;
+		FP += d;
+		TN += 1 - d;
 	    }
-	}
-	if (! TP) {
-	    patterns [i].rejected = 1;
-	    continue;
 	}
 	P = TP / (TP + FP);
 	R = TP / (TP + FN);
 	F = (1 + b2) * P * R / (b2 * P + R);
-	if (F < oldF * Limit) {
+
+	/* does this pattern increase the F score enough? */
+	if (F <= oldF * Limit) {
 	    patterns [i].rejected = 1;
 	    continue;
 	}
+
+	/* use it, save the updated counts and the new score */
 	oldF = F;
 	oldP = P;
 	oldR = R;
@@ -407,11 +447,7 @@ int main (int argc, char *argv [])
 	fprintf (fp, " ]\n");
     }
 
-
-
-
-
-
+    /* print the rejected patterns */
 
     qsort (patterns, n_patterns, sizeof (PATTERN_), cmppatstr);
 
@@ -423,7 +459,7 @@ int main (int argc, char *argv [])
 		    patterns [i].ii + patterns [i].oo);
 
 
-
+    /* print the total score */
 
     oldDST = (oldP - RelSize) / (1 - RelSize);
     if (oldDST > 0.0)
@@ -433,74 +469,31 @@ int main (int argc, char *argv [])
     fprintf (fp, "\n%.2f %.2f %.2f %.2f %.2f %i:%i\n", oldF, oldP, oldR, oldIMP, oldDST, oldI, oldI + oldO);
 
 
+    
+    /* write dump files for maprgb -r */
 
+    if (! dump)
+	return 0;
 
-    /*
-    allinn = 0;
-    for (i = 0; i < n_patterns; i++)
-	allinn += patterns [i].i;
-
-    b2 = beta * beta;
-    for (j = 0; j < n_patterns; j++) {
-	if (! patterns [j].used) {
-	    patterns [j].F = -1;
-	    continue;
-	}
-	i = patterns [j].i;
-	o = patterns [j].o;
-	p = ((double)(i + 1)) / (double)(i + o + 2);
-	r = ((double)(i + 1)) / (double)(allinn + 2);
-	f = (1.0 + b2) * p * r / (b2 * p + r);
-	patterns [j].F = f;
-	patterns [j].P = p;
-	patterns [j].R = r;
-
+    fp1 = fopen ("dump1.rgb", "w");
+    fp2 = fopen ("dump2.rgb", "w");
+    fprintf (fp1, "3\n");
+    fprintf (fp2, "3\n");
+    for (i = 0; i < nPlaces; i++) {
+        fprintf (fp1, "%s\n", lbls [i].s);
+        fprintf (fp2, "%s\n", lbls [i].s);
+        d = 1.0 - ppp[i] / lbls [i].ni;
+        if (lbls [i].n > 0)
+	    fprintf (fp1, "%f\n%f\n%f\n", d, d, d);
+        else
+            fprintf (fp1, "1\n.5\n.5\n");
+        fprintf (fp2, "%f\n%f\n%f\n", d, d, d);
     }
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat);
+    fclose (fp1);
+    fclose (fp2);
 
-    fp = stdout;
+    fprintf (stderr, "Wrote 'dump1.rgb' and 'dump2.rgb'\n");
 
-    oldF = oldP = oldR = 0.0;
-    oldI = oldO = 0;
-    for (j = 0; j < n_patterns; j++) {
-	if (! patterns[j].used)
-	    continue;
-	i = oldI + patterns[j].i;
-	o = oldO + patterns[j].o;
-	p = ((double)(i + 1)) / (double)(i + o + 2);
-	r = ((double)(i + 1)) / (double)(allinn + 2);
-	f = (1.0 + b2) * p * r / (b2 * p + r);
-	if (f < oldF * Limit)
-	    patterns[j].rejected = 1;
-	else {
-	    oldF = f;
-	    oldP = p;
-	    oldR = r;
-	    oldI = i;
-	    oldO = o;
-	    c = '[';
-	    fprintf (fp, "%.1f %.1f %.1f %s %i:%i",
-		     patterns[j].F, patterns[j].P, patterns[j].R,
-		     escape((unsigned char *) patterns[j].s),
-		     patterns[j].i, patterns[j].i + patterns[j].o);
-	    qsort (patterns[j].forms, patterns[j].n_forms, sizeof (char **), cmpstr);
-	    for (n = 0; n < patterns[j].n_forms; n++) {
-		fprintf (fp, " %c %s", c, escape((unsigned char *) patterns[j].forms[n]));
-		c = '|';
-	    }
-	    fprintf (fp, " ]\n");
-	}
-
-    }
-
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppatstr);
-    for (i = 0; i < n_patterns; i++)
-	if (patterns[i].rejected)
-	    fprintf (fp, "[%s %i:%i]\n", escape((unsigned char *) patterns[i].s), patterns[i].i, patterns[i].i + patterns[i].o);
-
-    fprintf (fp, "\n%.1f %.1f %.1f %i:%i\n", oldF, oldP, oldR, oldI, oldI + oldO);
-
-    */
 
     return 0;
 }
@@ -586,8 +579,11 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s [parameters]\n"
+	"Usage: %s datafile beta limit sepvalue\n"
+	"\n"
+	"Example: %s ../data/_/apple.data 1.5 1.02 3.0\n"
 	"\n",
+	programname,
 	programname
     );
     exit (1);
@@ -629,6 +625,7 @@ int GetLine ()
     int
         i;
 
+    /* there are no comment lines, and a line can have only a space, so just strip newline */
     for (;;) {
         lineno++;
         if (fgets (buffer, BUFSIZE, fp) == NULL)
@@ -753,16 +750,13 @@ void insert(int idx)
 	patterns [n_patterns].ii = 0;
 	patterns [n_patterns].oo = 0;
 	patterns [n_patterns].i = (double *) s_malloc (nPlaces * sizeof (double));
-	patterns [n_patterns].all = (double *) s_malloc (nPlaces * sizeof (double));
-	for (i = 0; i < nPlaces; i++) {
-	    patterns [n_patterns].i [i] = 0;
-	    patterns [n_patterns].all [i] = 0;
-	}
+	for (i = 0; i < nPlaces; i++)
+	    patterns [n_patterns].i [i] = 0.0;
 	p = &(patterns [n_patterns]);
 	n_patterns++;
     }
 
-    p->i[idx]++;
+    p->i[idx] += 1.0;
     lbls[idx].n++;
     if (lbls[idx].inside)
 	p->ii++;

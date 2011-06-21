@@ -124,7 +124,10 @@ def _setup():
                     break
             if mapidx[i] < 0 or mapidx[j] < 0:
                 continue
-            dst[mapidx[i]][mapidx[j]] = dst[mapidx[j]][mapidx[i]] = float(line)
+            d = float(line)
+            if d < 1.0:
+                d = 1.0
+            dst[mapidx[i]][mapidx[j]] = dst[mapidx[j]][mapidx[i]] = d
     fp.close()
 
     fp = open('data-1.txt', 'wt', encoding='iso-8859-1')
