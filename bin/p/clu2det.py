@@ -73,16 +73,15 @@ def _toStrHtml(s, em=False):
     return u.html.escape(re.sub('_([0-9]+)_', _num2chr, s))
 
 def _setup():
-    if os.access('version', os.F_OK):
+    if os.access('data-1.txt', os.F_OK):
         return
 
     if os.access('../map/PSEUDOMAP', os.F_OK):
         fp = open('version', 'wt')
         fp.write('fast\n')
         fp.close()
+        open('data-1.txt', 'wt').close()
         return
-
-    import pickle
 
     labels = []
     idx = {}
@@ -128,9 +127,15 @@ def _setup():
             dst[mapidx[i]][mapidx[j]] = dst[mapidx[j]][mapidx[i]] = float(line)
     fp.close()
 
-    fp = open('dst.pickle', 'wb')
-    pickle.dump((labels, idx, dst), fp)
+    fp = open('data-1.txt', 'wt', encoding='iso-8859-1')
+    fp.write('{}\n'.format(nLabels))
+    for i in sorted(idx):
+        fp.write("{} {}\n".format(idx[i], i))
+    for i in range(1, nLabels):
+        for j in range(i):
+            fp.write('{}\n'.format(dst[i][j]))        
     fp.close()
+
 
     c = open('current', 'rt').read().split()[0]
     fp = open('current', 'wt')

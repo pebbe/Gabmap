@@ -81,11 +81,13 @@ def setCluster():
     fp.close()
 
     makes = 'OK: ../diff/OK\n'
+    makes += '\tdetpre.py\n'
     if m == 1:
-        makes += '\tdetpre.py\n'
-        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} {} > _/`basename $$i .data`.utxt; done\n'.format(FastBeta, Limit)
+        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} {} > _/`basename $$i .data`.utxt; done\n'.format(
+            FastBeta, Limit)
     else:
-        makes += '\tfor i in ../data/_/*.data; do determinants2.py {} $$i > _/`basename $$i .data`.utxt; done\n'.format(c)
+        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} {} {} > _/`basename $$i .data`.utxt; done\n'.format(
+            SlowBeta, Limit, Sep)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)
