@@ -83,8 +83,6 @@ def _setup():
         open('data-1.txt', 'wt').close()
         return
 
-    import pickle
-
     labels = []
     idx = {}
     nLabels = 0
@@ -141,6 +139,8 @@ def _setup():
             fp.write('{}\n'.format(dst[i][j]))        
     fp.close()
 
+    # still needed for Step 4
+    import pickle
     fp = open('dst.pickle', 'wb')
     pickle.dump((labels, idx, dst), fp)
     fp.close()
