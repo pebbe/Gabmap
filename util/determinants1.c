@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.01"
+#define my_VERSION "0.9"
 
 #define __NO_MATH_INLINES
 
@@ -42,27 +42,27 @@
 
 typedef struct pattern_struct {
     char
-        *s,
-        **forms;
+        *s,         /*  pattern                    */
+        **forms;    /*  original forms             */
     int
-	n_forms,
-	max_forms,
-	i,
-	o,
+	n_forms,    /*  number of different forms  */
+	max_forms,  /*  space avaiable for forms   */
+	i,          /*  response count inside      */
+	o,          /*  response count outside     */
 	used,
 	rejected;
     double
-        F,
-	P,
-	R;
+        F,          /*  F[beta] score              */
+	P,          /*  precision                  */
+	R;          /*  recall                     */
 } PATTERN_;
 
 PATTERN_
     *patterns = NULL;
 
 double
-    beta = 0,
-    Limit = 0;
+    beta,
+    Limit;
 
 int
     minvar = 2,
@@ -140,8 +140,17 @@ int main (int argc, char *argv [])
 
     get_programname (argv [0]);
 
+
+    /* process args */
+
+    if (argc != 4)
+	syntax ();
+
     beta = atof (argv [2]);
     Limit = atof (argv [3]);
+
+
+    /* read data */
 
     if (access ("../data/UTF", F_OK) == 0)
 	utf = 1;
@@ -168,7 +177,6 @@ int main (int argc, char *argv [])
     fclose (fp);
     qsort (targets, n_targets, sizeof (char **), cmpstr);
 
-
     if (utf)
 	openread ("currentchars-u.txt");
     else
@@ -182,8 +190,6 @@ int main (int argc, char *argv [])
     }
     fclose (fp);
     qsort (valchars, n_valchars, sizeof (char **), cmpstr);
-
-
 
     intarget = 0;
     openread (argv [1]);
@@ -204,9 +210,20 @@ int main (int argc, char *argv [])
     }
     fclose (fp);
 
+
+    /* process data */
+
+    fp = stdout;
+
+
+    /* total response count inside */
+
     allinn = 0;
     for (i = 0; i < n_patterns; i++)
 	allinn += patterns [i].i;
+
+
+    /* score all patterens */
 
     b2 = beta * beta;
     for (j = 0; j < n_patterns; j++) {
@@ -224,9 +241,11 @@ int main (int argc, char *argv [])
 	patterns [j].R = r;
 
     }
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat);
 
-    fp = stdout;
+
+    /* see what patterns will be used, print them, and sum up values for total score */
+
+    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat); /* sort by F score, descending */
 
     oldF = oldP = oldR = 0.0;
     oldI = oldO = 0;
@@ -261,10 +280,17 @@ int main (int argc, char *argv [])
 
     }
 
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppatstr);
+
+    /* print the rejected patterns */
+
+    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppatstr); /* sort by pattern */
+
     for (i = 0; i < n_patterns; i++)
 	if (patterns[i].rejected)
 	    fprintf (fp, "[%s %i:%i]\n", escape((unsigned char *) patterns[i].s), patterns[i].i, patterns[i].i + patterns[i].o);
+
+
+    /* print the total score */
 
     fprintf (fp, "\n%.1f %.1f %.1f %i:%i\n", oldF, oldP, oldR, oldI, oldI + oldO);
 
@@ -353,8 +379,11 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s [parameters]\n"
+	"Usage: %s datafile beta limit\n"
+	"\n"
+	"Example: %s ../data/_/apple.data 1.5 1.02\n"
 	"\n",
+	programname,
 	programname
     );
     exit (1);
