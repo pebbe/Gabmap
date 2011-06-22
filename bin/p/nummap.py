@@ -94,6 +94,30 @@ def makepage(path):
         sys.stdout.write(u.html.foot())
         return
 
+    if not os.access('limits', os.F_OK):
+        fp = open('../data/table.txt', 'rt', encoding='iso-8859-1')
+        fp.readline()
+        hasF = False
+        for line in fp:
+            line = line.strip()
+            v = [float(x) for x in line.split('\t')[1:] if x != 'NA']
+            if v:
+                ff1 = min(v)
+                ff2 = max(v)                
+                if hasF:
+                    if ff1 < f1:
+                        f1 = ff1
+                    if ff2 > f2:
+                        f2 = ff2
+                else:
+                    f1 = ff1
+                    f2 = ff2
+                    hasF = True
+        fp.close()
+        fp = open('limits', 'wt')
+        fp.write('{:g} {:g}\n'.format(f1, f2))
+        fp.close()
+
     if not os.access('nummap.eps', os.F_OK):
         placen = {}
         placeall = {}
@@ -108,8 +132,9 @@ def makepage(path):
             placen[lbl] = value
             placeall[lbl] = 1
         fp.close()
-        f1 = min(placen.values())
-        f2 = max(placen.values())
+        fp = open('limits', 'rt')
+        f1, f2 = [float(x) for x in fp.read().split()]
+        fp.close()
         if f1 == f2:
             for p in placen:
                 placen[p] = 0.5
