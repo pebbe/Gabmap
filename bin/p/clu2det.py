@@ -73,7 +73,7 @@ def _toStrHtml(s, em=False):
     return u.html.escape(re.sub('_([0-9]+)_', _num2chr, s))
 
 def _setup():
-    if os.access('data-1.txt', os.F_OK):
+    if os.access('data-1.txt', os.F_OK) and os.access('dst.pickle', os.F_OK):
         return
 
     if os.access('../map/PSEUDOMAP', os.F_OK):
@@ -82,6 +82,8 @@ def _setup():
         fp.close()
         open('data-1.txt', 'wt').close()
         return
+
+    import pickle
 
     labels = []
     idx = {}
@@ -139,6 +141,9 @@ def _setup():
             fp.write('{}\n'.format(dst[i][j]))        
     fp.close()
 
+    fp = open('dst.pickle', 'wb')
+    pickle.dump((labels, idx, dst), fp)
+    fp.close()
 
     c = open('current', 'rt').read().split()[0]
     fp = open('current', 'wt')
@@ -197,11 +202,12 @@ def makepage(path):
         mtd = fp.read().strip()
         fp.close()
 
-        if mtd == 'fast':
-            from p.cludetparms import FastBeta as Beta
-        else:
-            from p.cludetparms import SlowBeta as Beta
-
+        try:
+            fp = open('currentparms', 'rt')
+            Beta = fp.read().split()[0]
+            fp.close()
+        except:
+            Beta = '&beta;'
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
@@ -463,7 +469,7 @@ def makepage(path):
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>F<sub>{3:g}</sub> Score:&nbsp;  <td>{1[0]}{2}
+                <tr><td>F<sub>{3}</sub> Score:&nbsp;  <td>{1[0]}{2}
                 <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
                 <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
                 ''' + e + '''
@@ -594,7 +600,7 @@ def makepage(path):
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>F<sub>{2:g}</sub> Score:&nbsp;  <td>{1[0]}
+                    <tr><td>F<sub>{2}</sub> Score:&nbsp;  <td>{1[0]}
                     <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
                     <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
                     ''' + e + '''

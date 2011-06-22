@@ -83,16 +83,19 @@ def setCluster():
     makes = 'OK: ../diff/OK\n'
     makes += '\tdetpre.py\n'
     if m == 1:
-        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} {} > _/`basename $$i .data`.utxt; done\n'.format(
-            FastBeta, Limit)
+        params = '{} {}'.format(FastBeta, Limit)
+        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
     else:
-        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} {} {} > _/`basename $$i .data`.utxt; done\n'.format(
-            SlowBeta, Limit, Sep)
+        params = '{} {} {}'.format(SlowBeta, Limit, Sep)
+        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)
     u.queue.run()
     time.sleep(2)
+    fp = open('currentparms', 'wt')
+    fp.write(params + '\n')
+    fp.close()
     for i in 'currentlist.txt currentselect.txt distmap.eps distmap.ex currentregex.txt'.split():
         if os.access(i, os.F_OK):
             os.remove(i)
@@ -142,10 +145,15 @@ def setRegex():
     matches = {}
     matchesin = {}
 
+    fp = open('currentparms', 'rt')
+    params = fp.read().split()
+    fp.close()
+
     mtd = open('version', 'rt').read().strip()
     if mtd == 'fast':
 
-        from p.cludetparms import FastBeta2 as B2
+        B = float(params[0])
+        B2 = B * B
 
         imatch = 0
         omatch = 0
@@ -193,8 +201,10 @@ def setRegex():
     else:
 
         import math, pickle
-        from p.cludetparms import Sep
-        from p.cludetparms import SlowBeta2 as B2
+
+        B = float(params[0])
+        B2 = B * B
+        Sep = float(params[2])
 
         fp = open('dst.pickle', 'rb')
         labels, idx, dst = pickle.load(fp)
