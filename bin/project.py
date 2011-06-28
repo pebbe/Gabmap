@@ -590,7 +590,7 @@ if re.search('office|excel|spreadsheet', filetest, re.I):
     Illegal file format: {}
     <p>
     You need to convert your data to plain text.<br>
-    See: 
+    See:
     <a href="http://www.gabmap.nl/~app/doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>
     '''.format(u.html.escape(s)))
 
