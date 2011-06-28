@@ -577,6 +577,23 @@ else:
 
 #||| check data
 
+fp = open('test', 'wb')
+fp.write(data)
+fp.close()
+fp = os.popen('file test 2>&1', 'r')
+filetest = fp.read()
+fp.close()
+os.remove('test')
+if re.search('office|excel|spreadsheet', filetest, re.I):
+    s = filetest.split(None, 1)[1]
+    u.html.exitMessage('Error', '''
+    Illegal file format: {}
+    <p>
+    You need to convert your data to plain text.<br>
+    See: 
+    <a href="http://www.gabmap.nl/~app/doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>
+    '''.format(u.html.escape(s)))
+
 if data.startswith(codecs.BOM_UTF8):
     enc = 'utf-8-sig'
 elif data.startswith(codecs.BOM_UTF16_BE) or data.startswith(codecs.BOM_UTF16_LE):
