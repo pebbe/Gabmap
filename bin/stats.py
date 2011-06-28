@@ -43,6 +43,7 @@ for dirname in os.listdir('.'):
         continue
     if os.access(dirname + '/TIMESTAMP', os.F_OK):
         t = os.stat(dirname + '/TIMESTAMP')[stat.ST_MTIME]
+        t2 = os.stat(dirname + '/passwd')[stat.ST_MTIME]
         if dirname.startswith('guest') or dirname.startswith('demo'):
             email = dirname
         else:
@@ -56,18 +57,20 @@ for dirname in os.listdir('.'):
         else:
             projects = '  '
         du = dus.get(dirname, '')
-        users.append((t, email, projects, du))
+        users.append((t, t2, email, projects, du))
 
 sys.stdout.write('''number of users: {}
 
 total disk use: {}
 
-last activity  -  number of projects  -  disk use  -  e-mail
+last activity  -  account since - number of projects  -  disk use  -  e-mail
 
 '''.format(len(users), dus.get('', '')))
 
-for t, email, projects, du in sorted(users, reverse=True):
+for t, t2, email, projects, du in sorted(users, reverse=True):
     sys.stdout.write(time.strftime(' %d %b %Y, %H:%M', time.localtime(t)).replace(' 0', '  ')[1:])
+    sys.stdout.write('  -  ')
+    sys.stdout.write(time.strftime(' %d %b %Y, %H:%M', time.localtime(t2)).replace(' 0', '  ')[1:])
     sys.stdout.write('  - {}  - {:>5}  -  {}\n'.format(projects, du, email))
 
 sys.stdout.write('\n\n')
