@@ -202,13 +202,6 @@ def makepage(path):
         mtd = fp.read().strip()
         fp.close()
 
-        try:
-            fp = open('currentparms', 'rt')
-            Beta = fp.read().split()[0]
-            fp.close()
-        except:
-            Beta = '&beta;'
-
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
         else:
@@ -251,8 +244,8 @@ def makepage(path):
                 accents[int(line)] = True
             fp.close
 
-        sys.stdout.write('<h3 id="s1">Step 1: select number of clusters</h3>\n' + u.html.img(p + '-clmap', usemap="map1", idx=1, pseudoforce=True) + '\n')
-
+        sys.stdout.write('<h3 id="s1">Step 1: select number of clusters</h3>\n' + u.html.img(
+            p + '-clmap', usemap="map1", idx=1, pseudoforce=True) + '\n')
 
         fp = open('current', 'rt')
         current = fp.read().split()
@@ -335,8 +328,8 @@ def makepage(path):
             sys.stdout.write('''
             Method:
             <select name="method">
-            <option value="fast"{}>fast</option>
-            <option value="slow"{}>accurate</option>
+            <option value="fast"{}>raw data</option>
+            <option value="slow"{}>localised data</option>
             </select>{}
             <p>
             '''.format(s1, s2, u.html.help('cludetfastslow')))
@@ -374,10 +367,7 @@ def makepage(path):
             '''.format(u.config.appurl, project))
             fp = open('score.txt', 'rt')
             for line in fp:
-                if mtd == 'fast':
-                    a, b, c, f, g = line.split()
-                else:
-                    a, b, c, d, e, f, g = line.split()
+                a, b, c, f, g = line.split()
                 if f.split(':')[0] == '0':
                     continue
                 gg = g[2:-5]
@@ -453,43 +443,30 @@ def makepage(path):
                 for line in fp:
                     a, b = line.split(None, 1)
                     wrdcount[b.strip()] = a
+                fp.close()
                 fp = open('_/' + curitem + '.utxt', 'rt')
                 lines = fp.readlines()
                 fp.close()
-                if mtd == 'fast':
-                    e = ''
-                else:
-                    e = '''
-                    <tr><td>Importance:&nbsp;  <td>{{1[3]}}{}
-                    <tr><td>&mdash; Representativeness:&nbsp;    <td>{{1[2]}}
-                    <tr><td>&mdash; Distinctiveness:&nbsp; <td>{{1[4]}}
-                    '''.format(u.html.help('importance'))
                 sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>F<sub>{3}</sub> Score:&nbsp;  <td>{1[0]}{2}
-                <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
-                <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
-                ''' + e + '''
+                <tr><td>Importance:&nbsp;  <td>{1[0]}{2}
+                <tr><td>&mdash; Representativeness:&nbsp; <td>{1[1]}
+                <tr><td>&mdash; Distinctiveness:&nbsp;    <td>{1[2]}
                 </table>
                 Patterns with forms:
                 <ul>
-                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('f1score'), Beta))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('importance')))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
                     if line.strip():
-                        if mtd == 'fast':
-                            a, b, c, d, e, f = line.split(None, 5)
-                        else:
-                            a, b, c, c2, c3, d, e, f = line.split(None, 7)
+                        a, b, c, d, e, f = line.split(None, 5)
                         sys.stdout.write('''<li><span class="ipa2">{}</span> &nbsp; {}<br>
                         {} - {} - {}<br>
                         '''.format( _toStrHtml(d, True), e, a, b, c))
-                        if mtd == 'slow':
-                            sys.stdout.write('{} - {} - {}<br>\n'.format(c2, c, c3))
                         wrds = [re.sub('_([0-9]+)_', _num2chr, w) for w in f.split() if w != '[' and w != '|' and w != ']']
                         if len(wrds) > 1 or _toStrHtml(d) != u.html.escape(wrds[0]):
                             sys.stdout.write('<ul>\n')
@@ -588,25 +565,16 @@ def makepage(path):
                     fp = open('reresults.txt', 'rt')
                     results = fp.read().split()
                     fp.close()
-                    if mtd == 'fast':
-                        e = ''
-                    else:
-                        e = '''
-                        <tr><td>Importance:&nbsp;  <td>{1[3]}
-                        <tr><td>&mdash; Representativeness:&nbsp;    <td>{1[2]}
-                        <tr><td>&mdash; Distinctiveness:&nbsp; <td>{1[4]}
-                        '''
                     sys.stdout.write(('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>F<sub>{2}</sub> Score:&nbsp;  <td>{1[0]}
-                    <tr><td>&mdash; Precision:&nbsp; <td>{1[1]}
-                    <tr><td>&mdash; Recall:&nbsp;    <td>{1[2]}
-                    ''' + e + '''
+                    <tr><td>Importance:&nbsp;  <td>{1[0]}
+                    <tr><td>&mdash; Representativeness:&nbsp; <td>{1[1]}
+                    <tr><td>&mdash; Distinctiveness:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    ''').format(regex, results, Beta))
+                    ''').format(regex, results))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:

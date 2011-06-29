@@ -6,31 +6,20 @@
 </head>
 <body>
 
-The measure of <b>Importance</b> is a recent, minor variation of the
-well known <a href="help?s=f1score" target="_blank">F1 score</a>.
-<p>
-Importance introduces a correction for expected outcome on F1's
-      <em>Precision</em>, and calls it <b>Distinctiveness</b>. But
-      F1's <em>Recall</em> is renamed to <b>Representativeness</b>
-      without such correction for expected outcome. This turns a
-      symmetric measure into an asymmetric measure. (A further variation
-      is to use the arithmetic mean instead of the harmonic
-      mean, because you can't use the latter with negative fractions.)
-<p>
-Unlike the F1 score, Importance depends on the amount of <em>false
-	negatives</em> in the data retrieval. This makes it more error
-	prone in a situation where various amounts of data are unavailable.
-This is the reason why, in Gabmap, it can't be used in the
-<a href="help?s=cludetfast" target="_blank">fast method</a>.
-<p>
-One author of Importance tells they wanted to introduce more
-      weight to one part of the equation over the other part. Of course,
-      the right way to do this is to use a known variant of the F1
-      score, for example the F2 score or the F0.5 score.
-<p>
-No tests are available that show that the measure of Importance has any
-      advantage over the F1 score (or over any other known measure used in
-      information retrieval).
+The measure of <b>Importance</b> is ...
+
+<p>TO DO: rewrite this part
+
+<ul>
+
+<li>Comparison of Importance with
+<a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F
+	  score</a> and
+<a href="http://en.wikipedia.org/wiki/Phi_coefficient"
+	  target="_blank">Phi coefficient</a>
+<li>Importance needs more testing
+</ul>
+
 
 <h4>Reference</h4>
 Martijn Wieling &amp; John Nerbonne.

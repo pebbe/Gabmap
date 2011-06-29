@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.9"
+#define my_VERSION "0.91"
 
 #define __NO_MATH_INLINES
 
@@ -52,16 +52,15 @@ typedef struct pattern_struct {
 	used,
 	rejected;
     double
-        F,          /*  F[beta] score              */
-	P,          /*  precision                  */
-	R;          /*  recall                     */
+        I,          /*  Importance                 */
+	R,          /*  Representativeness         */
+	D;          /*  Distinctiveness            */
 } PATTERN_;
 
 PATTERN_
     *patterns = NULL;
 
 double
-    beta,
     Limit;
 
 int
@@ -119,22 +118,25 @@ int main (int argc, char *argv [])
 	c;
     int
 	allinn,
+	allout,
+	bias,
 	i,
 	j,
 	n,
 	o,
-	oldI,
-	oldO,
+	old_i,
+	old_o,
 	intarget,
 	target;
     double
-	b2,
-	f,
-	p,
-	r,
-	oldF,
-	oldP,
-	oldR;
+	I,
+	R,
+	D,
+	RO,
+	RS,
+	oldI,
+	oldR,
+	oldD;
 
     no_mem_buffer = (char *) malloc (1024);
 
@@ -143,11 +145,10 @@ int main (int argc, char *argv [])
 
     /* process args */
 
-    if (argc != 4)
+    if (argc != 3)
 	syntax ();
 
-    beta = atof (argv [2]);
-    Limit = atof (argv [3]);
+    Limit = atof (argv [2]);
 
 
     /* read data */
@@ -216,58 +217,75 @@ int main (int argc, char *argv [])
     fp = stdout;
 
 
-    /* total response count inside */
+    /* total response count inside and outside */
 
     allinn = 0;
-    for (i = 0; i < n_patterns; i++)
+    allout = 0;
+    for (i = 0; i < n_patterns; i++) {
 	allinn += patterns [i].i;
+	allout += patterns [i].o;
+    }
 
+    /* bias: 0 or 1 */
+
+    bias = 1;
+
+    /* Relative Size */
+
+    RS = (allinn + 2 * bias) / (allinn + allout + 4 * bias);
 
     /* score all patterens */
 
-    b2 = beta * beta;
     for (j = 0; j < n_patterns; j++) {
 	if (! patterns [j].used) {
-	    patterns [j].F = -1;
+	    patterns [j].I = -1;
 	    continue;
 	}
 	i = patterns [j].i;
 	o = patterns [j].o;
-	p = ((double)(i + 1)) / (double)(i + o + 2);
-	r = ((double)(i + 1)) / (double)(allinn + 2);
-	f = (1.0 + b2) * p * r / (b2 * p + r);
-	patterns [j].F = f;
-	patterns [j].P = p;
-	patterns [j].R = r;
+	R = ((double)(i + bias)) / (double)(allinn + 2 * bias);
+	RO = ((double)(i + bias)) / (double)(i + o + 2 * bias);
+	D = (RO - RS) / (1 - RS);
+	if (D > 0)
+	    I = (R + D) / 2.0;
+	else
+	    I = 0.0;
+	patterns [j].I = I;
+	patterns [j].R = R;
+	patterns [j].D = D;
 
     }
 
 
     /* see what patterns will be used, print them, and sum up values for total score */
 
-    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat); /* sort by F score, descending */
+    qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat); /* sort by score, descending */
 
-    oldF = oldP = oldR = 0.0;
-    oldI = oldO = 0;
+    oldI = oldR = oldD = 0.0;
+    old_i = old_o = 0;
     for (j = 0; j < n_patterns; j++) {
 	if (! patterns[j].used)
 	    continue;
-	i = oldI + patterns[j].i;
-	o = oldO + patterns[j].o;
-	p = ((double)(i + 1)) / (double)(i + o + 2);
-	r = ((double)(i + 1)) / (double)(allinn + 2);
-	f = (1.0 + b2) * p * r / (b2 * p + r);
-	if (f < oldF * Limit)
+	i = old_i + patterns[j].i;
+	o = old_o + patterns[j].o;
+	R = ((double)(i + bias)) / (double)(allinn + 2 * bias);
+	RO = ((double)(i + bias)) / (double)(i + o + 2 * bias);
+	D = (RO - RS) / (1 - RS);
+	if (D > 0)
+	    I = (R + D) / 2.0;
+	else
+	    I = 0.0;
+	if (patterns[j].i == 0 || I < oldI * Limit)
 	    patterns[j].rejected = 1;
 	else {
-	    oldF = f;
-	    oldP = p;
-	    oldR = r;
-	    oldI = i;
-	    oldO = o;
+	    oldI = I;
+	    oldR = R;
+	    oldD = D;
+	    old_i = i;
+	    old_o = o;
 	    c = '[';
-	    fprintf (fp, "%.1f %.1f %.1f %s %i:%i",
-		     patterns[j].F, patterns[j].P, patterns[j].R,
+	    fprintf (fp, "%.2f %.2f %.2f %s %i:%i",
+		     patterns[j].I, patterns[j].R, patterns[j].D,
 		     escape((unsigned char *) patterns[j].s),
 		     patterns[j].i, patterns[j].i + patterns[j].o);
 	    qsort (patterns[j].forms, patterns[j].n_forms, sizeof (char **), cmpstr);
@@ -292,7 +310,7 @@ int main (int argc, char *argv [])
 
     /* print the total score */
 
-    fprintf (fp, "\n%.1f %.1f %.1f %i:%i\n", oldF, oldP, oldR, oldI, oldI + oldO);
+    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldI, oldR, oldD, old_i, old_i + old_o);
 
 
     return 0;
@@ -379,9 +397,9 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s datafile beta limit\n"
+	"Usage: %s datafile limit\n"
 	"\n"
-	"Example: %s ../data/_/apple.data 1.5 1.02\n"
+	"Example: %s ../data/_/apple.data 1.02\n"
 	"\n",
 	programname,
 	programname
@@ -451,8 +469,8 @@ int cmppat (void const *p1, void const *p2)
     double
 	f1,
 	f2;
-    f1 = ((PATTERN_ *)p1)->F;
-    f2 = ((PATTERN_ *)p2)->F;
+    f1 = ((PATTERN_ *)p1)->I;
+    f2 = ((PATTERN_ *)p2)->I;
     if (f1 > f2)
 	return -1;
     if (f1 < f2)

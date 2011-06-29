@@ -2,7 +2,7 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>Cluster determinants: Fast method</title>
+  <title>Cluster determinants: Raw data method</title>
 </head>
 <body>
 
@@ -13,14 +13,12 @@ This methods works on the individual responses in the data. The result
       different areas, due to missing data. So, the scores may perhaps
       not be comparable. This may lead to a
       suboptimal ranking of the items. It doesn't effect the selection
-      of patterns within an item. (At least, not with the F score. The
-      Importance score suffers notably, because of the variable
-      asymmetry inherent in the method.)
+      of patterns within an item.
 <p>
 Is this a problem? You don't need the values to be accurate. All you
       need is a sensible ranking. You may get some high-ranking items
       that don't lead you to a clear, determining feature. But this may
-      happen even in the accurate method, perhaps not as often.  If it
+      happen even in the localised data method, perhaps not as often.  If it
       happens, just move on to the next item.
 <p>
 The results for items with very few data are less reliable than those for
@@ -28,7 +26,7 @@ The results for items with very few data are less reliable than those for
       scores as extreme as those for items with many data. We do this by
       adding 1 to each count of <em>true positives</em>,  <em>false
       positives</em>,  <em>false negatives</em>, and <em>true
-      negatives</em>. (The last one isn't used in the F score.) This
+      negatives</em>. This
       method is based on the predictive values of small sample draws from large
       data sets.
 

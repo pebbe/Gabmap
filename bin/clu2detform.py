@@ -83,10 +83,10 @@ def setCluster():
     makes = 'OK: ../diff/OK\n'
     makes += '\tdetpre.py\n'
     if m == 1:
-        params = '{} {}'.format(FastBeta, Limit)
+        params = '{}'.format(Limit)
         makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
     else:
-        params = '{} {} {}'.format(SlowBeta, Limit, Sep)
+        params = '{} {}'.format(Limit, Sep)
         makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
@@ -145,15 +145,8 @@ def setRegex():
     matches = {}
     matchesin = {}
 
-    fp = open('currentparms', 'rt')
-    params = fp.read().split()
-    fp.close()
-
     mtd = open('version', 'rt').read().strip()
     if mtd == 'fast':
-
-        B = float(params[0])
-        B2 = B * B
 
         imatch = 0
         omatch = 0
@@ -189,12 +182,17 @@ def setRegex():
         fp = open('reresults.txt', 'wt')
 
         if imatch + omatch == 0:
-            fp.write('0.0 0.0 0.0\n')
+            fp.write('0.00 0.00 0.00\n')
         else:
-            p = (imatch + 1) / (imatch + omatch + 2)
             r = (imatch + 1) / (imatch + iother + 2)
-            f1 = (1 + B2) * p * r / (B2 * p + r)
-            fp.write('{:.1f} {:.1f} {:.1f}\n'.format(f1, p, r))
+            ro = (imatch + 1) / (imatch + omatch + 2)
+            rs = (imatch + iother + 2) / (imatch + iother + omatch + oother + 4)
+            d = (ro - rs) / (1 - rs)
+            if d < 0:
+                i = 0
+            else:
+                i = (r + d) / 2
+            fp.write('{:.2f} {:.2f} {:.2f}\n'.format(i, r, d))
 
         fp.close()
 
@@ -202,9 +200,11 @@ def setRegex():
 
         import math, pickle
 
-        B = float(params[0])
-        B2 = B * B
-        Sep = float(params[2])
+        fp = open('currentparms', 'rt')
+        params = fp.read().split()
+        fp.close()
+
+        Sep = float(params[1])
 
         fp = open('dst.pickle', 'rb')
         labels, idx, dst = pickle.load(fp)
@@ -268,20 +268,16 @@ def setRegex():
                 FP += fp
                 TN += 1 - fp
 
-        Prec = TP / (TP + FP)
-        Reca = TP / (TP + FN)
-        if Prec + Reca > 0:
-            F1 = (1 + B2) * Prec * Reca / (B2 * Prec + Reca)
+        R = TP / (TP + FN)
+        RO = TP / (TP + FP)
+        D = (RO - RelSize) / (1 - RelSize)
+        if D > 0:
+            I = (R + D) / 2.0
         else:
-            F1 = 0
-        Dist = (Prec - RelSize) / (1 - RelSize)
-        if Dist > 0:
-            Imp = (Dist + Reca) / 2.0
-        else:
-            Imp = 0.0
+            I = 0.0
 
         fp = open('reresults.txt', 'wt')
-        fp.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.2f}\n'.format(F1, Prec, Reca, Imp, Dist))
+        fp.write('{:.2f} {:.2f} {:.2f}\n'.format(I, R, D))
         fp.close()
 
 

@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.9"
+#define my_VERSION "0.91"
 
 #define __NO_MATH_INLINES
 
@@ -54,11 +54,9 @@ typedef struct {
 	used;
     double
 	*i,         /*  counts per place, possibly interpolated   */
-        F,          /*  F[beta] score                             */
-	P,          /*  precision                                 */
-	R,          /*  recall                                    */
-	DST,        /*  distinctiveness                           */
-	IMP;        /*  importance                                */
+        I,          /*  Importance                                */
+	R,          /*  Representativeness                        */
+	D;          /*  Distinctiveness                           */
 } PATTERN_;
 
 typedef struct {
@@ -155,8 +153,8 @@ int main (int argc, char *argv [])
 	k,
 	n,
 	target,
-	oldI,
-	oldO;
+	old_i,
+	old_o;
     double
 	d,
 	b2,
@@ -166,17 +164,14 @@ int main (int argc, char *argv [])
 	FP,
 	FN,
 	TN,
-	F,
-	P,
+	I,
 	R,
-	DST,
-	IMP,
+	RO,
+	D,
 	RelSize,
-	oldF,
-	oldP,
+	oldI,
 	oldR,
-	oldIMP,
-	oldDST;
+	oldD;
     LBLI_
 	*p;
 
@@ -195,12 +190,11 @@ int main (int argc, char *argv [])
 	}
     }
 
-    if (argc != 5)
+    if (argc != 4)
 	syntax ();
 
-    beta = atof (argv [2]);
-    Limit = atof (argv [3]);
-    Sep = atof (argv [4]);
+    Limit = atof (argv [2]);
+    Sep = atof (argv [3]);
 
 
     /* read data */
@@ -296,7 +290,7 @@ int main (int argc, char *argv [])
 	if (lbls [i].inside && lbls [i].n)
 	    n++;
     if (n < 3) {
-	fprintf (fp, "\n0.00 0.00 0.00 0.00 0.00 0:0\n");
+	fprintf (fp, "\n0.00 0.00 0.00 0:0\n");
 	return 0;
     }
 
@@ -364,19 +358,16 @@ int main (int argc, char *argv [])
 	    continue;
 	}
 
-	P = TP / (TP + FP);
 	R = TP / (TP + FN);
-	F = (1 + b2) * P * R / (b2 * P + R);
-	DST = (P - RelSize) / (1 - RelSize);
-	if (DST > 0)
-	    IMP = (DST + R) / 2.0;
+	RO = TP / (TP + FP);
+	D = (RO - RelSize) / (1 - RelSize);
+	if (D > 0)
+	    I = (R + D) / 2.0;
 	else
-	    IMP = 0.0;
-	patterns [i].F = F;
-	patterns [i].P = P;
+	    I = 0.0;
+	patterns [i].I = I;
 	patterns [i].R = R;
-	patterns [i].IMP = IMP;
-	patterns [i].DST = DST;
+	patterns [i].D = D;
 
     }
 
@@ -389,9 +380,8 @@ int main (int argc, char *argv [])
     for (i = 0; i < nPlaces; i++)
 	ppp[i] = 0.0;
 
-    oldF = oldP = oldR = 0.0;
-    oldIMP = oldDST = 0.0;
-    oldI = oldO = 0;
+    oldI = oldR = oldD = 0.0;
+    old_i = old_o = 0;
     for (i = 0; i < n_patterns; i++) {
 	if (! patterns [i].used)
 	    continue;
@@ -412,30 +402,32 @@ int main (int argc, char *argv [])
 		TN += 1 - d;
 	    }
 	}
-	P = TP / (TP + FP);
 	R = TP / (TP + FN);
-	F = (1 + b2) * P * R / (b2 * P + R);
+	RO = TP / (TP + FP);
+	D = (RO - RelSize) / (1 - RelSize);
+	if (D > 0)
+	    I = (R + D) / 2.0;
+	else
+	    I = 0.0;
 
-	/* does this pattern increase the F score enough? */
-	if (F <= oldF * Limit) {
+	/* does this pattern increase the score enough? */
+	if (I < oldI * Limit) {
 	    patterns [i].rejected = 1;
 	    continue;
 	}
 
 	/* use it, save the updated counts and the new score */
-	oldF = F;
-	oldP = P;
+	oldI = I;
 	oldR = R;
-	oldI += patterns [i].ii;
-	oldO += patterns [i].oo;
+	oldD = D;
+	old_i += patterns [i].ii;
+	old_o += patterns [i].oo;
 	for (j = 0; j < nPlaces; j++)
 	    ppp [j] = patterns [i].i [j];
-	fprintf (fp, "%.2f %.2f %.2f %.2f %.2f %s %i:%i",
-		 patterns [i].F,
-		 patterns [i].P,
+	fprintf (fp, "%.2f %.2f %.2f %s %i:%i",
+		 patterns [i].I,
 		 patterns [i].R,
-		 patterns [i].IMP,
-		 patterns [i].DST,
+		 patterns [i].D,
 		 escape ((unsigned char *) patterns [i].s),
 		 patterns [i].ii,
 		 patterns [i].ii + patterns [i].oo);
@@ -461,12 +453,7 @@ int main (int argc, char *argv [])
 
     /* print the total score */
 
-    oldDST = (oldP - RelSize) / (1 - RelSize);
-    if (oldDST > 0.0)
-	oldIMP = (oldDST + oldR) / 2.0;
-    else
-	oldIMP = 0.0;
-    fprintf (fp, "\n%.2f %.2f %.2f %.2f %.2f %i:%i\n", oldF, oldP, oldR, oldIMP, oldDST, oldI, oldI + oldO);
+    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldI, oldR, oldD, old_i, old_i + old_o);
 
 
     
@@ -579,9 +566,9 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s datafile beta limit sepvalue\n"
+	"Usage: %s datafile limit sepvalue\n"
 	"\n"
-	"Example: %s ../data/_/apple.data 1.5 1.02 3.0\n"
+	"Example: %s ../data/_/apple.data 1.02 3.0\n"
 	"\n",
 	programname,
 	programname
@@ -652,8 +639,8 @@ int cmppat (void const *p1, void const *p2)
     double
 	f1,
 	f2;
-    f1 = ((PATTERN_ *)p1)->F;
-    f2 = ((PATTERN_ *)p2)->F;
+    f1 = ((PATTERN_ *)p1)->I;
+    f2 = ((PATTERN_ *)p2)->I;
     if (f1 > f2)
 	return -1;
     if (f1 < f2)
