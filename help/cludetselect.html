@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Selection of patterns for cluster determinants</title>
+</head>
+<body>
+
+TO DO
+
+<pre>
+# global variables:
+#   inside   : number of elements in target cluster
+#   outside  : number of elements not in target cluster
+
+relative_size = inside / (inside + outside)
+
+def get_score(true_pos, false_pos):
+    representativeness = true_pos / inside
+    distinctiveness = ( true_pos / (true_pos + false_pos) - relative_size ) /  ( 1 - relative_size )
+    if distinctiveness &gt; 0:
+        return (representativeness + distinctiveness) / 2
+    else:
+        return 0
+
+score = 0
+true_positives = 0
+false_positives = 0
+for pattern in sorted(patterns, order = descending by
+pattern.score):
+    new_true_positives = true_positives + pattern.true_positives
+    new_false_positives = false_positives + pattern.false_positives
+    new_score = get_score(new_true_positives, new_false_positives)
+    if new_score &gt; score:
+        accept(pattern)
+        score = new_score
+        true_positives = new_true_positives
+        false_positives = new_false_positives
+    else:
+        reject(pattern)
+</pre>
+
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->
