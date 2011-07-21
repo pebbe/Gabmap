@@ -72,10 +72,14 @@ def setCluster():
         fpin.close()
 
     mm = getval('method')
-    if mm == 'fast':
+    if mm.startswith('fast'):
         m = 1
     else:
         m = 2
+    if mm.endswith('af'):
+        m2 = 'af'
+    else:
+        m2 = ''
     fp = open('version', 'wt')
     fp.write(mm + '\n')
     fp.close()
@@ -84,10 +88,14 @@ def setCluster():
     makes += '\tdetpre.py\n'
     if m == 1:
         params = '{}'.format(Limit)
-        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+        if m2 == 'af':
+            params = '{} {}'.format(FastBeta, params)
+        makes += '\tfor i in ../data/_/*.data; do determinants1{} $$i {} > _/`basename $$i .data`.utxt; done\n'.format(m2, params)
     else:
         params = '{} {}'.format(Limit, Sep)
-        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+        if m2 == 'af':
+            params = '{} {}'.format(SlowBeta, params)
+        makes += '\tfor i in ../data/_/*.data; do determinants2{} $$i {} > _/`basename $$i .data`.utxt; done\n'.format(m2, params)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/clu2det', makes)
@@ -196,7 +204,64 @@ def setRegex():
 
         fp.close()
 
-    else:
+    elif mtd == 'fastaf':
+
+        fp = open('currentparms', 'rt')
+        params = fp.read().split()
+        fp.close()
+        beta = float(params[0])
+
+        TP = 0
+        FP = 0
+        FN = 0
+        TN = 0
+
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = line.decode('iso-8859-1')[1:].strip()
+            elif line[:1] == b'-':
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    if not item in matches:
+                        matches[item] = 0
+                        matchesin[item] = 0
+                    matches[item] += 1
+                    if lbl in partition:
+                        matchesin[item] += 1
+                        TP += 1
+                    else:
+                        FP += 1
+                else:
+                    if lbl in partition:
+                        FN += 1
+                    else:
+                        TN += 1
+        fp.close()
+
+        fp = open('reresults.txt', 'wt')
+
+        if TP + FP == 0:
+            fp.write('0.00 0.00 0.00\n')
+        else:
+            p = (TP + 1) / (TP + FP + 2)
+            r = (TP + 1) / (TP + FN + 2)
+            bp = (TP + FN + 2) / (TP + FN + FP + TN + 4)
+            br = (TP + FP + 2) / (TP + FN + FP + TN + 4)
+            ap = (p - bp) / (1 - bp)
+            ar = (r - br) / (1 - br)
+            if ap < 0 or ar < 0:
+                af = 0
+            else:
+                af = (ap + beta * ar) / (1 + beta)
+            fp.write('{:.2f} {:.2f} {:.2f}\n'.format(af, ap, ar))
+
+        fp.close()
+
+    elif mtd == 'slow':
 
         import math, pickle
 
@@ -278,6 +343,93 @@ def setRegex():
 
         fp = open('reresults.txt', 'wt')
         fp.write('{:.2f} {:.2f} {:.2f}\n'.format(I, R, D))
+        fp.close()
+
+    else: # mtd == 'slowaf'
+        import math, pickle
+
+        fp = open('currentparms', 'rt')
+        params = fp.read().split()
+        fp.close()
+
+        beta = float(params[0])
+        Sep = float(params[2])
+
+        fp = open('dst.pickle', 'rb')
+        labels, idx, dst = pickle.load(fp)
+        fp.close()
+
+        nPlaces = len(labels)
+        nPlacesIn = len(partition)
+
+        RelSize = nPlacesIn / nPlaces
+
+        Counts = []
+        for i in range(nPlaces):
+            Counts.append([0, 0])
+
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = idx[line.decode('iso-8859-1')[1:].strip()]
+            elif line[:1] == b'-':
+                Counts[lbl][1] += 1
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    Counts[lbl][0] += 1
+                    if not item in matches:
+                        matches[item] = 0
+                        matchesin[item] = 0
+                    matches[item] += 1
+                    if labels[lbl] in partition:
+                        matchesin[item] += 1
+        fp.close()
+
+        missing = [False] * nPlaces
+        for i in range(nPlaces):
+            if Counts[i][1] == 0:
+                missing[i] = True
+
+        for i in range(nPlaces):
+            if missing[i]:
+                sum0 = 0
+                sum1 = 0
+                for j in range(nPlaces):
+                    if not missing[j]:
+                        d = math.pow(dst[i][j], Sep)
+                        sum0 += Counts[j][0] / d
+                        sum1 += Counts[j][1] / d
+                Counts[i][0] = sum0
+                Counts[i][1] = sum1
+
+        TP = FP = FN = TN = 0.0
+        for i in range(nPlaces):
+            lbl = labels[i]
+            if lbl in partition:
+                tp = Counts[i][0] / Counts[i][1]
+                TP += tp
+                FN += 1 - tp
+            else:
+                fp = Counts[i][0] / Counts[i][1]
+                FP += fp
+                TN += 1 - fp
+
+        p = TP / (TP + FP)
+        r = TP / (TP + FN)
+        bp = (TP + FN) / (TP + FN + FP + TN)
+        br = (TP + FP) / (TP + FN + FP + TN)
+        ap = (p - bp) / (1 - bp)
+        ar = (r - br) / (1 - br)
+        if ap < 0 or ar < 0:
+            af = 0
+        else:
+            af = (ap + beta * ar) / (1 + beta)
+
+        fp = open('reresults.txt', 'wt')
+        fp.write('{:.2f} {:.2f} {:.2f}\n'.format(af, ap, ar))
         fp.close()
 
 

@@ -50,6 +50,9 @@ defaults = '''
 207F  SUPERSCRIPT LATIN SMALL LETTER N
 '''.strip().split('\n')
 
+_labelsImp = ('Importance', 'Representativeness', 'Distinctiveness')
+_labelsAFs = ['Adjusted F<sub>{}</sub> score', 'Adjusted Precision', 'Adjusted Recall']
+
 
 #| functions
 
@@ -78,7 +81,7 @@ def _setup():
 
     if os.access('../map/PSEUDOMAP', os.F_OK):
         fp = open('version', 'wt')
-        fp.write('fast\n')
+        fp.write('fastaf\n')
         fp.close()
         open('data-1.txt', 'wt').close()
         return
@@ -136,7 +139,7 @@ def _setup():
         fp.write("{} {}\n".format(idx[i], i))
     for i in range(1, nLabels):
         for j in range(i):
-            fp.write('{}\n'.format(dst[i][j]))        
+            fp.write('{}\n'.format(dst[i][j]))
     fp.close()
 
     # still needed for Step 4
@@ -157,7 +160,7 @@ def _setup():
             pass
 
     fp = open('version', 'wt')
-    fp.write('fast\n')
+    fp.write('fastaf\n')
     fp.close()
 
 
@@ -201,6 +204,14 @@ def makepage(path):
         fp = open('version', 'rt')
         mtd = fp.read().strip()
         fp.close()
+
+        try:
+            fp = open('currentparms', 'rt')
+            Beta = fp.read().split()[0]
+            fp.close()
+        except:
+            Beta = '&beta;'
+
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
@@ -313,26 +324,31 @@ def makepage(path):
             &nbsp;<br>
             ''')
 
-        if isPseudo:
+        s1 = s2 = s3 = s4 = ''
+        s = ' selected="selected"'
+        if mtd == 'fastaf':
+            s1 = s
+        elif mtd == 'fast':
+            s2 = s
+        elif mtd == 'slowaf':
+            s3 = s
+        elif mtd == 'slow':
+            s4 = s
+        sys.stdout.write('''
+        Method:
+        <select name="method">
+        <option value="fastaf"{}>raw data - adjusted F score</option>
+        <option value="fast"{}>raw data - importance</option>
+        '''.format(s1, s2))
+        if not isPseudo:
             sys.stdout.write('''
-            <input type="hidden" name="method" value="fast">
-            ''')
-        else:
-            s1 = s2 = ''
-            s = ' selected="selected"'
-            i = open('version', 'rt').read().strip()
-            if i == 'fast':
-                s1 = s
-            else:
-                s2 = s
-            sys.stdout.write('''
-            Method:
-            <select name="method">
-            <option value="fast"{}>raw data</option>
-            <option value="slow"{}>localised data</option>
-            </select>{}
-            <p>
-            '''.format(s1, s2, u.html.help('cludetfastslow')))
+            <option value="slowaf"{}>localised data - adjusted F score</option>
+            <option value="slow"{}>localised data - importance</option>
+            '''.format(s3, s4))
+        sys.stdout.write('''
+        </select>{}
+        <p>
+        '''.format(u.html.help('cludetfastslow')))
 
         sys.stdout.write('''
         Clusters in plot:
@@ -447,18 +463,25 @@ def makepage(path):
                 fp = open('_/' + curitem + '.utxt', 'rt')
                 lines = fp.readlines()
                 fp.close()
+                if mtd.endswith('af'):
+                    ll = _labelsAFs
+                    _labelsAFs[0] = _labelsAFs[0].format(Beta)
+                    hlp = 'adjustedfscore'
+                else:
+                    ll = _labelsImp
+                    hlp = 'importance'
                 sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>Importance:&nbsp;  <td>{1[0]}{2}
-                <tr><td>&mdash; Representativeness:&nbsp; <td>{1[1]}
-                <tr><td>&mdash; Distinctiveness:&nbsp;    <td>{1[2]}
+                <tr><td>{3[0]}:&nbsp;  <td>{1[0]}{2}
+                <tr><td>&mdash; {3[1]}:&nbsp; <td>{1[1]}
+                <tr><td>&mdash; {3[2]}:&nbsp;    <td>{1[2]}
                 </table>
                 Patterns with forms:
                 <ul>
-                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('importance')))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help(hlp), ll))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
@@ -565,16 +588,20 @@ def makepage(path):
                     fp = open('reresults.txt', 'rt')
                     results = fp.read().split()
                     fp.close()
+                    if mtd.endswith('af'):
+                        ll = _labelsAFs
+                    else:
+                        ll = _labelsImp
                     sys.stdout.write(('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>Importance:&nbsp;  <td>{1[0]}
-                    <tr><td>&mdash; Representativeness:&nbsp; <td>{1[1]}
-                    <tr><td>&mdash; Distinctiveness:&nbsp;    <td>{1[2]}
+                    <tr><td>{2[0]}:&nbsp;  <td>{1[0]}
+                    <tr><td>&mdash; {2[1]}:&nbsp; <td>{1[1]}
+                    <tr><td>&mdash; {2[2]}:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    ''').format(regex, results))
+                    ''').format(regex, results, ll))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:
