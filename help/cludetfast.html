@@ -21,15 +21,15 @@ Is this a problem? You don't need the values to be accurate. All you
       happen even in the localised data method, perhaps not as often.  If it
       happens, just move on to the next item.
 <p>
-The results for items with very few data are less reliable than those for
-      items with many data. So we prevent items with very few data to get
-      scores as extreme as those for items with many data. We do this by
+Different items can have different amounts of data, resulting in
+      different error margins, so we correct for the median expected
+      error, in order to
+      get a more reliable comparison between items.  We do this by
       adding 1 to each count of <em>true positives</em>,  <em>false
       positives</em>,  <em>false negatives</em>, and <em>true
       negatives</em>. This
       method is based on the predictive values of small sample draws from large
       data sets.
-
 
 </body>
 </html>
