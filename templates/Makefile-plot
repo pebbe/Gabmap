@@ -3,7 +3,7 @@ OK: ../diff/OK
 
 	difmodin ../data/labels.txt tmp.tbl
 	difmod ../map/map.geo tmp.tbl > tmp.dst
-	R --no-save < {0[appdir]}util/{0[script]}
+	R --no-save < {0[appdir]}util/plot.R
 
 	eps2png
 

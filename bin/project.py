@@ -1110,11 +1110,7 @@ if not pseudo:
     fp = open('{}/templates/Makefile-plot'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
-    if method == 'giw':
-        script = 'plot-giw.R'
-    else:
-        script = 'plot.R'
-    u.queue.enqueue(path + '/plot', make.format({'appdir': u.config.appdir, 'script': script}))
+    u.queue.enqueue(path + '/plot', make.format({'appdir': u.config.appdir}))
 
 u.queue.enqueue(path, 'OK:\n\ttouch OK\n')
 

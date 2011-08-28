@@ -54,8 +54,15 @@ plot01 <- function() {
 
   abc <- sprintf('a = %.3g   b = %.3g   c = %g km', a, b, round(c))
 
+  con <- file('../data/Method', open='rt')
+  mtd <- readLines(con, n=1)
+  close(con)
+  if (mtd == "giw") {
+    yrange <- c(a - b, max(max(dif), a + b))
+  } else{
+    yrange <- c(0, max(max(dif), a + b))
+  }
 
-  yrange <- c(0, max(max(dif), a + b))
   plot(xrange, yrange, xlab='Geograpic distance (km)', ylab='Linguistic difference', type='n', sub=abc)
   assign("needplot", FALSE, envir=.GlobalEnv)
   points(geo, dif, col='#A0A0A0', pch='.')
@@ -86,7 +93,7 @@ plot01 <- function() {
   sink()
 
   return(yrange)
- 
+
 }
 
 result <- try(plot01())
