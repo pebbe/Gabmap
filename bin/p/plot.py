@@ -57,23 +57,41 @@ def makepage(path):
 
         <p>
         <hr>
-        <p>
+        '''.format(u.html.img(p + '-plot02'), txt2))
 
-        {}
-        <p>
-        A plot with local regression (red) and asymptotic regression (blue).<br>
-        A large b/a ratio indicates a large signal/noise ratio in the data.<br>
-        A small value for c indicates that linguistic variation is measurable over a short geographic distance.
-        <p>
-        {}
 
-        <p>
-        <hr>
+        if (os.access('plot01.eps', os.F_OK)):
+            sys.stdout.write('''
+            <p>
+            {}
+            <p>
+            A plot with local regression (red) and asymptotic regression (blue).<br>
+            A large b/a ratio indicates a large signal/noise ratio in the data.<br>
+            A small value for c indicates that linguistic variation is measurable over a short geographic distance.
+            <p>
+            {}
+
+            <p>
+            <hr>
+            '''.format(u.html.img(p + '-plot01'), txt))
+        else:
+            # TO DO: link to help page on reason for failure
+            sys.stdout.write('''
+            <p>
+            A plot with asymptotic regression failed.
+            <p>
+            {}
+
+            <p>
+            <hr>
+            '''.format(txt))
+
+        sys.stdout.write('''
         <p>
         
         {}        
 
-        '''.format(u.html.img(p + '-plot02'), txt2, u.html.img(p + '-plot01'), txt, u.html.img(p + '-plot03')))
+        '''.format(u.html.img(p + '-plot03')))
     elif os.access('QUEUED', os.F_OK):
         sys.stdout.write(u.html.busy())
     else:
