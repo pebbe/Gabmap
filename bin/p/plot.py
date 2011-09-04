@@ -25,6 +25,7 @@ def makepage(path):
     ltitle = path.split('-')[1].replace('_', ' ') + ' / ' + title
 
     p = path.split('-', 1)[1]
+    pnum = int(path.split('-')[1].split('_')[-1])
 
     sys.stdout.write(u.html.head(ltitle))
     sys.stdout.write('''
@@ -34,6 +35,13 @@ def makepage(path):
     '''.format(crumbs))
 
     if os.access('OK', os.F_OK):
+
+        sys.stdout.write('''
+        &rarr; <a href="getplotdata?{}">download R data</a>{}
+        <p>
+        '''.format(pnum, u.html.help("plotr")))
+
+        
         try:
             fp = open('plot01.log', 'rt', encoding='utf-8')
             txt = fp.read()

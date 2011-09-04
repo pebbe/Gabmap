@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Gabmap data in R</title>
+</head>
+<body>
+
+See also: <a href="http://www.r-project.org/">The R Project for Statistical Computing</a>
+<p>
+Example usage in R:
+
+<pre>
+    Sys.setlocale(locale="en_US.UTF-8")    <span class="ccom">## for non us-ascii in project description</span>
+    load("gabmap.Rdata")                   <span class="ccom">## load the data</span>
+    ls(pattern="gabmap")                   <span class="ccom">## see what is in it</span>
+    plot(gabmap.Data, main=gabmap.Description, pch=".")
+    lines(gabmap.Mean, col="red", lwd=2)
+</pre>
+
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->

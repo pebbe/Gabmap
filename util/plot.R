@@ -35,6 +35,14 @@ desc <- gsub('&gt;', '>', desc, fixed=TRUE)
 desc <- gsub('&quot;', '"', desc, fixed=TRUE)
 desc <- gsub('&amp;', '&', desc, fixed=TRUE)
 
+gabmap.Data <- data.frame(geo, dif)
+colnames(gabmap.Data) <- c('geographic distance (km)', 'linguistic difference')
+gabmap.Mean <- data.frame(g1, d1)
+colnames(gabmap.Mean) <- c('mean geographic distance (km)', 'mean linguistic difference')
+gabmap.Description <- desc
+save(gabmap.Data, gabmap.Mean, gabmap.Description, file='gabmap.Rdata')
+rm(gabmap.Data, gabmap.Mean, gabmap.Description)
+
 postscript(file='plot%02d.eps', width=6, height=5, onefile=FALSE, horizontal=FALSE, paper='a4')
 par(mar=c(5, 4, 1, 2) + 0.1)
 
