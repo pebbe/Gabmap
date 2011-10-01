@@ -1,7 +1,7 @@
 
 .SUFFIXES:
 
-all: agclus agden auleven auleven-r auleven-s determinants1 determinants1af determinants2 determinants2af smap
+all: agclus agden auleven auleven-r auleven-s determinants1 determinants2 smap
 
 agclus: agclus.c
 	gcc -s -Wall -o agclus agclus.c
@@ -21,14 +21,8 @@ auleven-s: auleven.c
 determinants1: determinants1.c
 	gcc -s -Wall -O2 -o determinants1 determinants1.c
 
-determinants1af: determinants1af.c
-	gcc -s -Wall -O2 -o determinants1af determinants1af.c
-
 determinants2: determinants2.c
 	gcc -s -Wall -O2 -o determinants2 determinants2.c -lm
-
-determinants2af: determinants2af.c
-	gcc -s -Wall -O2 -o determinants2af determinants2af.c -lm
 
 smap: smap.c
 	gcc -s -Wall -o smap smap.c -lm

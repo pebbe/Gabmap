@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.91"
+#define my_VERSION "0.93"
 
 #define __NO_MATH_INLINES
 
@@ -52,15 +52,16 @@ typedef struct pattern_struct {
 	used,
 	rejected;
     double
-        I,          /*  Importance                 */
-	R,          /*  Representativeness         */
-	D;          /*  Distinctiveness            */
+        AF,         /*  Adjusted F score           */
+	AP,         /*  Adjusted precision         */
+	AR;         /*  Adjusted recall            */
 } PATTERN_;
 
 PATTERN_
     *patterns = NULL;
 
 double
+    beta,
     Limit;
 
 int
@@ -123,20 +124,23 @@ int main (int argc, char *argv [])
 	i,
 	j,
 	n,
-	o,
-	old_i,
-	old_o,
+	TP,
+	FP,
+	oldTP,
+	oldFP,
 	intarget,
 	target;
     double
-	I,
+	P,
 	R,
-	D,
-	RO,
-	RS,
-	oldI,
-	oldR,
-	oldD;
+	AF,
+	AP,
+	AR,
+	BP,
+	BR,
+	oldAF,
+	oldAP,
+	oldAR;
 
     no_mem_buffer = (char *) malloc (1024);
 
@@ -145,10 +149,11 @@ int main (int argc, char *argv [])
 
     /* process args */
 
-    if (argc != 3)
+    if (argc != 4)
 	syntax ();
 
-    Limit = atof (argv [2]);
+    beta = atof (argv [2]);
+    Limit = atof (argv [3]);
 
 
     /* read data */
@@ -230,29 +235,31 @@ int main (int argc, char *argv [])
 
     bias = 1;
 
-    /* Relative Size */
+    /* Baseline precision */
 
-    RS = (allinn + 2 * bias) / (allinn + allout + 4 * bias);
+    BP = ((double)(allinn + 2 * bias)) / (double)(allinn + allout + 4 * bias);
 
     /* score all patterens */
 
     for (j = 0; j < n_patterns; j++) {
 	if (! patterns [j].used) {
-	    patterns [j].I = -1;
+	    patterns [j].AF = -1;
 	    continue;
 	}
-	i = patterns [j].i;
-	o = patterns [j].o;
-	R = ((double)(i + bias)) / (double)(allinn + 2 * bias);
-	RO = ((double)(i + bias)) / (double)(i + o + 2 * bias);
-	D = (RO - RS) / (1 - RS);
-	if (D > 0)
-	    I = (R + D) / 2.0;
+	TP = patterns [j].i;
+	FP = patterns [j].o;
+	R = ((double)(TP + bias)) / (double)(allinn + 2 * bias);
+	BR = ((double)(TP + FP + 2 * bias)) / (double)(allinn + allout + 4 * bias);
+	AR = (R - BR) / (1.0 - BR);
+	P = ((double)(TP + bias)) / (double)(TP + FP + 2 * bias);
+	AP = (P - BP) / (1.0 - BP);
+	if (AP > 0.0 && AR > 0.0)
+	    AF = (AP + beta * AR) / (1.0 + beta);
 	else
-	    I = 0.0;
-	patterns [j].I = I;
-	patterns [j].R = R;
-	patterns [j].D = D;
+	    AF = 0.0;
+	patterns [j].AF = AF;
+	patterns [j].AP = AP;
+	patterns [j].AR = AR;
 
     }
 
@@ -261,31 +268,33 @@ int main (int argc, char *argv [])
 
     qsort (patterns, n_patterns, sizeof (PATTERN_), cmppat); /* sort by score, descending */
 
-    oldI = oldR = oldD = 0.0;
-    old_i = old_o = 0;
+    oldAF = oldAP = oldAR = 0.0;
+    oldTP = oldFP = 0;
     for (j = 0; j < n_patterns; j++) {
 	if (! patterns[j].used)
 	    continue;
-	i = old_i + patterns[j].i;
-	o = old_o + patterns[j].o;
-	R = ((double)(i + bias)) / (double)(allinn + 2 * bias);
-	RO = ((double)(i + bias)) / (double)(i + o + 2 * bias);
-	D = (RO - RS) / (1 - RS);
-	if (D > 0)
-	    I = (R + D) / 2.0;
+	TP = oldTP + patterns[j].i;
+	FP = oldFP + patterns[j].o;
+	R = ((double)(TP + bias)) / (double)(allinn + 2 * bias);
+	BR = ((double)(TP + FP + 2 * bias)) / (double)(allinn + allout + 4 * bias);
+	AR = (R - BR) / (1.0 - BR);
+	P = ((double)(TP + bias)) / (double)(TP + FP + 2 * bias);
+	AP = (P - BP) / (1.0 - BP);
+	if (AP > 0.0 && AR > 0.0)
+	    AF = (AP + beta * AR) / (1.0 + beta);
 	else
-	    I = 0.0;
-	if (patterns[j].i == 0 || I < oldI * Limit)
+	    AF = 0.0;
+	if (patterns[j].i == 0 || AF < oldAF * Limit)
 	    patterns[j].rejected = 1;
 	else {
-	    oldI = I;
-	    oldR = R;
-	    oldD = D;
-	    old_i = i;
-	    old_o = o;
+	    oldAF = AF;
+	    oldAP = AP;
+	    oldAR = AR;
+	    oldTP = TP;
+	    oldFP = FP;
 	    c = '[';
 	    fprintf (fp, "%.2f %.2f %.2f %s %i:%i",
-		     patterns[j].I, patterns[j].R, patterns[j].D,
+		     patterns[j].AF, patterns[j].AP, patterns[j].AR,
 		     escape((unsigned char *) patterns[j].s),
 		     patterns[j].i, patterns[j].i + patterns[j].o);
 	    qsort (patterns[j].forms, patterns[j].n_forms, sizeof (char **), cmpstr);
@@ -298,7 +307,6 @@ int main (int argc, char *argv [])
 
     }
 
-
     /* print the rejected patterns */
 
     qsort (patterns, n_patterns, sizeof (PATTERN_), cmppatstr); /* sort by pattern */
@@ -310,7 +318,7 @@ int main (int argc, char *argv [])
 
     /* print the total score */
 
-    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldI, oldR, oldD, old_i, old_i + old_o);
+    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldAF, oldAP, oldAR, oldTP, oldTP + oldFP);
 
 
     return 0;
@@ -397,9 +405,9 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s datafile limit\n"
+	"Usage: %s datafile beta limit\n"
 	"\n"
-	"Example: %s ../data/_/apple.data 1.02\n"
+	"Example: %s ../data/_/apple.data 1.5 1.02\n"
 	"\n",
 	programname,
 	programname
@@ -469,8 +477,8 @@ int cmppat (void const *p1, void const *p2)
     double
 	f1,
 	f2;
-    f1 = ((PATTERN_ *)p1)->I;
-    f2 = ((PATTERN_ *)p2)->I;
+    f1 = ((PATTERN_ *)p1)->AF;
+    f2 = ((PATTERN_ *)p2)->AF;
     if (f1 > f2)
 	return -1;
     if (f1 < f2)
@@ -698,11 +706,11 @@ char *escape (unsigned char *s)
 
 	switch (n){
 	    case 1: c = (unsigned char) s [i]; break;
-  	    case 2: c = bytes2 (s + i); break;
-  	    case 3: c = bytes3 (s + i); break;
-  	    case 4: c = bytes4 (s + i); break;
-  	    case 5: c = bytes5 (s + i); break;
-  	    case 6: c = bytes6 (s + i); break;
+	    case 2: c = bytes2 (s + i); break;
+	    case 3: c = bytes3 (s + i); break;
+	    case 4: c = bytes4 (s + i); break;
+	    case 5: c = bytes5 (s + i); break;
+	    case 6: c = bytes6 (s + i); break;
 	    default: c = 32;
 	}
 

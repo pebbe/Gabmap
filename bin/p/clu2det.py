@@ -50,9 +50,6 @@ defaults = '''
 207F  SUPERSCRIPT LATIN SMALL LETTER N
 '''.strip().split('\n')
 
-_labelsImp = ('Importance', 'Representativeness', 'Distinctiveness')
-_labelsAFs = ['Adjusted F<sub>{}</sub> score', 'Adjusted Precision', 'Adjusted Recall']
-
 
 #| functions
 
@@ -81,7 +78,7 @@ def _setup():
 
     if os.access('../map/PSEUDOMAP', os.F_OK):
         fp = open('version', 'wt')
-        fp.write('fastaf\n')
+        fp.write('fast\n')
         fp.close()
         open('data-1.txt', 'wt').close()
         return
@@ -160,7 +157,7 @@ def _setup():
             pass
 
     fp = open('version', 'wt')
-    fp.write('fastaf\n')
+    fp.write('fast\n')
     fp.close()
 
 
@@ -324,27 +321,21 @@ def makepage(path):
             &nbsp;<br>
             ''')
 
-        s1 = s2 = s3 = s4 = ''
+        s1 = s2  = ''
         s = ' selected="selected"'
-        if mtd == 'fastaf':
+        if mtd == 'fast':
             s1 = s
-        elif mtd == 'fast':
-            s2 = s
-        elif mtd == 'slowaf':
-            s3 = s
         elif mtd == 'slow':
-            s4 = s
+            s2 = s
         sys.stdout.write('''
         Method:
         <select name="method">
-        <option value="fastaf"{}>raw data - adjusted F score</option>
-        <option value="fast"{}>raw data - importance</option>
-        '''.format(s1, s2))
+        <option value="fast"{}>raw data</option>
+        '''.format(s1))
         if not isPseudo:
             sys.stdout.write('''
-            <option value="slowaf"{}>localised data - adjusted F score</option>
-            <option value="slow"{}>localised data - importance</option>
-            '''.format(s3, s4))
+            <option value="slow"{}>localised data</option>
+            '''.format(s2))
         sys.stdout.write('''
         </select>{}
         <p>
@@ -463,25 +454,18 @@ def makepage(path):
                 fp = open('_/' + curitem + '.utxt', 'rt')
                 lines = fp.readlines()
                 fp.close()
-                if mtd.endswith('af'):
-                    ll = _labelsAFs
-                    _labelsAFs[0] = _labelsAFs[0].format(Beta)
-                    hlp = 'adjustedfscore'
-                else:
-                    ll = _labelsImp
-                    hlp = 'importance'
                 sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
                 Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>{3[0]}:&nbsp;  <td>{1[0]}{2}
-                <tr><td>&mdash; {3[1]}:&nbsp; <td>{1[1]}
-                <tr><td>&mdash; {3[2]}:&nbsp;    <td>{1[2]}
+                <tr><td>Adjusted F<sub>{3}</sub> score:&nbsp;  <td>{1[0]}{2}
+                <tr><td>&mdash; Adjusted Precision:&nbsp; <td>{1[1]}
+                <tr><td>&mdash; Adjusted Recall:&nbsp;    <td>{1[2]}
                 </table>
                 Patterns with forms:
                 <ul>
-                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help(hlp), ll))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('adjustedfscore'), Beta))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
@@ -588,20 +572,16 @@ def makepage(path):
                     fp = open('reresults.txt', 'rt')
                     results = fp.read().split()
                     fp.close()
-                    if mtd.endswith('af'):
-                        ll = _labelsAFs
-                    else:
-                        ll = _labelsImp
                     sys.stdout.write(('''
                     &nbsp;<br>
                     Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>{2[0]}:&nbsp;  <td>{1[0]}
-                    <tr><td>&mdash; {2[1]}:&nbsp; <td>{1[1]}
-                    <tr><td>&mdash; {2[2]}:&nbsp;    <td>{1[2]}
+                    <tr><td>Adjusted F<sub>{2}</sub> score:&nbsp;  <td>{1[0]}
+                    <tr><td>&mdash; Adjusted Precision:&nbsp; <td>{1[1]}
+                    <tr><td>&mdash; Adjusted Recall:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    ''').format(regex, results, ll))
+                    ''').format(regex, results, Beta))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:

@@ -19,7 +19,7 @@
  *
  */
 
-#define my_VERSION "0.91"
+#define my_VERSION "0.93"
 
 #define __NO_MATH_INLINES
 
@@ -54,9 +54,9 @@ typedef struct {
 	used;
     double
 	*i,         /*  counts per place, possibly interpolated   */
-        I,          /*  Importance                                */
-	R,          /*  Representativeness                        */
-	D;          /*  Distinctiveness                           */
+        AF,         /*  Adjusted F score                          */
+	AP,         /*  Adjusted precision                        */
+	AR;         /*  Adjusted recall                           */
 } PATTERN_;
 
 typedef struct {
@@ -88,7 +88,7 @@ LBLS_
 double
     **dst,
     *ppp,
-    beta = 0,
+    Beta = 0,
     Limit = 0,
     Sep = 0;
 
@@ -157,21 +157,22 @@ int main (int argc, char *argv [])
 	old_o;
     double
 	d,
-	b2,
 	sum1,
 	sum2,
 	TP,
 	FP,
 	FN,
 	TN,
-	I,
+	P,
 	R,
-	RO,
-	D,
-	RelSize,
-	oldI,
-	oldR,
-	oldD;
+	AF,
+	AP,
+	AR,
+	BP,
+	BR,
+	oldAF,
+	oldAP,
+	oldAR;
     LBLI_
 	*p;
 
@@ -190,11 +191,12 @@ int main (int argc, char *argv [])
 	}
     }
 
-    if (argc != 4)
+    if (argc != 5)
 	syntax ();
 
-    Limit = atof (argv [2]);
-    Sep = atof (argv [3]);
+    Beta = atof (argv [2]);
+    Limit = atof (argv [3]);
+    Sep = atof (argv [4]);
 
 
     /* read data */
@@ -312,8 +314,9 @@ int main (int argc, char *argv [])
 
     /* score all patterens */
 
-    b2 = beta * beta;
-    RelSize = ((double) nPlacesIn) / (double) nPlaces;
+    /* Baseline precision */
+    BP = ((double) nPlacesIn) / (double) nPlaces;
+
     for (i = 0; i < n_patterns; i++) {
 
 	/* skip it if pattern is too rare */
@@ -358,16 +361,18 @@ int main (int argc, char *argv [])
 	    continue;
 	}
 
+ 	P = TP / (TP + FP);
 	R = TP / (TP + FN);
-	RO = TP / (TP + FP);
-	D = (RO - RelSize) / (1 - RelSize);
-	if (D > 0)
-	    I = (R + D) / 2.0;
+	BR = ((double)(TP + FP)) / (double)(nPlaces);
+	AP = (P - BP) / (1.0 - BP);
+	AR = (R - BR) / (1.0 - BR);
+	if (AP > 0 && AR > 0)
+	    AF = (AP + Beta * AR) / (1.0 + Beta);
 	else
-	    I = 0.0;
-	patterns [i].I = I;
-	patterns [i].R = R;
-	patterns [i].D = D;
+	    AF = 0.0;
+	patterns [i].AF = AF;
+	patterns [i].AP = AP;
+	patterns [i].AR = AR;
 
     }
 
@@ -380,7 +385,7 @@ int main (int argc, char *argv [])
     for (i = 0; i < nPlaces; i++)
 	ppp[i] = 0.0;
 
-    oldI = oldR = oldD = 0.0;
+    oldAF = oldAP = oldAR = 0.0;
     old_i = old_o = 0;
     for (i = 0; i < n_patterns; i++) {
 	if (! patterns [i].used)
@@ -402,32 +407,34 @@ int main (int argc, char *argv [])
 		TN += 1 - d;
 	    }
 	}
+ 	P = TP / (TP + FP);
 	R = TP / (TP + FN);
-	RO = TP / (TP + FP);
-	D = (RO - RelSize) / (1 - RelSize);
-	if (D > 0)
-	    I = (R + D) / 2.0;
+	BR = ((double)(TP + FP)) / (double)(nPlaces);
+	AP = (P - BP) / (1.0 - BP);
+	AR = (R - BR) / (1.0 - BR);
+	if (AP > 0 && AR > 0)
+	    AF = (AP + Beta * AR) / (1.0 + Beta);
 	else
-	    I = 0.0;
+	    AF = 0.0;
 
 	/* does this pattern increase the score enough? */
-	if (I < oldI * Limit) {
+	if (AF < oldAF * Limit) {
 	    patterns [i].rejected = 1;
 	    continue;
 	}
 
 	/* use it, save the updated counts and the new score */
-	oldI = I;
-	oldR = R;
-	oldD = D;
+	oldAF = AF;
+	oldAP = AP;
+	oldAR = AR;
 	old_i += patterns [i].ii;
 	old_o += patterns [i].oo;
 	for (j = 0; j < nPlaces; j++)
 	    ppp [j] = patterns [i].i [j];
 	fprintf (fp, "%.2f %.2f %.2f %s %i:%i",
-		 patterns [i].I,
-		 patterns [i].R,
-		 patterns [i].D,
+		 patterns [i].AF,
+		 patterns [i].AP,
+		 patterns [i].AR,
 		 escape ((unsigned char *) patterns [i].s),
 		 patterns [i].ii,
 		 patterns [i].ii + patterns [i].oo);
@@ -453,7 +460,7 @@ int main (int argc, char *argv [])
 
     /* print the total score */
 
-    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldI, oldR, oldD, old_i, old_i + old_o);
+    fprintf (fp, "\n%.2f %.2f %.2f %i:%i\n", oldAF, oldAP, oldAR, old_i, old_i + old_o);
 
 
     
@@ -566,9 +573,9 @@ void syntax ()
 	"\n"
 	"Version " my_VERSION "\n"
 	"\n"
-	"Usage: %s datafile limit sepvalue\n"
+	"Usage: %s datafile beta limit sepvalue\n"
 	"\n"
-	"Example: %s ../data/_/apple.data 1.02 3.0\n"
+	"Example: %s ../data/_/apple.data 1.05 1.02 3.0\n"
 	"\n",
 	programname,
 	programname
@@ -639,8 +646,8 @@ int cmppat (void const *p1, void const *p2)
     double
 	f1,
 	f2;
-    f1 = ((PATTERN_ *)p1)->I;
-    f2 = ((PATTERN_ *)p2)->I;
+    f1 = ((PATTERN_ *)p1)->AF;
+    f2 = ((PATTERN_ *)p2)->AF;
     if (f1 > f2)
 	return -1;
     if (f1 < f2)
