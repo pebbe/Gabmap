@@ -15,7 +15,7 @@ import u.path, u.html, u.config, u.distribute, u.setChar
 
 #| globals
 
-title = 'cluster determinants - development'
+title = 'cluster determinants'
 
 defaults = '''
 02B0  MODIFIER LETTER SMALL H
@@ -189,7 +189,7 @@ def makepage(path):
     sys.stdout.write('''
     {}
     <div class="pgcludet">
-    <h2>cluster determinants - development</h2>
+    <h2>cluster determinants</h2>
     '''.format(crumbs))
 
     if os.access('OK', os.F_OK):
