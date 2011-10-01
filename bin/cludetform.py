@@ -15,6 +15,7 @@ import os, re, sys, time
 
 import u.html, u.config, u.path, u.queue, u.myCgi, u.hebci
 from u.login import username
+from p.cludetparms import *
 
 #| globals
 
@@ -43,7 +44,7 @@ def setNumber():
     make = fp.read()
     fp.close()
     u.queue.enqueue(path + '/cludet', make.format({'appdir': u.config.appdir, 'python3': u.config.python3, 'n': n}))
-    for i in 'important.txt currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split():
+    for i in 'score.txt currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split():
         if os.access(i, os.F_OK):
             os.remove(i)
     u.queue.run()
@@ -68,14 +69,29 @@ def setCluster():
             if getval('chr{}'.format(line.strip())):
                 fpout.write(line)
         fpout.close()
-        fpin.close()        
+        fpin.close()
+
+    mm = getval('method')
+    fp = open('version', 'wt')
+    fp.write(mm + '\n')
+    fp.close()
+
     makes = 'OK: ../diff/OK\n'
-    makes += '\tfor i in ../data/_/*.data; do determinants {} $$i > _/`basename $$i .data`.utxt; done\n'.format(c)
-    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | grep -v ^_ | cdsort > important.txt\n'.format(c)
+    makes += '\tdetpre.py\n'
+    if mm == 'fast':
+        params = '{} {}'.format(FastBeta, Limit)
+        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+    else:
+        params = '{} {} {}'.format(SlowBeta, Limit, Sep)
+        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+    makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/cludet', makes)
     u.queue.run()
     time.sleep(2)
+    fp = open('currentparms', 'wt')
+    fp.write(params + '\n')
+    fp.close()
     for i in 'currentlist.txt currentselect.txt distmap.eps distmap.ex currentregex.txt'.split():
         if os.access(i, os.F_OK):
             os.remove(i)
@@ -113,67 +129,168 @@ def setRegex():
     target, datafile = fp.read().split()[1:]
     fp.close()
 
-    inpart = {}
-    outpart = {}
+    partition = set()
 
     fp = open('clgroups.txt', 'rt', encoding='iso-8859-1')
     for line in fp:
         a, b = line.split(None, 1)
-        b = _unquote(b)
         if a == target:
-            inpart[b] = False
-        else:
-            outpart[b] = False
+            partition.add(_unquote(b))
     fp.close()
 
     matches = {}
+    matchesin = {}
 
-    fp = open('../data/_/' + datafile + '.data', 'rb')
-    encoding = 'iso-8859-1'
-    for line in fp:
-        if line.startswith(b'%utf8'):
-            encoding = 'utf-8'
-        elif line[:1] == b':':
-            lbl = line.decode('iso-8859-1')[1:].strip()
-        elif line[:1] == b'-':
-            item = line.decode(encoding)[1:].strip()
-            if RE.search(item):
-                if not item in matches:
-                    matches[item] = set()
-                matches[item].add(lbl)
-                if lbl in inpart:
-                    inpart[lbl] = True
+    mtd = open('version', 'rt').read().strip()
+    if mtd == 'fast':
+
+        fp = open('currentparms', 'rt')
+        params = fp.read().split()
+        fp.close()
+        beta = float(params[0])
+
+        TP = 0
+        FP = 0
+        FN = 0
+        TN = 0
+
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = line.decode('iso-8859-1')[1:].strip()
+            elif line[:1] == b'-':
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    if not item in matches:
+                        matches[item] = 0
+                        matchesin[item] = 0
+                    matches[item] += 1
+                    if lbl in partition:
+                        matchesin[item] += 1
+                        TP += 1
+                    else:
+                        FP += 1
                 else:
-                    outpart[lbl] = True
+                    if lbl in partition:
+                        FN += 1
+                    else:
+                        TN += 1
+        fp.close()
 
-    fp.close()
+        fp = open('reresults.txt', 'wt')
 
-    fp = open('reresults.txt', 'wt')
+        if TP + FP == 0:
+            fp.write('0.00 0.00 0.00\n')
+        else:
+            p = (TP + 1) / (TP + FP + 2)
+            r = (TP + 1) / (TP + FN + 2)
+            bp = (TP + FN + 2) / (TP + FN + FP + TN + 4)
+            br = (TP + FP + 2) / (TP + FN + FP + TN + 4)
+            ap = (p - bp) / (1 - bp)
+            ar = (r - br) / (1 - br)
+            if ap < 0 or ar < 0:
+                af = 0
+            else:
+                af = (ap + beta * ar) / (1 + beta)
+            fp.write('{:.2f} {:.2f} {:.2f}\n'.format(af, ap, ar))
 
-    imatch = sum([1 for x in inpart if inpart[x]])
-    omatch = sum([1 for x in outpart if outpart[x]])
-    iother = len(inpart) - imatch
-    oother = len(outpart) - omatch
+        fp.close()
 
-    if imatch + omatch == 0:
-        fp.write('0.000 0.000 0.000\n')
-    else:
-        Repres = imatch / (imatch + iother)
-        RelOcc = imatch / (imatch + omatch)
-        RelSize = (imatch + iother) /  (imatch + iother + omatch + oother)
-        Distinct = (RelOcc - RelSize) / (1.0 - RelSize)
-        Import = (Repres + Distinct) / 2.0
-        if Distinct < 0.0:
-            Import = 0
-        fp.write('{:.3f} {:.3f} {:.3f}\n'.format(Import, Distinct, Repres))
+    else: # mtd == 'slow'
+        import math, pickle
 
-    fp.close()
+        fp = open('currentparms', 'rt')
+        params = fp.read().split()
+        fp.close()
+
+        beta = float(params[0])
+        Sep = float(params[2])
+
+        fp = open('dst.pickle', 'rb')
+        labels, idx, dst = pickle.load(fp)
+        fp.close()
+
+        nPlaces = len(labels)
+        nPlacesIn = len(partition)
+
+        RelSize = nPlacesIn / nPlaces
+
+        Counts = []
+        for i in range(nPlaces):
+            Counts.append([0, 0])
+
+        fp = open('../data/_/' + datafile + '.data', 'rb')
+        encoding = 'iso-8859-1'
+        for line in fp:
+            if line.startswith(b'%utf8'):
+                encoding = 'utf-8'
+            elif line[:1] == b':':
+                lbl = idx[line.decode('iso-8859-1')[1:].strip()]
+            elif line[:1] == b'-':
+                Counts[lbl][1] += 1
+                item = line.decode(encoding)[1:].strip()
+                if RE.search(item):
+                    Counts[lbl][0] += 1
+                    if not item in matches:
+                        matches[item] = 0
+                        matchesin[item] = 0
+                    matches[item] += 1
+                    if labels[lbl] in partition:
+                        matchesin[item] += 1
+        fp.close()
+
+        missing = [False] * nPlaces
+        for i in range(nPlaces):
+            if Counts[i][1] == 0:
+                missing[i] = True
+
+        for i in range(nPlaces):
+            if missing[i]:
+                sum0 = 0
+                sum1 = 0
+                for j in range(nPlaces):
+                    if not missing[j]:
+                        d = math.pow(dst[i][j], Sep)
+                        sum0 += Counts[j][0] / d
+                        sum1 += Counts[j][1] / d
+                Counts[i][0] = sum0
+                Counts[i][1] = sum1
+
+        TP = FP = FN = TN = 0.0
+        for i in range(nPlaces):
+            lbl = labels[i]
+            if lbl in partition:
+                tp = Counts[i][0] / Counts[i][1]
+                TP += tp
+                FN += 1 - tp
+            else:
+                fp = Counts[i][0] / Counts[i][1]
+                FP += fp
+                TN += 1 - fp
+
+        p = TP / (TP + FP)
+        r = TP / (TP + FN)
+        bp = (TP + FN) / (TP + FN + FP + TN)
+        br = (TP + FP) / (TP + FN + FP + TN)
+        ap = (p - bp) / (1 - bp)
+        ar = (r - br) / (1 - br)
+        if ap < 0 or ar < 0:
+            af = 0
+        else:
+            af = (ap + beta * ar) / (1 + beta)
+
+        fp = open('reresults.txt', 'wt')
+        fp.write('{:.2f} {:.2f} {:.2f}\n'.format(af, ap, ar))
+        fp.close()
+
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):
-        fp.write('{}\t{}\n'.format(len(matches[i]), i))
+        fp.write('{}:{}\t{}\n'.format(matchesin[i], matches[i], i))
     fp.close()
-                
 
 
 #| main

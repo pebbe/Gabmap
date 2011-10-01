@@ -42,9 +42,9 @@ Pragma: no-cache
 
 ''')
 
-fp = open('important.txt', 'rt')
+fp = open('score.txt', 'rt')
 for line in fp:
     a, b, c, d, e = line.split()
-    sys.stdout.write('{} - {} - {} - {} ({})\n'.format(a, b, c, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
+    sys.stdout.write('{} - {} - {}  |  {}  {}\n'.format(a, b, c, re.sub('_([0-9]+)_', num2chr, e[2:-5]), d))
 fp.close()
 

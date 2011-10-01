@@ -1,5 +1,0 @@
-#!/bin/sh
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
-$PYTHON clu2detlist.py

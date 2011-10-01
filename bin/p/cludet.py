@@ -15,7 +15,7 @@ import u.path, u.html, u.config, u.distribute, u.setChar
 
 #| globals
 
-title = 'cluster determinants'
+title = 'cluster determinants - development'
 
 defaults = '''
 02B0  MODIFIER LETTER SMALL H
@@ -53,6 +53,14 @@ defaults = '''
 
 #| functions
 
+def _unquote(s):
+    s = s.strip()
+    if len(s) < 2:
+        return s
+    if s[0] != '"' or s[-1] != '"':
+        return s
+    return re.sub(r'\\(.)', r'\1', s[1:-1]).strip()
+
 def _num2chr(m):
     return '{:c}'.format(int(m.group(1)))
 
@@ -63,6 +71,95 @@ def _toStrHtml(s, em=False):
         else:
             return ''
     return u.html.escape(re.sub('_([0-9]+)_', _num2chr, s))
+
+def _setup():
+    if os.access('data-1.txt', os.F_OK) and os.access('dst.pickle', os.F_OK):
+        return
+
+    if os.access('../map/PSEUDOMAP', os.F_OK):
+        fp = open('version', 'wt')
+        fp.write('fast\n')
+        fp.close()
+        open('data-1.txt', 'wt').close()
+        return
+
+    labels = []
+    idx = {}
+    nLabels = 0
+
+    fp = open('../data/labels.txt', 'rt', encoding='iso-8859-1')
+    for line in fp:
+        labels.append(line.split(None, 1)[1].strip())
+        idx[labels[nLabels]] = nLabels
+        nLabels += 1
+    fp.close()
+
+    fp = open('../map/map.geo', 'rt', encoding='iso-8859-1')
+    while True:
+        line = fp.readline().strip()
+        if line[0] != '#':
+            break
+    nMap = int(line)
+
+    mapidx = []
+    for i in range(nMap):
+        while True:
+            line = fp.readline().strip()
+            if line[0] != '#':
+                break
+        if line in idx:
+            mapidx.append(idx[line])
+        else:
+            mapidx.append(-1)
+
+    dst = []
+    for i in range(nLabels):
+        dst.append([0] * nLabels)
+
+    for i in range(1, nMap):
+        for j in range(i):
+            while True:
+                line = fp.readline().strip()
+                if line[0] != '#':
+                    break
+            if mapidx[i] < 0 or mapidx[j] < 0:
+                continue
+            d = float(line)
+            if d < 1.0:
+                d = 1.0
+            dst[mapidx[i]][mapidx[j]] = dst[mapidx[j]][mapidx[i]] = d
+    fp.close()
+
+    fp = open('data-1.txt', 'wt', encoding='iso-8859-1')
+    fp.write('{}\n'.format(nLabels))
+    for i in sorted(idx):
+        fp.write("{} {}\n".format(idx[i], i))
+    for i in range(1, nLabels):
+        for j in range(i):
+            fp.write('{}\n'.format(dst[i][j]))
+    fp.close()
+
+    # still needed for Step 4
+    import pickle
+    fp = open('dst.pickle', 'wb')
+    pickle.dump((labels, idx, dst), fp)
+    fp.close()
+
+    c = open('current', 'rt').read().split()[0]
+    fp = open('current', 'wt')
+    fp.write(c + '\n')
+    fp.close()
+
+    for i in 'score.txt important.txt'.split():
+        try:
+            os.remove(i)
+        except:
+            pass
+
+    fp = open('version', 'wt')
+    fp.write('fast\n')
+    fp.close()
+
 
 def makepage(path):
     u.path.chdir(path)
@@ -92,26 +189,31 @@ def makepage(path):
     sys.stdout.write('''
     {}
     <div class="pgcludet">
-    <h2>cluster determinants</h2>
+    <h2>cluster determinants - development</h2>
     '''.format(crumbs))
 
     if os.access('OK', os.F_OK):
+
+        _setup()
+
+        isPseudo = os.access('../map/PSEUDOMAP', os.F_OK)
+
+        fp = open('version', 'rt')
+        mtd = fp.read().strip()
+        fp.close()
+
+        try:
+            fp = open('currentparms', 'rt')
+            Beta = fp.read().split()[0]
+            fp.close()
+        except:
+            Beta = '&beta;'
+
 
         if os.access('../data/UTF', os.F_OK):
             encoding = 'utf-8'
         else:
             encoding = 'iso-8859-1'
-
-        sys.stdout.write('''<div style="padding:1em;margin:1em 0px;border:3px dashed #e00000">
-        <b>Warning:</b> Due to recent changes in Gabmap, this part is currently not working well.
-        The results it gives may be poorly.<br>
-        &nbsp;<br>
-        At the moment we are working on an improved version of this part. Are you interested
-        in test-driving the new version, and giving us some feedback? Then please contact:
-        support@gabmap.nl
-        </div>
-        ''')
-
 
         sys.stdout.write('''<div class="info">
         Here you can discover what linguistic features are characteristic for certain areas.<br>
@@ -159,11 +261,11 @@ def makepage(path):
 
         sys.stdout.write('''
         <p>
-	<form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="p" value="{}">
-	<input type="hidden" name="action" value="number">
-	Number of clusters:
-	<select name="n">
+        <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="{}">
+        <input type="hidden" name="action" value="number">
+        Number of clusters:
+        <select name="n">
         '''.format(u.config.appurl, project))
         n = int(current[0])
         for i in range(2, 13):
@@ -173,8 +275,8 @@ def makepage(path):
                 sys.stdout.write('<option>{}</option>\n'.format(i))
         sys.stdout.write('''
         </select>
-	<input type="submit" value="Change number">
-	</form>
+        <input type="submit" value="Change number">
+        </form>
         <p>
         ''')
 
@@ -185,9 +287,9 @@ def makepage(path):
 
         sys.stdout.write('''
         <h3 id="s2">Step 2: select cluster</h3>
-	<form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="p" value="{}">
-	<input type="hidden" name="action" value="cluster">
+        <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="{}">
+        <input type="hidden" name="action" value="cluster">
         '''.format(u.config.appurl, project))
 
         if accents:
@@ -219,23 +321,43 @@ def makepage(path):
             &nbsp;<br>
             ''')
 
+        s1 = s2  = ''
+        s = ' selected="selected"'
+        if mtd == 'fast':
+            s1 = s
+        elif mtd == 'slow':
+            s2 = s
         sys.stdout.write('''
-	Clusters in plot:
-        '''.format(u.config.appurl, project))
+        Method:
+        <select name="method">
+        <option value="fast"{}>raw data</option>
+        '''.format(s1))
+        if not isPseudo:
+            sys.stdout.write('''
+            <option value="slow"{}>localised data</option>
+            '''.format(s2))
+        sys.stdout.write('''
+        </select>{}
+        <p>
+        '''.format(u.html.help('cludetfastslow')))
 
+        sys.stdout.write('''
+        Clusters in plot:
+        '''.format(u.config.appurl, project))
         for i in range(1, n + 1):
             if i == curclnum:
                 c = ' checked="checked"'
             else:
                 c = ''
             sys.stdout.write('<span class="s{0}"><input type="radio" name="c" value="{0}"{1}></span>\n'.format(i, c))
+
         sys.stdout.write('''
-	<input type="submit" value="Select cluster">
-	</form>
+        <input type="submit" value="Select cluster">
+        </form>
         <p>
         ''')
 
-        if os.access('important.txt', os.F_OK):
+        if os.access('score.txt', os.F_OK):
 
             if len(current) > 2:
                 curitem = current[2]
@@ -243,49 +365,63 @@ def makepage(path):
                 curitem = ''
 
             sys.stdout.write('''
-            <!-- <h3 id="s3">step 3: select important item</h3> -->
             <h3 id="s3">step 3: select item</h3>
             <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
-            Items sorted by importance:
+            Items sorted by value:
             <select name="item">
             '''.format(u.config.appurl, project))
-            fp = open('important.txt', 'rt')
+            fp = open('score.txt', 'rt')
             for line in fp:
-                a, b, c, d, e = line.split()
-                if d == '0':
+                a, b, c, f, g = line.split()
+                if f.split(':')[0] == '0':
                     continue
-                f = e[2:-5]
-                if f == curitem:
+                gg = g[2:-5]
+                if gg == curitem:
                     sel = ' selected="selected"'
                 else:
                     sel = ''
-                sys.stdout.write('<option value="{}"{}>{} - {} - {} - {} ({})</option>\n'.format(
-                    f, sel, a, b, c, _toStrHtml(f), d))
+                sys.stdout.write('<option value="{}"{}>{} &nbsp; {} &nbsp; {}</option>\n'.format(
+                    gg, sel, a, _toStrHtml(gg), f))
             sys.stdout.write('''
             </select>
             <input type="submit" value="Select item">
             <br>&rarr; <a href="cludetlist?p={}" target="_blank">download as list</a>
-            <!-- <br>&rarr; <a href="help?s=cludetscores" target="_blank">about importance</a> -->
             </form>
             <p>
             '''.format(project))
 
             if curitem:
                 if not os.access('currentlist.txt', os.F_OK):
+
+                    partition = set()
+                    fp = open('clgroups.txt', 'rt', encoding='iso-8859-1')
+                    for line in fp:
+                        a, b = line.split(None, 1)
+                        if int(a) == curclnum:
+                            partition.add(_unquote(b))
+                    fp.close()
+
                     variants = {}
+                    variantsin = {}
                     fp = open('../data/_/' + curitem + '.data', 'rb')
                     for line in fp:
-                        if line[:1] == b'-':
+                        if line[:1] == b':':
+                            lbl = line[1:].strip().decode('iso-8859-1')
+                        elif line[:1] == b'-':
                             v = line[1:].strip().decode(encoding)
                             if not v in variants:
                                 variants[v] = 0
+                                variantsin[v] = 0
                             variants[v] += 1
+                            if lbl in partition:
+                                variantsin[v] += 1
+
                     fp.close()
                     fp = open('currentlist.txt', 'wt', encoding='utf-8')
                     for v in sorted(variants):
-                        fp.write('{}\t{}\n'.format(variants[v], v))
+                        fp.write('{}:{}\t{}\n'.format(variantsin[v], variants[v], v))
                     fp.close()
 
             if curitem:
@@ -314,33 +450,35 @@ def makepage(path):
                 for line in fp:
                     a, b = line.split(None, 1)
                     wrdcount[b.strip()] = a
+                fp.close()
                 fp = open('_/' + curitem + '.utxt', 'rt')
                 lines = fp.readlines()
                 fp.close()
-                sys.stdout.write('''
+                sys.stdout.write(('''
                 <table style="margin:1em 0px;padding:0px;border:0px" cellpadding="0" cellspacing="0" border="0">
                 <tr valign="top"><td style="padding-right:4em">
-                Current item: {0}<br>
+                Current item: {0}
                 <table cellspacing="0" cellpadding="0" border="0">
-                <tr><td>Importance:&nbsp;  <td>{1[0]}
-                <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
-                <tr><td>Representativeness:&nbsp;    <td>{1[2]}
+                <tr><td>Adjusted F<sub>{3}</sub> score:&nbsp;  <td>{1[0]}{2}
+                <tr><td>&mdash; Adjusted Precision:&nbsp; <td>{1[1]}
+                <tr><td>&mdash; Adjusted Recall:&nbsp;    <td>{1[2]}
                 </table>
                 Patterns with forms:
                 <ul>
-                '''.format(_toStrHtml(curitem), lines[-1].split()))
+                ''').format(_toStrHtml(curitem), lines[-1].split(), u.html.help('adjustedfscore'), Beta))
                 for line in lines[:-1]:
                     if line[0] == '[':
                         continue
                     if line.strip():
                         a, b, c, d, e, f = line.split(None, 5)
-                        sys.stdout.write('<li>{} - {} - {} - <span class="ipa2">{}</span> {}\n\n'.format(
-                            a, b, c, _toStrHtml(d, True), e))
+                        sys.stdout.write('''<li><span class="ipa2">{}</span> &nbsp; {}<br>
+                        {} - {} - {}<br>
+                        '''.format( _toStrHtml(d, True), e, a, b, c))
                         wrds = [re.sub('_([0-9]+)_', _num2chr, w) for w in f.split() if w != '[' and w != '|' and w != ']']
                         if len(wrds) > 1 or _toStrHtml(d) != u.html.escape(wrds[0]):
                             sys.stdout.write('<ul>\n')
                             for wrd in sorted(wrds):
-                                sys.stdout.write('<li><span class="ipa2">{}</span> ({})\n'.format(
+                                sys.stdout.write('<li><span class="ipa2">{}</span> &nbsp; {}\n'.format(
                                     u.html.escape(wrd), wrdcount[wrd]))
                             sys.stdout.write('</ul>\n')
                 sys.stdout.write('''
@@ -355,7 +493,9 @@ def makepage(path):
                     ''')
                     fp = open('currentreject.txt', 'rt')
                     for line in fp:
-                        sys.stdout.write('<span class="ipa2">' + _toStrHtml(line.strip(), True) + '</span><br>\n')
+                        line = line.strip()
+                        a, b = line.rsplit(None, 1)
+                        sys.stdout.write('<span class="ipa2">{}</span> &nbsp; {}<br>\n'.format(_toStrHtml(a, True), b))
                     fp.close()
                     sys.stdout.write('</td>\n')
                 sys.stdout.write('</tr>\n</table>\n')
@@ -432,16 +572,16 @@ def makepage(path):
                     fp = open('reresults.txt', 'rt')
                     results = fp.read().split()
                     fp.close()
-                    sys.stdout.write('''
+                    sys.stdout.write(('''
                     &nbsp;<br>
-                    Current regular expression: <span class="ipa2">{0}</span>
+                    Current regular expression: <span class="ipa2">{0}</span><br>
                     <table cellspacing="0" cellpadding="0" border="0">
-                    <tr><td>Importance:&nbsp;  <td>{1[0]}
-                    <tr><td>Distinctiveness:&nbsp; <td>{1[1]}
-                    <tr><td>Representativeness:&nbsp;    <td>{1[2]}
+                    <tr><td>Adjusted F<sub>{2}</sub> score:&nbsp;  <td>{1[0]}
+                    <tr><td>&mdash; Adjusted Precision:&nbsp; <td>{1[1]}
+                    <tr><td>&mdash; Adjusted Recall:&nbsp;    <td>{1[2]}
                     </table>
                     Matching forms:
-                    '''.format(regex, results))
+                    ''').format(regex, results, Beta))
                     found = False
                     fp = open('rematches.txt', 'rt', encoding='utf-8')
                     for line in fp:
@@ -449,7 +589,7 @@ def makepage(path):
                             sys.stdout.write('<ul>\n')
                             found = True
                         a, b = line.split(None, 1)
-                        sys.stdout.write('<li><span class="ipa2">{}</span> ({})\n'.format(u.html.escape(b.strip()), a))
+                        sys.stdout.write('<li><span class="ipa2">{}</span> &nbsp; {}\n'.format(u.html.escape(b.strip()), a))
                     fp.close()
                     if found:
                         sys.stdout.write('</ul>\n')
