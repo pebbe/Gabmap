@@ -63,7 +63,8 @@ def makepage(path):
             sys.stdout.write('''
             <p>
             &rarr; <a href="mapdstget?p={0}&f=tbl">download distances in table format</a><br>
-            &rarr; <a href="mapdstget?p={0}&f=l04">download distances in L04 format</a>
+            &rarr; <a href="mapdstget?p={0}&f=l04">download distances in L04 format</a><br>
+            note: these are <em>geographic</em> distances in kilometers
             <p>
             '''.format(pnum))
 
