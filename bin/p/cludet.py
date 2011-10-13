@@ -321,25 +321,23 @@ def makepage(path):
             &nbsp;<br>
             ''')
 
-        s1 = s2  = ''
-        s = ' selected="selected"'
-        if mtd == 'fast':
-            s1 = s
-        elif mtd == 'slow':
-            s2 = s
-        sys.stdout.write('''
-        Method:
-        <select name="method">
-        <option value="fast"{}>raw data</option>
-        '''.format(s1))
-        if not isPseudo:
+        if isPseudo:
+            sys.stdout.write('<input type="hidden" name="method" value="fast">\n')
+        else:
+            s1 = s2  = ''
+            s = ' selected="selected"'
+            if mtd == 'fast':
+                s1 = s
+            elif mtd == 'slow':
+                s2 = s
             sys.stdout.write('''
+            Method:
+            <select name="method">
+            <option value="fast"{}>raw data</option>
             <option value="slow"{}>localised data</option>
-            '''.format(s2))
-        sys.stdout.write('''
-        </select>{}
-        <p>
-        '''.format(u.html.help('cludetfastslow')))
+            </select>{}
+            <p>
+            '''.format(s1, s2, u.html.help('cludetfastslow')))
 
         sys.stdout.write('''
         Clusters in plot:
