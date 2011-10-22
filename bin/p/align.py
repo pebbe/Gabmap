@@ -239,7 +239,7 @@ def makepage(path):
                     if rownum == 3:
                         sys.stdout.write('<td class="total">&nbsp;{}&nbsp;\n'.format(line.split('\t')[-1]))
                     else:
-                        sys.stdout.write('<td class="white">&nbsp\n')
+                        sys.stdout.write('<td class="white">&nbsp;\n')
             fp.close()
             if page:
                 sys.stdout.write('<p>Page: ')
