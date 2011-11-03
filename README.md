@@ -15,4 +15,4 @@ To run Gabmap on your own web server, you can download it from Github,
 but at the moment, there is no installation guide.
 
 - - -
-Athor: [Peter Kleiweg](http://www.let.rug.nl/~kleiweg/)
+Author: [Peter Kleiweg](http://www.let.rug.nl/~kleiweg/)
