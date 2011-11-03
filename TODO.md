@@ -1,14 +1,14 @@
 **Methods:**
 
 <table border="1" cellpadding="4">
-<tr><td> lev          <td>   String Edit Distance — Plain
-<tr><td> levfeat-tok  <td>   String Edit Distance — Tokenized
-<tr><td> levfeat-user <td>   String Edit Distance — User defined
-<tr><td> bin          <td>   Binary comparison
-<tr><td> giw          <td>   Gewichteter Identitätswert
-<tr><td> num          <td>   Numeric distance — not normalised
-<tr><td> numnorm      <td>   Numeric distance — normalised by column
-<tr><td> dif          <td>   User supplied differences — Method unknown
+<tr><td> `lev`          <td>   String Edit Distance — Plain
+<tr><td> `levfeat-tok`  <td>   String Edit Distance — Tokenized
+<tr><td> `levfeat-user` <td>   String Edit Distance — User defined
+<tr><td> `bin`          <td>   Binary comparison
+<tr><td> `giw`          <td>   Gewichteter Identitätswert
+<tr><td> `num`          <td>   Numeric distance — not normalised
+<tr><td> `numnorm`      <td>   Numeric distance — normalised by column
+<tr><td> `dif`          <td>   User supplied differences — Method unknown
 </table>
 
 Let op: Na belangrijke veranderingen testen met PA-euro om te zien of er
