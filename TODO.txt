@@ -169,6 +169,8 @@ Implementatie
 Overigen
  * Handleiding schrijven voor downloaden en installeren van de software
    vanaf github
+ * Admin guide
+   + crontab
 
 ================================================================
 
