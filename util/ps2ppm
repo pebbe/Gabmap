@@ -85,7 +85,7 @@ foreach $_ (@postscript) {
         $level--;
     }
 }
-$found or die "\nBoundingBox not found in $file.ps\n\n";
+$found or die "\nBoundingBox not found in $infile\n\n";
 
 if ($opt_O) {
     if ($opt_O =~ /^portrait/i) {
