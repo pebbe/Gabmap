@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 for PY in *.py
 do
     SH=`basename $PY .py`
     if [ ! -e $SH ]
     then
-	echo '#!/bin/sh' > $SH
+	echo '#!/bin/bash' > $SH
 	echo 'source INIT.sh' >> $SH
 	echo 'export PYTHON=$PYTHON3' >> $SH
 	echo 'export PYTHONPATH=$PYTHON3PATH' >> $SH
