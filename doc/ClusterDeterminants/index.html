@@ -17,9 +17,6 @@ This demonstration uses data from LAMSAS for Pennsylvania, USA
 <li>map: <a href="../../examples/Demo-Pennsylvania.kml">Demo-Pennsylvania.kml</a>
 <li>data: <a href="../../examples/Demo-Pennsylvania.utxt">Demo-Pennsylvania.utxt</a>
 </ul>
-<div class="warning">
-Warning: this documentation is outdated.
-</div>
 </div>
 
 <div>
@@ -58,8 +55,7 @@ of
 <p>
 Some diacritics can be hard to recognise. To help you, if you move your mouse over
 	it, you get to see the official Unicode name of the character,
-	for instance <tt><small><u>MODIFIER LETTER SMALL H WITH
-	HOOK</u></small></tt> for <span class="ipa2">&#689;</span>.
+	for instance <tt><small><u>MODIFIER LETTER SMALL H</u></small></tt> for <span class="ipa2">&#688;</span>.
 <p>
 <img src="screen03a.png">
 <p>
@@ -75,31 +71,32 @@ Don't select any special characters. Just pick the light
 </div>
 
 <div>
-<h3>step 3: select relevant item</h3>
+<h3>step 3: select item</h3>
 The server needs some time to score all words and their variants for the
       area you have chosen. When it is finished, you get a list of words to
-      choose from. These words are ordered by relevance for the
+      choose from. These words are ordered by score for the
       selected area, starting with
-      the most relevant word at the top. 
+      the highest scoring word at the top. 
 <p>
-After each word is a number in brackets. This is how many instances of
-	the word were found to be relevant.
+After each word there are two numbers. The second number is how many instances of
+the word were found to be relevant. The first number is how many of
+these were actually in the selected area.
 
 <p>
-Let's pick the second word, <em>Philadelphia</em>. Its score is slightly
-	less than the number one, but it has more instances:
+Let's pick the first word, <em>Philadelphia</em>.
 <p>
 <img src="screen04.png">
 </div>
 
 <div>
 After you selected a word, you get a list of all variants of that word
-      that contributed to the relevance for the area you selected (the
+      that contributed to the score for the area you selected (the
       light blue area), as well as a list with rejected patterns:
 <p>
 <img src="screen05.png">
 <p>
-You also get a distribution map for the relevant variants:
+You also get a distribution map for the relevant variants. De locations
+belonging to the selected area are marked with a dot:
 <p>
 <img src="screen06.png">
 <p>
@@ -234,7 +231,7 @@ of a word, or at the beginning of some syllables.
 <div>
 Of course, this doesn't have to be the only determining feature for this
 	area. Other words may help you find other determining features.
-	What about <em>nice day</em>? It is on the top of the list, but
+	What about <em>nice day</em>? It is near the top of the list, but
 	has no 'l' in it.
 <p>
 <img src="screen04.png">
