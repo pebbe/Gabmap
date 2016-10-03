@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Cluster determinants: Adjusted F_1.5 score</title>
+</head>
+<body>
+
+    Each pattern of each word is given a score for how well it fits with
+    the desired cluster. The actual value is not that important. What is
+    important is the relative order of the patterns based on the score.
+    It should help to find the best fitting words with a combination of
+    the best fitting patterns. Several methods of scoring have been
+    tested, and usually, the one described below gives very useful results.
+    <p>
+      <hr>
+<p>
+      The <b>Adjusted F<sub>1.5</sub> score</b> is derived from the
+      <b>F<sub>1</sub> score</b> (see: <a
+	href="https://en.wikipedia.org/wiki/F1_score">Wikipedia</a>).
+      For this application, the F<sub>1</sub> score is modified in the
+      following manners.
+    <p>
+      The F<sub>1</sub> score is based on <b>Precision</b> and
+      <b>Recall</b>, which are based on counts of true and false
+      positives and negatives. Here we add 1 to the count of each to
+      prevent a possible division by zero in some corner cases:
+      <p>
+    <blockquote>
+      TP = true positives + 1<br>
+      FP = false positives + 1<br>
+      FN = false negatives + 1<br>
+      TN = true negatives + 1
+    </blockquote>
+    <p>
+      Then, Precision P and Recall R are calculated in the standard way:
+    <p>
+    <blockquote>
+      P = TP / (TP + FP) <br>
+      R = TP / (TP + FN)
+    </blockquote>
+    <p>
+      The F<sub>1</sub> score functions well in very large datasets,
+      where the target cluster a tiny fraction of the dataset.
+      In this application, that is not the case. The target cluster can
+      be one tenth of the dataset, or as big as more than half. That's
+      why we use an <b>Adjusted Precision</b> AP and <b>Adjusted Recall</b> AR, by
+      compensating for the <b>Baseline Precision</b> BP and <b>Baseline Recall</b> BR.
+    <p>
+      Baseline precision and recall are the values you get from a random
+      sample of data:
+    <p>
+    <blockquote>
+      BP = (TP + FN) / (TP + FN + FP + TN) <br>
+      BR = (TP + FP) / (TP + FN + FP + TN)
+    </blockquote>
+    <p>
+      The adjusted values for precision and recall are:
+    <p>
+    <blockquote>
+      AP = (P &ndash; BP) / (1 &ndash; BP) <br>
+      AR = (R &ndash; BR) / (1 &ndash; BR)
+    </blockquote>
+    <p>
+      P and R always have a value in the range from 0 to 1. This is not
+      the case for AP and AR. The maximum value is still 1, but the
+      values can now be negative as well.
+    <p>
+      When AP and AR are positive, we use the formula for the <b>F<sub>&beta;</sub> score</b>, setting
+      &beta; to 1.5, to get the Adjusted F<sub>1.5</sub> score:
+    <blockquote>
+      &beta; = 1.5 <br>
+      Adjusted F<sub>1.5</sub> score = (AP + &beta; &times; AR) / (1 + &beta;)
+    </blockquote>
+    <p>
+      (Tests showed that a value of 1.5 for &beta; works relatively well.) 
+      <p>
+      When AP or AR is zero or negative, the Adjusted F<sub>1.5</sub> score is zero.
+    <p>
+    <hr>
+    <p>
+      When all patterns for a single word have their Adjusted
+      F<sub>1.5</sub> score, it's time to find the set of patterns that
+      give the highest combined score.
+    <p>
+      First, the patterns are sorted by decreasing score. We create a
+      new set, and put the first pattern in it, the pattern with the
+      highest score. The score of the set is identical to the score of
+      the first pattern.
+    <p>
+      Now, going down the list, for each pattern, we
+      calculate the Adjusted F<sub>1.5</sub> score of the set when we
+      have added the pattern to it. If it raises the score by a fraction of
+      1.01 or more, the pattern is accepted, and stays in the set. If
+      not, the pattern is rejected. Patterns down the line are always
+      tested with the set of all already accepted patterns.
+
+      
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->
