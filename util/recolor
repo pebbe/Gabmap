@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python2
 
 """
 --documentation--
@@ -13,7 +13,6 @@ __date__ = "2010/06/01"
 import cgitb; cgitb.enable(format="text")
 
 import math, sys
-from colormath.color_objects import RGBColor, HSVColor
 
 #| globals
 
@@ -21,25 +20,66 @@ axEqual = False
 
 #| functions
 
+def rgb2hsv(r, g, b):
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    d = mx - mn
+    try:
+        if r >= g and r >= b:
+            h = 60.0 * (g - b) / d
+        elif g >= b:
+            h = 60.0 * (2.0 + (b - r) / d)
+        else:
+            h = 60.0 * (4.0 + (r - g) / d)
+    except:
+        h = 0
+    while h >= 360.0:
+        h = h - 360.0
+    while h < 0.0:
+        h = h + 360.0
+    s = d / mx
+    v = mx
+    return (h, s, v)
+
+def hsv2rgb(h, s, v):
+    if s == 0:
+        return (v, v, v)
+    hi = int(h / 60.0)
+    f = h / 60.0 - hi
+    p = v * (1.0 - s)
+    q = v * (1.0 - f * s)
+    t = v * (1.0 - (1.0 - f) * s)
+    if hi == 0:
+        return (v, t, p)
+    if hi == 1:
+        return (q, v, p)
+    if hi == 2:
+        return (p, v, t)
+    if hi == 3:
+        return (p, q, v)
+    if hi == 4:
+        return (t, p, v)
+    return (v, p, q)
+
 def isNaN(f):
     return str(f) == 'nan'
 
 def recolor(r, g, b):
     if dim1:
-        r = int(math.sqrt((r - rmin) / (rmax - rmin)) * 255.99)
+        r = math.sqrt((r - rmin) / (rmax - rmin))
     else:
-        r = 181
+        r = 181 / 255.0
     if dim2:
-        g = int(math.sqrt((g - gmin) / (gmax - gmin)) * 255.99)
+        g = math.sqrt((g - gmin) / (gmax - gmin))
     else:
-        g = 181
+        g = 181 / 255.0
     if dim3:
-        b = int(math.sqrt((b - bmin) / (bmax - bmin)) * 255.99)
+        b = math.sqrt((b - bmin) / (bmax - bmin))
     else:
-        b = 181
-    hsv = RGBColor(r, g, b).convert_to('hsv')
-    rgb = HSVColor(hsv.hsv_h, hsv.hsv_s, hsv.hsv_v * hsv.hsv_v).convert_to('rgb')
-    return (rgb.rgb_r / 255.0, rgb.rgb_g / 255.0, rgb.rgb_b / 255.0)
+        b = 181 / 255.0
+    h, s, v = rgb2hsv(r, g, b)
+    r, g, b = hsv2rgb(h, s, v * v)
+    return (r, g, b)
 
 #| main
 
