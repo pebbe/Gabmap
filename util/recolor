@@ -17,6 +17,7 @@ import math, sys
 #| globals
 
 axEqual = False
+fromMDS = False
 
 #| functions
 
