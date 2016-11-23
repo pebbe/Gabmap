@@ -4,7 +4,7 @@
 
 - - -
 
-The main website voor Gabmap is [gabmap.nl](http://www.gabmap.nl/),
+The main website for Gabmap is [gabmap.nl](http://www.gabmap.nl/),
 however, the web application running on that site is outdated, and no
 longer supported by the author.
 
