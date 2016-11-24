@@ -1,3 +1,25 @@
+**Python**
+
+De volgende programma's en bestanden gebruiken nog python2. Inmiddels
+zou het allemaal omgezet moeten kunnen worden naar Python3.
+
+ * bin/INIT.sh
+ * bin/INIT.sh.example
+ * bin/cccmapsform.py
+ * bin/clumapsform.py
+ * bin/project.py
+ * bin/test.py
+ * bin/u/config.py
+ * templates/Makefile-cccmaps
+ * templates/Makefile-clumaps
+ * templates/Makefile-mdsmaps
+ * util/check2.py
+ * util/epstrim
+ * util/plotmds
+ * util/plotmds-extra
+ * util/procrustes
+
+
 **Methods:**
 
 <table border="1" cellpadding="4">
