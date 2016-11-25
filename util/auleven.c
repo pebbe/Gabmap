@@ -168,7 +168,7 @@ void
     *s_malloc (size_t size),
     *s_realloc (void *block, size_t size);
 char
-    *getline (BOOL_ required),
+    *GetLine (BOOL_ required),
     *get_arg (void),
     *s_strdup (char const *s);
 WEIGHTTYPE
@@ -217,7 +217,7 @@ int main (int argc, char *argv [])
 
     if (label_file) {
 	open_read (label_file);
-	getline (TRUE);
+	GetLine (TRUE);
 	label = s_strdup (buffer);
 	fclose (fp_in);
     }
@@ -225,7 +225,7 @@ int main (int argc, char *argv [])
     utf8 = FALSE;
     current_loc = s_strdup ("");
     open_read (arg_v [1]);
-    while (getline (FALSE)) {
+    while (GetLine (FALSE)) {
         if (buffer [0] == '*') {
 	    ;
 	} else if (buffer [0] == '%') {
@@ -710,7 +710,7 @@ void open_read (char const *s)
         errit ("Opening file \"%s\": %s", s, strerror (errno));
 }
 
-char *getline (BOOL_ required)
+char *GetLine (BOOL_ required)
 {
     int
         i;
@@ -754,12 +754,12 @@ void read_substfile ()
     weight = weight_subst;
 
     open_read (subst_file);
-    getline (TRUE);
+    GetLine (TRUE);
 #ifdef LEVEN_REAL
     if (buffer [0] != 'F' || buffer [1] != ':') {
 	errit ("File \"%s\" is not a table with real values. You should use 'auleven' or 'auleven-s'", filename);
     }
-    getline (TRUE);
+    GetLine (TRUE);
 #else
     if (buffer [0] == 'F' && buffer [1] == ':') {
 	errit ("File \"%s\" is not a table with integer values. You should use 'auleven-r'", filename);
@@ -772,7 +772,7 @@ void read_substfile ()
     for (i = 1; i <= max_code; i++) {
         w [i] = (DIFFTYPE *) s_malloc (i * sizeof (DIFFTYPE));
         for (j = 0; j < i; j++) {
-            getline (TRUE);
+            GetLine (TRUE);
 #ifdef LEVEN_REAL
 	    if (sscanf (buffer, "%f", &c) != 1)
 #else
@@ -794,12 +794,12 @@ void read_substfile ()
 	return;
 
     open_read (zero_file);
-    getline (TRUE);
+    GetLine (TRUE);
 #ifdef LEVEN_REAL
     if (buffer [0] != 'F' || buffer [1] != ':') {
 	errit ("File \"%s\" is not a table with real values. You should use 'auleven' or 'auleven-s'", filename);
     }
-    getline (TRUE);
+    GetLine (TRUE);
 #else
     if (buffer [0] == 'F' && buffer [1] == ':') {
 	errit ("File \"%s\" is not a table with integer values. You should use 'auleven-r'", filename);
@@ -812,7 +812,7 @@ void read_substfile ()
     zero = (DIFFTYPE *) s_malloc ((max_code + 1) * sizeof (DIFFTYPE));
     zero [0] = 0;
     for (i = 1; i <= max_code; i++) {
-        getline (TRUE);
+        GetLine (TRUE);
 #ifdef LEVEN_REAL
 	if (sscanf (buffer, "%f", &c) != 1)
 #else
@@ -838,7 +838,7 @@ void read_tokenfile ()
     long int
 	l;
     open_read (token_file);
-    while (getline (FALSE)) {
+    while (GetLine (FALSE)) {
 	l = atol (buffer);
 	if (l < 1)
 	    errit ("Illegal value in \"%s\", line %li", filename, lineno);
@@ -853,7 +853,7 @@ void read_tokenfile ()
 	tokens [l] = NULL;
 
     open_read (token_file);
-    while (getline (FALSE)) {
+    while (GetLine (FALSE)) {
 	if (sscanf (buffer, "%li %s", &l, buffer2) == 2)
 	    tokens [l] = s_strdup (buffer2);
     }
@@ -876,12 +876,12 @@ void read_indelfile ()
     weight = weight_indel;
 
     open_read (indel_file);
-    getline (TRUE);
+    GetLine (TRUE);
 #ifdef LEVEN_REAL
     if (buffer [0] != 'F' || buffer [1] != ':') {
 	errit ("File \"%s\" is not a table with real values. You should use 'auleven' or 'auleven-s'", filename);
     }
-    getline (TRUE);
+    GetLine (TRUE);
 #else
     if (buffer [0] == 'F' && buffer [1] == ':') {
 	errit ("File \"%s\" is not a table with integer values. You should use 'auleven-r'", filename);
@@ -893,7 +893,7 @@ void read_indelfile ()
     id = (DIFFTYPE *) s_malloc ((max_code + 1) * sizeof (DIFFTYPE));
     id [0] = 0;
     for (i = 1; i <= max_code; i++) {
-        getline (TRUE);
+        GetLine (TRUE);
 #ifdef LEVEN_REAL
 	if (sscanf (buffer, "%f", &c) != 1)
 #else

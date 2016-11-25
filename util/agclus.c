@@ -110,7 +110,7 @@ int
     scmp (void const *p1, void const *p2),
     lscmp (void const *key, void const *p);
 BOOL_
-    getline (BOOL_ required);
+    GetLine (BOOL_ required);
 GROUP_
     *newgroup (void),
     *findgroup (void);
@@ -159,7 +159,7 @@ int main (int argc, char *argv [])
 	argv = (char **) s_malloc (argmax * sizeof (char *));
 	argv [0] = p;
 	fileopen (listfile);
-	while (getline (FALSE)) {
+	while (GetLine (FALSE)) {
 	    if (argc == argmax) {
 		argmax += 256;
 		argv = (char **) s_realloc (argv, argmax * sizeof (char *));
@@ -169,7 +169,7 @@ int main (int argc, char *argv [])
     }
     
     fileopen (argv [1]);
-    while (getline (FALSE)) {
+    while (GetLine (FALSE)) {
 	if (buffer [0] == 'l' || buffer [0] == 'L') {
 	    if (n_lbls == max_lbls) {
 		max_lbls += 256;
@@ -206,11 +206,11 @@ int main (int argc, char *argv [])
     for (argn = 1; argn < argc; argn++) {
 	fileopen (argv [argn]);
 	for (used = 0; used < max; used++) {
-	    getline (TRUE);
+	    GetLine (TRUE);
 	    if (sscanf (buffer, "%i %f%n", &(cl [used].index), &(cl [used].value), &i) < 2)
 		errit ("Syntax error in \"%s\", line %i: \"%s\"", filename, inputline, buffer);
 	    for (n = 0; n < 2; n++) {
-		getline (TRUE);
+		GetLine (TRUE);
 		switch (buffer [0]) {
                     case 'l':
                     case 'L':
@@ -345,7 +345,7 @@ void fileopen (char const *s)
 	errit ("Opening file \"%s\": %s", s, strerror (errno));
 }
 
-BOOL_ getline (BOOL_ required)
+BOOL_ GetLine (BOOL_ required)
 /* Lees een regel in
  * Plaats in buffer
  * Negeer lege regels en regels die beginnen met #

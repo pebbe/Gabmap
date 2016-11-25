@@ -97,7 +97,7 @@ char
 char const
     *psstring (unsigned char const *s);
 BOOL_
-    getline (BOOL_ required),
+    GetLine (BOOL_ required),
     is_parent (int i, int j);
 
 int main (int argc, char *argv [])
@@ -135,18 +135,18 @@ int main (int argc, char *argv [])
 	syntax ();
 
     fileopen (argv [1]);
-    getline (TRUE);
+    GetLine (TRUE);
     nfiles = atoi (buffer);
-    getline (TRUE);
+    GetLine (TRUE);
     nlbls = atoi (buffer);
     lbls = (char **) s_malloc (nlbls * sizeof (char *));
     for (i = 0; i < nlbls; i++) {
-	getline (TRUE);
+	GetLine (TRUE);
 	lbls [i] = (char *) s_strdup (buffer);
     }
     members = (char *) s_malloc ((nlbls + 1) * sizeof (char));
     limit = percentage / 100.0 * nfiles;
-    while (getline (FALSE)) {
+    while (GetLine (FALSE)) {
 	sscanf (buffer, "%i %s %lf", &i, members, &f);
 	if (i < limit)
 	    continue;
@@ -251,7 +251,7 @@ BOOL_ is_parent (int i, int j)
 }
 
 
-BOOL_ getline (BOOL_ required)
+BOOL_ GetLine (BOOL_ required)
 /* Lees een regel in
  * Plaats in buffer
  * Negeer lege regels en regels die beginnen met #
