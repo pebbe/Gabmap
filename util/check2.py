@@ -67,9 +67,9 @@ def test():
     """run the examples in the docstrings using the doctest module"""
     import doctest
 
-    print 'Testing colormath ...'
-    doctest.run_docstring_examples(colormath, None, name='colormath', verbose=False)
-    print 'Testing colormath ... done'
+    #print 'Testing colormath ...'
+    #doctest.run_docstring_examples(colormath, None, name='colormath', verbose=False)
+    #print 'Testing colormath ... done'
 
     print 'Testing numpy ...'
     doctest.run_docstring_examples(numpy, None, name='numpy', verbose=False)

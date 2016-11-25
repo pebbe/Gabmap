@@ -26,7 +26,7 @@ else:
 if contactname:
     contacthtml = '<a href="{}"{}>{}</a>'.format(contact, _t, contactname)
 else:
-    contacthtml = '<a href="{}"{}>contact</a>'.format(contact, _)
+    contacthtml = '<a href="{}"{}>contact</a>'.format(contact, _t)
 
 
 #| functions
