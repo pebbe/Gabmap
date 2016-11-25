@@ -16,7 +16,7 @@ import os, sys
 #| globals
 
 pscode = r'''
-.5 setgray
+.5 .5 .5 setrgbcolor
 0 0 595 842 rectfill
 0 setgray
 1 setlinewidth

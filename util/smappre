@@ -193,7 +193,7 @@ for line in lns:
             state = 2
     elif state == 2:
         if line.startswith('0 setgray'):
-            #fp.write('.5 setgray\n')
+            #fp.write('.5 .5 .5 setrgbcolor\n')
             fp.write('0 setgray\n')
             state = 3
         else:

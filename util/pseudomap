@@ -238,7 +238,7 @@ fp.close()
 fp = open('map.map', 'wt')
 fp.write('''
 1 setlinewidth
-.5 setgray
+.5 .5 .5 setrgbcolor
 /r {0} 0 Map pop 0 0 Map pop sub def
 {0} 0 Map moveto
 0 0 Map r 0 360 arc
