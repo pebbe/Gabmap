@@ -124,7 +124,7 @@ def makepage(path):
         fp = open('../data/table.txt', 'rt', encoding='iso-8859-1')
         fp.readline()
         for line in fp:
-            i = line.split('\t')
+            i = line.strip('\n').split('\t')
             lbl = _unquote(i[0])
             if i[current + 1] == 'NA':
                 continue
