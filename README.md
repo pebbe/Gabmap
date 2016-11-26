@@ -14,5 +14,7 @@ site](http://www.let.rug.nl/~kleiweg/L04/webapp/).
 To run Gabmap on your own web server, you can download it from Github,
 but at the moment, there is no installation guide.
 
+Or you can [run it in Docker](https://github.com/pebbe/Gabmap-docker).
+
 - - -
 Author: [Peter Kleiweg](http://www.let.rug.nl/~kleiweg/)
