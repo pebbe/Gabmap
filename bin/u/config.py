@@ -31,8 +31,6 @@ appdir    = os.environ['APPDIR']
 appurl    = os.environ['APPURL']
 appurls   = os.environ['APPURLS']
 apprel    = os.environ['APPREL']
-abouturl  = os.environ['ABOUTURL']
-helpurl   = os.environ['HELPURL']
 
 assert datadir[-1] == '/'
 assert appdir[-1] == '/'

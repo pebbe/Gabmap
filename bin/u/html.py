@@ -38,23 +38,18 @@ Pragma: no-cache
     {{}}
   </head>
   <body>
-<!--
-<center style="background-color:#800000;color:#ffffff;padding:.2em 0px">under development | grey means: not yet implemented</center>
--->
     <div id="header">
       <a href="{0}bin/home">home</a>
       <a href="{0}examples/" target="_blank">examples</a>
       <a href="{0}tools/">tools</a>
       {1}
-      <a href="{2}" target="_blank">help</a>
-      <a href="{3}" target="_blank">about</a>
-      <a href="http://www.gabmap.nl" target="_blank">Gabmap</a>
+      <a href="{0}doc/">help</a>
     </div>
     {{}}
     <!-- START CONTENT -->
 
 
-'''.format(_c.appurl, _logout,  _c.helpurl, _c.abouturl)
+'''.format(_c.appurl, _logout)
 
 if _c.contactline:
     _a = _c.contactline
