@@ -23,8 +23,6 @@ if contact[:4] == 'http':
     _t = ' target="_blank"'
 else:
     _t = ''
-if contactname == '':
-    contactname = contact.replace("mailto:", "")
 contacthtml = '<a href="{}"{}>{}</a>'.format(contact, _t, contactname)
 
 #| functions

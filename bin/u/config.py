@@ -47,3 +47,8 @@ smtppass = os.environ.get('SMTPPASS', '')
 contact     = os.environ.get('CONTACT',     '')
 contactname = os.environ.get('CONTACTNAME', '')
 contactline = os.environ.get('CONTACTLINE', '')
+
+if contact == '':
+    contact = 'mailto:' + mailfrom
+if contactname == '':
+    contactname = mailfrom
