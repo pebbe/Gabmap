@@ -50,23 +50,24 @@ def makepage(path):
             txt = ''
         else:
             txt = '<pre class="log">\n' + u.html.escape(txt) + '</pre>\n'
-        try:
-            fp = open('plot02.log', 'rt', encoding='utf-8')
-            txt2 = fp.read()
-            fp.close()
-        except:
-            txt2 = ''
-        else:
-            txt2 = '<pre class="log">\n' + u.html.escape(txt2) + '</pre>\n'
-        sys.stdout.write('''
-        {}
-        <p>
-        {}
 
-        <p>
-        <hr>
-        '''.format(u.html.img(p + '-plot02'), txt2))
-
+        # try:
+        #     fp = open('plot02.log', 'rt', encoding='utf-8')
+        #     txt2 = fp.read()
+        #     fp.close()
+        # except:
+        #     txt2 = ''
+        # else:
+        #     txt2 = '<pre class="log">\n' + u.html.escape(txt2) + '</pre>\n'
+        #
+        # sys.stdout.write('''
+        # {}
+        # <p>
+        # {}
+        #
+        # <p>
+        # <hr>
+        # '''.format(u.html.img(p + '-plot02'), txt2))
 
         if (os.access('plot01.eps', os.F_OK)):
             sys.stdout.write('''
