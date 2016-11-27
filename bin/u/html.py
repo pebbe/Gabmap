@@ -18,7 +18,7 @@ import u.login as _l
 
 #| globals
 
-if _l.username:
+if _c.usermode == 'multi' and _l.username:
     _logout = '<a href="{}bin/account?action=logout">log out</a>'.format(_c.appurl)
     # _logout += ' <a href="{}bin/account?action=edit">edit account</a>'.format(_c.appurl)
 else:
@@ -51,7 +51,9 @@ Pragma: no-cache
 
 '''.format(_c.appurl, _logout)
 
-if _c.contactline:
+if _c.usermode == 'single':
+    _a = ''
+elif _c.contactline:
     _a = _c.contactline
 else:
     if _c.contact[:4] == 'http':

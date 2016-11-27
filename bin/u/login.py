@@ -37,6 +37,11 @@ def mkString(user, passwd):
 
 def _init():
     global username
+
+    if _c.usermode == 'single':
+        username = 'User'
+        return
+
     cs = ''
     if 'HTTP_COOKIE' in os.environ:
         c = cookies.SimpleCookie()

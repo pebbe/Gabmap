@@ -14,6 +14,8 @@ def _istrue(s):
         pass
     return s.lower() in ['y', 'yes', 't', 'true']
 
+usermode = os.environ.get("USERMODE", "multi")
+
 maxprojects = int(os.environ['MAXPROJECTS'])
 maxdays = int(os.environ['MAXDAYS'])
 
@@ -38,17 +40,19 @@ assert appurl[-1] == '/'
 assert appurls[-1] == '/'
 assert apprel[-1] == '/'
 
-mailfrom = os.environ['MAILFROM']
+if usermode != 'single':
 
-smtpserv = os.environ['SMTPSERV']
-smtpuser = os.environ.get('SMTPUSER', '')
-smtppass = os.environ.get('SMTPPASS', '')
+    mailfrom = os.environ['MAILFROM']
 
-contact     = os.environ.get('CONTACT',     '')
-contactname = os.environ.get('CONTACTNAME', '')
-contactline = os.environ.get('CONTACTLINE', '')
+    smtpserv = os.environ['SMTPSERV']
+    smtpuser = os.environ.get('SMTPUSER', '')
+    smtppass = os.environ.get('SMTPPASS', '')
 
-if contact == '':
-    contact = 'mailto:' + mailfrom
-if contactname == '':
-    contactname = mailfrom
+    contact     = os.environ.get('CONTACT',     '')
+    contactname = os.environ.get('CONTACTNAME', '')
+    contactline = os.environ.get('CONTACTLINE', '')
+
+    if contact == '':
+        contact = 'mailto:' + mailfrom
+    if contactname == '':
+        contactname = mailfrom

@@ -20,7 +20,7 @@ import u.config as _c
 def chdir(path):
     os.chdir(_c.datadir)
     for p in path.split('-'):
-        assert re.match(r'[a-z][a-z0-9_]*$', p)
+        assert _c.usermode == 'single' or re.match(r'[a-z][a-z0-9_]*$', p)
         os.chdir(p)
 
 def breadcrumbs(path):

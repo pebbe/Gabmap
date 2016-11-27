@@ -40,7 +40,9 @@ def makepage(user):
         </div>
         '''
 
-    if user.startswith('demo'):
+    if _c.usermode == 'single':
+        template = 'p-user-single.html'
+    elif user.startswith('demo'):
         template = 'p-user-demo.html'
     elif count >= _c.maxprojects:
         template = 'p-user-full.html'
