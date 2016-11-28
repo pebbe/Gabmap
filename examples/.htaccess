@@ -20,6 +20,11 @@ AddDescription "Map for Bantu dialect data" Bantu.kml
 AddDescription "Dutch dialect data (Meertens), encoding: UTF-16 " Dutch613.u16
 AddDescription "Dutch dialect data (Meertens), encoding: UTF-8 " Dutch613.txt
 AddDescription "Map for Dutch dialect data (Meertens)" Dutch613.kml
+AddDescription "Difference table based on German dialect data" Germany.differences.txt
+AddDescription "Map for Germany" Germany.kml
+AddDescription "LAMSAS dialect data: Guy Loman" LAMSAS483-Loman.txt
+AddDescription "LAMSAS dialect data" LAMSAS483-all.txt
+AddDescription "Map for LAMSAS" LAMSAS483.kml
 AddDescription "Pennsylvania, map, by county" Pennsylvania-67.kml
 AddDescription "Pennsylvania, map, by informant" Pennsylvania-158.kml
 AddDescription "Demo Pennsylvania, map" Demo-Pennsylvania.kml
