@@ -87,13 +87,15 @@ def makepage(path):
             # TO DO: link to help page on reason for failure
             sys.stdout.write('''
             <p>
-            A plot with asymptotic regression failed.
+            {}
+            <p>
+            Asymptotic regression failed.
             <p>
             {}
 
             <p>
             <hr>
-            '''.format(txt))
+            '''.format(u.html.img(p + '-plot02'), txt))
 
         sys.stdout.write('''
         <p>

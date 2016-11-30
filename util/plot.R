@@ -121,21 +121,25 @@ if (class(result) == "try-error") {
 o <- is.finite(log(geo))
 dif <- dif[o]
 geo <- geo[o]
-mlog <- lm(dif ~ I(log(geo)))
+#mlog <- lm(dif ~ I(log(geo)))
 plot(xrange, yrange, xlab='Geograpic distance (km)', ylab='Linguistic difference', type='n')
 points(geo, dif, col='#A0A0A0', pch='.')
 lines(g1, d1, col='red', lwd=2)
-lines(x, predict(mlog, data.frame(geo = x)), col='blue',  lwd=2)
+#lines(x, predict(mlog, data.frame(geo = x)), col='blue',  lwd=2)
+#legend(xrange[2], yrange[1],
+#       c('log', 'local'),
+#       xjust=1, yjust=0,
+#       col=c('blue', 'red'), lwd=2, bty="n")
 legend(xrange[2], yrange[1],
-       c('log', 'local'),
+       c('local'),
        xjust=1, yjust=0,
-       col=c('blue', 'red'), lwd=2, bty="n")
+       col=c('red'), lwd=2, bty="n")
 
-sink('plot02.log')
-print(summary(mlog))
-cat('Logarithmic/Actual  R-squared:', cor(dif, predict(mlog, data.frame(geo = geo)))^2, '\n')
-cat('Logarithmic/Local   R-squared:', cor(d1[1:n], predict(mlog, data.frame(geo = g1[1:n])))^2, '\n')
-sink()
+#sink('plot02.log')
+#print(summary(mlog))
+#cat('Logarithmic/Actual  R-squared:', cor(dif, predict(mlog, data.frame(geo = geo)))^2, '\n')
+#cat('Logarithmic/Local   R-squared:', cor(d1[1:n], predict(mlog, data.frame(geo = g1[1:n])))^2, '\n')
+#sink()
 
 dif <- as.matrix(read.dif('../diff/diff.txt'))
 geo <- as.matrix(read.dif('tmp.dst'))
