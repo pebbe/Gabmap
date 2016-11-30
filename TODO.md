@@ -131,9 +131,6 @@ Differences: linguistic difference <-> geographic distance (niet: pseudomap)
  * help: uitleg bij grafieken
  * use circles instead of dots for very small data sets
  * meer uitleg over R: ook hoe de modellen te gebruiken
- * logaritmische grafiek wordt niet weergegeven maar nog wel gemaakt,
-   anders klopt de nummering van de grafieken niet voor oude projecten,
-   oplossing: lege grafiek plot02 maken?
 
 Differences: reference point maps
 
