@@ -624,6 +624,9 @@ if enc.startswith('utf') and enc != 'utf-8':
     except:
         u.html.exitMessage('Error', 'Decoding of data failed.')
 
+# harde spaties omzetten in gewone spaties
+data = data.replace('\xa0', ' ')
+
 j = len(data)
 for sp in [b'\n\r', b'\n', b'\r\n', b'\r']:
     i = data.find(sp)
