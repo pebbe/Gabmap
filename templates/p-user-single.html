@@ -135,24 +135,6 @@ function checktype() {{
   }}
 }}
 
-function show() {{
-  s = document.getElementById('advanced').style;
-  s.visibility = 'visible';
-  s.display = 'block';
-  s = document.getElementById('advshow').style;
-  s.visibility = 'hidden';
-  s.display = 'none';
-}}
-function hide() {{
-  s = document.getElementById('advshow').style;
-  s.visibility = 'visible';
-  s.display = 'block';
-  s = document.getElementById('advanced').style;
-  s.visibility = 'hidden';
-  s.display = 'none';
-}}
-
-
 //--></script>
 
 <form action="{0[appurl]}bin/project" method="post"
@@ -223,21 +205,6 @@ Upload definition file:{0[helpuserdef]}<br>
 <input type="file" name="featdef" size="40">
 </div>
 
-</fieldset>
-
-<p>
-
-<a href="javascript:show()" id="advshow">show advanced options</a>
-<fieldset id="advanced" style="visibility:hidden;display:none">
-<legend>Advanced options</legend>
-<a href="javascript:hide()">hide advanced options</a><br>
-&nbsp;<br>
-Cronbach's alpha:{0[helpadvca]}<br>
-<select name="ca">
-<option value="no">Never</option>
-<option value="auto" selected="selected">Only for small and medium sized data sets</option>
-<option value="yes">Allways</option>
-</select>
 </fieldset>
 
 <p>

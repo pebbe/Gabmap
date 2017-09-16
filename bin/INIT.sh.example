@@ -8,7 +8,6 @@
 # Set access mask for new files and directories
 umask 077
 
-# The 'leven' program can use a lot of memory when it has to calculate Cronbach's alpha
 # Limit the amount of memory programs may use, so it won't crash the web server
 ulimit -v 500000
 

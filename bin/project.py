@@ -911,17 +911,6 @@ if enc.startswith('utf'):
 if method.startswith('dif'):
     open('OK', 'wt').close()
 
-s = u.myCgi.data.get('ca', b'auto').decode('utf-8')
-if s == 'yes':
-    cronbachalpha = True
-elif s == 'no':
-    cronbachalpha = False
-else:
-    cronbachalpha = True
-    if nItems > 200:
-        cronbachalpha = False
-
-
 #|| do shift map
 
 if not pseudo:
@@ -991,19 +980,11 @@ elif method.startswith('lev'):
     else:
         feat = '# '
         plain = ''
-    if cronbachalpha:
-        ca1 = ''
-        ca0 = '# '
-    else:
-        ca1 = '# '
-        ca0 = ''
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
                                                  'python3': u.config.python3,
                                                  'feat': feat,
-                                                 'plain': plain,
-                                                 'ca1': ca1,
-                                                 'ca0': ca0}))
+                                                 'plain': plain))
 elif method.startswith('dif'):
     fp = open('{}templates/Makefile-diff-diff'.format(u.config.appdir), 'r')
     make = fp.read()
@@ -1021,19 +1002,11 @@ else:
     else:
         command = 'giw'
         c2 = '-C -4'
-    if cronbachalpha:
-        ca1 = ''
-        ca0 = '# '
-    else:
-        ca1 = '# '
-        ca0 = ''
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
                                                  'python3': u.config.python3,
                                                  'command': command,
-                                                 'c': c2,
-                                                 'ca1': ca1,
-                                                 'ca0': ca0}))
+                                                 'c': c2}))
 
 if pseudo:
     fp = open('{}/templates/Makefile-pseudomap'.format(u.config.appdir), 'r')

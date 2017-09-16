@@ -55,10 +55,6 @@ def makepage(path):
 
     if os.access('OK', os.F_OK):
 
-        fp = open('ca.txt', 'r')
-        ca = fp.read().strip()
-        fp.close()
-
         if os.access('../map/PSEUDOMAP', os.F_OK):
             linc = 'undefined for pseudomap'
         else:
@@ -79,8 +75,6 @@ def makepage(path):
 
         sys.stdout.write('Local incoherence: {}{}\n<p>\n'.format(_number(linc), u.html.help('linc')))
 
-        sys.stdout.write('Cronbach\'s alpha: {}{}\n<p>\n'.format(_number(ca), u.html.help('ca')))
-                
         sys.stdout.write('''
         &rarr; <a href="{0}bin/getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
         <p>

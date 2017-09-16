@@ -1,8 +1,7 @@
 OK: ../data/OK ../data/labels.txt ../data/_/*.data
 	rm -f OK
 	rm -f tmp*
-	{0[ca1]}{0[command]} -c -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
-	{0[ca0]}{0[command]}    -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	{0[command]} -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
 	{0[python3]} {0[appdir]}util/difok diff.txt || \
 		diffix -a 1 -o tmp.diff diff.txt ../map/map.coo || \
 		{0[python3]} {0[appdir]}util/diffix2 diff.txt diff.txt
@@ -21,8 +20,6 @@ OK: ../data/OK ../data/labels.txt ../data/_/*.data
 		else \
 			linc -D diff.txt ../map/map.geo > linc.txt ; \
 		fi
-	{0[ca1]}perl -n -e 'if (/^# Cronbach Alpha/) {{ @i = split /\s+/, $$_; print "$$i[3] $$i[4] $$i[5]\n"; }}' diff.txt > ca.txt
-	{0[ca0]}echo skipped > ca.txt
 	R --no-save < {0[appdir]}util/histnorm.R
 	mapdiff -l -r -o diff1.eps -c 2 {0[c]} ../map/map.cfg ../diff/diff.txt
 	{0[python3]} {0[appdir]}util/smappost diff1.eps
