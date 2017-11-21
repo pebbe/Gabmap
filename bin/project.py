@@ -984,7 +984,7 @@ elif method.startswith('lev'):
                                                  'appdir': u.config.appdir,
                                                  'python3': u.config.python3,
                                                  'feat': feat,
-                                                 'plain': plain))
+                                                 'plain': plain}))
 elif method.startswith('dif'):
     fp = open('{}templates/Makefile-diff-diff'.format(u.config.appdir), 'r')
     make = fp.read()
