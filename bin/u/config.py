@@ -41,18 +41,20 @@ assert appurls[-1] == '/'
 assert apprel[-1] == '/'
 
 if usermode != 'single':
-
     mailfrom = os.environ['MAILFROM']
-
     smtpserv = os.environ['SMTPSERV']
-    smtpuser = os.environ.get('SMTPUSER', '')
-    smtppass = os.environ.get('SMTPPASS', '')
+else:
+    mailfrom = os.environ.get('MAILFROM', '')
+    smtpserv = os.environ.get('SMTPSERV', '')
 
-    contact     = os.environ.get('CONTACT',     '')
-    contactname = os.environ.get('CONTACTNAME', '')
-    contactline = os.environ.get('CONTACTLINE', '')
+smtpuser = os.environ.get('SMTPUSER', '')
+smtppass = os.environ.get('SMTPPASS', '')
 
-    if contact == '':
-        contact = 'mailto:' + mailfrom
-    if contactname == '':
-        contactname = mailfrom
+contact     = os.environ.get('CONTACT',     '')
+contactname = os.environ.get('CONTACTNAME', '')
+contactline = os.environ.get('CONTACTLINE', '')
+
+if contact == '':
+    contact = 'mailto:' + mailfrom
+if contactname == '':
+    contactname = mailfrom
