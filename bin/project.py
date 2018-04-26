@@ -690,7 +690,12 @@ if method == 'dif':
             if len(data[i]) != nPlaces:
                 errs = True
                 continue
-            if data[i][i] != '0':
+            try:
+                v = float(data[i][i])
+            except:
+                errs = True
+                continue
+            if v != 0.0:
                 errs = True
                 continue
             for j in range(i):
