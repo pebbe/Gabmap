@@ -43,7 +43,7 @@ mailtxt = """
 Dear Gabmap user,
 
 You haven't used your Gabmap account for a while.
-Your account, including all data, will be removed in one week,
+Your account, including all data, will be removed in 30 days,
 unless you log in before then.
 
 Gabmap: {}
@@ -52,7 +52,7 @@ Username: {}
 
 
 limit  = time.time() - 60 * 60 * 24 * int(os.environ['MAXDAYS'])
-limitm = time.time() - 60 * 60 * 24 * (int(os.environ['MAXDAYS']) - 8)
+limitm = time.time() - 60 * 60 * 24 * (int(os.environ['MAXDAYS']) - 31)
 limit2 = time.time() - 60 * 60 * 24 * 2
 
 os.chdir(os.environ['DATADIR'])
