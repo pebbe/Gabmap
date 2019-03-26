@@ -57,11 +57,11 @@ def makepage(path):
                 sys.stdout.write('<div class="warn">Missing: failed map #{}{}</div>\n'.format(i + 1, u.html.help('cccmapsmissing')))
         sys.stdout.write('''
         <p>
-        <form action="{}bin/cccmapsform" method="post">
+        <form action="{}cccmapsform" method="post">
         <input type="hidden" name="p" value="{}">
         Number of groups:
         <select name="n">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
         for i in range(2, 9):
             if i == current:
                 sys.stdout.write('<option selected="selected">{}</option>\n'.format(i))

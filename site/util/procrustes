@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # this is like script 'procrustes' but it doesn't use the R program
 
@@ -84,7 +84,7 @@ while True:
     lbl = getline(fp)
     if not lbl:
         break
-    if not items.has_key(lbl):
+    if lbl not in items:
         items[lbl] = {}
     items[lbl]['target'] = []
     for i in range(dim):
@@ -129,7 +129,7 @@ if doAxes:
 #         addcols <- ncol(Y) - ncol(X)
 #         for (i in 1:addcols) X <- cbind(X, 0)
 #     }
-#     ctrace <- function(MAT) sum(diag(crossprod(MAT)))
+#     ctrace <- function(MAT) sum(diag(crossprod(MAT, MAT)))
 #     c <- 1
 #     if (symmetric) {
 #         X <- scale(X, scale = FALSE)
@@ -159,9 +159,7 @@ if doAxes:
 #     return(reslt)
 # }
 
-def crossprod(x, y = None):
-    if y == None:
-        y = x
+def crossprod(x, y):
     dimx = len(x[0])
     dimy = len(y[0])
     n = len(x)
@@ -191,7 +189,7 @@ solV = numpy.transpose(solVt) # ????
 
 A = crossprod(numpy.transpose(solV), numpy.transpose(solU))
 
-cpY = crossprod(Y)
+cpY = crossprod(Y, Y)
 c = sum(solD) / sum([cpY[i][i] for i in range(dim)])
 
 Yrot = crossprod(numpy.transpose(Y), A)
@@ -200,7 +198,7 @@ for i in range(n):
         Yrot[i][j] *= c
 
 if doAxes:
-    cpAXES = crossprod(AXES)
+    cpAXES = crossprod(AXES, AXES)
     AXESrot = crossprod(numpy.transpose(AXES), A)
     for i in range(len(AXES)):
         for j in range(dim):

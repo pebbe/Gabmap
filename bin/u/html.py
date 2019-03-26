@@ -19,8 +19,8 @@ import u.login as _l
 #| globals
 
 if _c.usermode == 'multi' and _l.username:
-    _logout = '<a href="{}bin/account?action=logout">log out</a>'.format(_c.appurl)
-    # _logout += ' <a href="{}bin/account?action=edit">edit account</a>'.format(_c.appurl)
+    _logout = '<a href="{}account?action=logout">log out</a>'.format(_c.binurl)
+    # _logout += ' <a href="{}account?action=edit">edit account</a>'.format(_c.binurl)
 else:
     _logout = ''
 
@@ -39,7 +39,7 @@ Pragma: no-cache
   </head>
   <body>
     <div id="header">
-      <a href="{0}bin/home">home</a>
+      <a href="{2}home">home</a>
       <a href="{0}examples/" target="_blank">examples</a>
       <a href="{0}tools/">tools</a>
       {1}
@@ -49,7 +49,7 @@ Pragma: no-cache
     <!-- START CONTENT -->
 
 
-'''.format(_c.appurl, _logout)
+'''.format(_c.apprel, _logout, _c.binrel)
 
 if _c.usermode == 'single':
     _a = ''
@@ -103,7 +103,7 @@ def head(title='', headers='', tip=False, maptip=False):
     if title:
         title = ' - ' + title
     if tip:
-        headers += '\n    <script type="text/javascript" src="../tip.js"></script>'
+        headers += '\n    <script type="text/javascript" src="{0}tip.js"></script>'.format(_c.apprel)
     if maptip:
         try:
             fp = open('../map/image.html', 'rt', encoding='utf-8')
@@ -168,8 +168,8 @@ def busy(path='.'):
 def makeError(path):
     return '''
     Something went wrong.
-    View <a href="{}bin/makelog?p={}" target="_blank">logfile</a>.
-    '''.format(_c.appurl, path)
+    View <a href="{}makelog?p={}" target="_blank">logfile</a>.
+    '''.format(_c.binurl, path)
 
 def img(path, bw=False, usemap=None, noover=False, idx=0, imgpath=None, pseudoforce=False):
     if usemap:
@@ -184,10 +184,10 @@ def img(path, bw=False, usemap=None, noover=False, idx=0, imgpath=None, pseudofo
                     u = ' usemap="#{}" border="0"'.format(usemap)
                 else:
                     u = ''' usemap="#{0}" border="0"
-                    style="background-image:url({1}bin/get?p={2}.png&xx={5})"
-                    onmouseover="setPoints(this, '{1}bin/get?p={3}-map-mapover.png&xx={5}',{4})"
-                    onmouseout="restore(this, '{1}bin/get?p={2}.png&xx={5}')"
-                    '''.format(usemap, _c.appurl, path, imgpath, idx, xx)
+                    style="background-image:url({1}get?p={2}.png&xx={5})"
+                    onmouseover="setPoints(this, '{1}get?p={3}-map-mapover.png&xx={5}',{4})"
+                    onmouseout="restore(this, '{1}get?p={2}.png&xx={5}')"
+                    '''.format(usemap, _c.binurl, path, imgpath, idx, xx)
             else:
                 u = ''
     else:
@@ -195,28 +195,28 @@ def img(path, bw=False, usemap=None, noover=False, idx=0, imgpath=None, pseudofo
     if bw:
         return '''
         <div class="img">
-        <img src="{0}bin/get?p={1}.png" align="left"{2}>
+        <img src="{0}get?p={1}.png" align="left"{2}>
         <div class="imlink">
-        <a href="{0}bin/get?p={1}.eps&i=1">eps</a><br>
-        <a href="{0}bin/get?p={1}.eps&i=1&b=1">eps-bw</a><br>
-        <a href="{0}bin/get?p={1}.pdf&i=1">pdf</a><br>
-        <a href="{0}bin/get?p={1}.pdf&i=1&b=1">pdf-bw</a><br>
-        <a href="{0}bin/get?p={1}.png&i=1">png</a><br>
-        <a href="{0}bin/get?p={1}.png&i=1&b=1">png-bw</a><br clear="all">
+        <a href="{0}get?p={1}.eps&i=1">eps</a><br>
+        <a href="{0}get?p={1}.eps&i=1&b=1">eps-bw</a><br>
+        <a href="{0}get?p={1}.pdf&i=1">pdf</a><br>
+        <a href="{0}get?p={1}.pdf&i=1&b=1">pdf-bw</a><br>
+        <a href="{0}get?p={1}.png&i=1">png</a><br>
+        <a href="{0}get?p={1}.png&i=1&b=1">png-bw</a><br clear="all">
         </div>
         </div>
-        '''.format(_c.appurl, path, u)
+        '''.format(_c.binurl, path, u)
     else:
         return '''
         <div class="img">
-        <img src="{0}bin/get?p={1}.png" align="left"{2}>
+        <img src="{0}get?p={1}.png" align="left"{2}>
         <div class="imlink">
-        <a href="{0}bin/get?p={1}.eps&i=1">eps</a><br>
-        <a href="{0}bin/get?p={1}.pdf&i=1">pdf</a><br>
-        <a href="{0}bin/get?p={1}.png&i=1">png</a><br clear="all">
+        <a href="{0}get?p={1}.eps&i=1">eps</a><br>
+        <a href="{0}get?p={1}.pdf&i=1">pdf</a><br>
+        <a href="{0}get?p={1}.png&i=1">png</a><br clear="all">
         </div>
         </div>
-        '''.format(_c.appurl, path, u)
+        '''.format(_c.binurl, path, u)
 
 def html2js(h):
     h = h.replace('&gt;', '>').replace('&lt;', '<').replace('&quot;', '"').replace('&amp;', '&')
@@ -225,10 +225,10 @@ def html2js(h):
 
 
 def help(s):
-    return '<a href="{}bin/help?s={}" class="help" target="_blank">?</a>'.format(_c.appurl, s)
+    return '<a href="{}help?s={}" class="help" target="_blank">?</a>'.format(_c.binurl, s)
 
 def more(s):
-    return '<a href="{}bin/help?s={}" class="more" target="_blank">Read&nbsp;more&nbsp;&rarr;</a>'.format(_c.appurl, s)
+    return '<a href="{}help?s={}" class="more" target="_blank">Read&nbsp;more&nbsp;&rarr;</a>'.format(_c.binurl, s)
 
 #| main
 

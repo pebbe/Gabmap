@@ -70,12 +70,12 @@ def makepage(path):
 
         sys.stdout.write('''
         <p>
-	<form action="{}bin/clusterform" method="post">
+	<form action="{}clusterform" method="post">
         <fieldset><legend></legend>
 	<input type="hidden" name="p" value="{}">
 	Clustering method:
 	<select name="mthd">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
         for i in sorted(methods):
             if i == method:
                 sys.stdout.write('<option selected="selected" value="{}">{}</option>\n'.format(i, methods[i]))

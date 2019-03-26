@@ -1097,4 +1097,4 @@ u.queue.enqueue(path, 'OK:\n\ttouch OK\n')
 
 u.queue.run()
 
-sys.stdout.write('Location: {}bin/goto?p={}\n\n'.format(u.config.appurl, path))
+sys.stdout.write('Location: {}goto?p={}\n\n'.format(u.config.binurls, path))

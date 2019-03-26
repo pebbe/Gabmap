@@ -15,6 +15,7 @@ import os, random, re, sys, unicodedata
 
 import u.html, u.path, u.distribute
 from u.login import username
+from u.config import apprel
 
 #| globals
 
@@ -126,12 +127,12 @@ Pragma: no-cache
       document.getElementById('body').className = 'hide';
     }}
     //--></script>
-    <script type="text/javascript" src="../tip.js"></script>
+    <script type="text/javascript" src="{2}tip.js"></script>
   </head>
   <body class="hide" id="body">
   <h1>map and samples for {0}</h1>
   {1}
-'''.format(t, h2))
+'''.format(t, h2, apprel))
 
 if os.access('../../map/image.html', os.F_OK):
     fp = open('../../map/image.html', 'rt', encoding='utf-8')

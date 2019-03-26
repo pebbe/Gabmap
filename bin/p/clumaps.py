@@ -55,9 +55,9 @@ def makepage(path):
         The results of clustering can be deceptive. So,
         the purpose of this page is not just to devide your data into dialects groups, but to test the validity of each group.<br>
         &nbsp;<br>
-        For an introduction, read <a href="../doc/ClusterValidation" target="_blank">this demonstration</a>
+        For an introduction, read <a href="{}doc/ClusterValidation" target="_blank">this demonstration</a>
         </div>
-        ''')
+        '''.format(u.config.appurls))
 
 
         open('reset', 'wt').close()
@@ -99,14 +99,14 @@ def makepage(path):
                    corr))
 
         sys.stdout.write('''
-	<form action="{}bin/clumapsform" method="post">
+	<form action="{}clumapsform" method="post">
 	<input type="hidden" name="p" value="{}">
 	<input type="hidden" name="action" value="method">
         <em>Note: each of the following buttons changes a single option</em>
         <p>
 	Clustering method:
 	<select name="m">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
         for i in sorted(methods):
             if i == method:
                 sys.stdout.write('<option selected="selected" value="{}">{}</option>\n'.format(i, methods[i]))
@@ -120,12 +120,12 @@ def makepage(path):
         ''')
 
         sys.stdout.write('''
-	<form action="{}bin/clumapsform" method="post">
+	<form action="{}clumapsform" method="post">
 	<input type="hidden" name="p" value="{}">
 	<input type="hidden" name="action" value="number">
 	Number of clusters:
 	<select name="n">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
         for i in range(2, 13):
             if i == n:
                 sys.stdout.write('<option selected="selected">{}</option>\n'.format(i))
@@ -139,11 +139,11 @@ def makepage(path):
         ''')
 
         sys.stdout.write('''
-	<form action="{}bin/clumapsform" method="post">
+	<form action="{}clumapsform" method="post">
 	<input type="hidden" name="p" value="{}">
 	<input type="hidden" name="action" value="subset">
 	Clusters in plot:
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
 
         if current[0] == 'all':
             subset = set(range(1, n + 1))
@@ -155,7 +155,7 @@ def makepage(path):
                 if i in subset:
                     sys.stdout.write('<span class="sym"><input type="checkbox" name="s{0}" checked="checked"><img src="{1}img/sym{0:02d}.png"></span>\n'.format(i, u.config.appurl))
                 else:
-                    sys.stdout.write('<span class="sym"><input type="checkbox" name="s{0}"<img src="{1}img/sym{0:02d}.png"></span>\n'.format(i, u.config.appurl))
+                    sys.stdout.write('<span class="sym"><input type="checkbox" name="s{0}"><img src="{1}img/sym{0:02d}.png"></span>\n'.format(i, u.config.appurl))
         else:
             for i in range(1, n + 1):
                 if i in subset:
@@ -170,20 +170,20 @@ def makepage(path):
 
         if bw == 'bw':
             sys.stdout.write('''
-            <form action="{}bin/clumapsform" method="post">
+            <form action="{}clumapsform" method="post">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="col">
             <input type="submit" value="Switch to colour">
             </form>
-            '''.format(u.config.appurl, project))
+            '''.format(u.config.binurls, project))
         else:
             sys.stdout.write('''
-            <form action="{}bin/clumapsform" method="post">
+            <form action="{}clumapsform" method="post">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="bw">
             <input type="submit" value="Switch to black/white">
             </form>
-            '''.format(u.config.appurl, project))
+            '''.format(u.config.binurls, project))
 
     elif os.access('QUEUED', os.F_OK):
         sys.stdout.write(u.html.busy())

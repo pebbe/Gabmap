@@ -67,12 +67,12 @@ def makepage(path):
     items.sort()
 
     sys.stdout.write('''
-    <form action="{}bin/nummapform" method="post">
+    <form action="{}nummapform" method="post">
     <fieldset><legend></legend>
     <input type="hidden" name="p" value="project_{}">
     Item: <select name="item">
     <option value="-1">--</option>
-    '''.format(u.config.appurl, pnum))
+    '''.format(u.config.binurls, pnum))
 
     for item, i in items:
         if i == current:

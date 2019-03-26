@@ -15,6 +15,7 @@ import os, random, re, sys, unicodedata
 
 import u.html, u.path, u.distribute
 from u.login import username
+from u.config import apprel
 
 #| globals
 
@@ -44,57 +45,57 @@ Pragma: no-cache
     <title>map and samples for substring</title>
     <style type="text/css">
     <!--
-    body {
+    body {{
         margin: 2em 4em;
-    }
-    .sample {
+    }}
+    .sample {{
       font-size: x-large;
       margin: 1em 0px .2em 0px;
       font-family: "Doulos SIL", serif;
-    }
-    .p { color: blue; }
-    .q { color: red; }
-    .tokens {
+    }}
+    .p {{ color: blue; }}
+    .q {{ color: red; }}
+    .tokens {{
         font-size: small;
-    }
-    .hex {
+    }}
+    .hex {{
 
-    }
+    }}
     body.show a.show,
-    body.hide a.hide {
+    body.hide a.hide {{
       display: none;
       visibility: hidden;      
-    }
+    }}
     body.hide a.show,
-    body.show a.hide {
+    body.show a.hide {{
         padding: .4em .6em;
         border: 1px solid #808080;
         text-decoration: none;
         color: black;
-    }
-    a.show:hover, a.hide:hover {
+    }}
+    a.show:hover, a.hide:hover {{
         background-color: #c0c0FF;
-    }
+    }}
 
     body.hide .tokens, 
-    body.hide a.hide {
+    body.hide a.hide {{
       display: none;
       visibility: hidden;      
-    }
-    body.hide a.show {
+    }}
+    body.hide a.show {{
       display: inline;
       visibility: visible;
-    }
+    }}
 
-    body.show a.show {
+    body.show a.show {{
       display: none;
       visibility: hidden;      
-    }
-    body.show a.hide {
+    }}
+    body.show a.hide {{
       display: inline;
       visibility: visible;
-    }
-    .tip {
+    }}
+    .tip {{
       display: block;
       /* font: 14px Courier,fixed; */
       border: solid 1px #000000;
@@ -107,22 +108,22 @@ Pragma: no-cache
       left: 90px;
       background-color: #ffffc0;
       layer-background-color: #e8e8e8;
-    }
+    }}
     -->
     </style>
     <script language="JavaScript"><!--
-    function show() {
+    function show() {{
       document.getElementById('body').className = 'show';
-    }
-    function hide() {
+    }}
+    function hide() {{
       document.getElementById('body').className = 'hide';
-    }
+    }}
     //--></script>
-    <script type="text/javascript" src="../tip.js"></script>
+    <script type="text/javascript" src="{0}tip.js"></script>
   </head>
   <body class="hide" id="body">
   <h1>map and samples for substring</h1>
-''')
+'''.format(apprel))
 
 if os.access('../../map/image.html', os.F_OK):
     fp = open('../../map/image.html', 'rt', encoding='utf-8')

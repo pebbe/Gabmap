@@ -89,11 +89,11 @@ def makepage(path):
     function DEL() {{
         var answer = confirm("Remove project {0}?\\n\\nThis will destroy all data and results for this project");
         if (answer) {{
-            window.location = "{1}bin/projectremove?p={0}";
+            window.location = "{1}projectremove?p={0}";
         }}
     }}
     //--></script>
-    '''.format(path.split('_')[-1], u.config.appurl)
+    '''.format(path.split('_')[-1], u.config.binurl)
     sys.stdout.write(u.html.head(title, headers=header))
 
     sys.stdout.write('''
@@ -103,7 +103,7 @@ def makepage(path):
     {1} <a href="javascript:EDIT()" title="Edit">&nbsp;&nbsp;&laquo;&nbsp;&nbsp;</a>
     </div>
     <div id="edit" style="visibility:hidden;display:none">
-    <form action="{3}bin/editproject" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="editproject">
+    <form action="{3}editproject" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="editproject">
     <input type="hidden" name="hebci_auml"   value="&auml;">
     <input type="hidden" name="hebci_divide" value="&divide;">
     <input type="hidden" name="hebci_euro"   value="&euro;">
@@ -121,7 +121,7 @@ def makepage(path):
     </form>
     </div>
 
-    '''.format(title, description, path.split('_')[-1], u.config.appurl))
+    '''.format(title, description, path.split('_')[-1], u.config.binurl))
 
     if method.startswith('num'):
         num = 'num'
@@ -134,12 +134,12 @@ def makepage(path):
     <tr valign="top">
     <td>Index
     <td><ul>
-    <li><a href="{0}bin/goto?p={1}-map">places</a>
-    '''.format(u.config.appurl, path.split('-', 1)[1]))
+    <li><a href="{0}goto?p={1}-map">places</a>
+    '''.format(u.config.binrel, path.split('-', 1)[1]))
     if not method.startswith('dif'):
         sys.stdout.write('''
-        <li><a href="{0}bin/goto?p={1}-{2}items">items</a>
-        '''.format(u.config.appurl, path.split('-', 1)[1], num))
+        <li><a href="{0}goto?p={1}-{2}items">items</a>
+        '''.format(u.config.binrel, path.split('-', 1)[1], num))
     sys.stdout.write('''
     </ul>
     <tr valign="top">
@@ -148,19 +148,19 @@ def makepage(path):
     ''')
     if method.startswith('num'):
         sys.stdout.write('''
-        <li><a href="{0}bin/goto?p={1}-numdata">data overview</a>
-        <li><a href="{0}bin/goto?p={1}-nummap">value maps</a>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
+        <li><a href="{0}goto?p={1}-numdata">data overview</a>
+        <li><a href="{0}goto?p={1}-nummap">value maps</a>
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
     elif method.startswith('dif'):
         sys.stdout.write('''
-        <li><a href="{0}bin/goto?p={1}-difdata">data overview</a>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
+        <li><a href="{0}goto?p={1}-difdata">data overview</a>
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
     else:
         sys.stdout.write('''
-        <li><a href="{0}bin/goto?p={1}-data">data overview</a>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
-        sys.stdout.write('<li><a href="{0}bin/goto?p={1}-distmap">distribution maps</a>\n'.format(
-            u.config.appurl, path.split('-', 1)[1]))
+        <li><a href="{0}goto?p={1}-data">data overview</a>
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
+        sys.stdout.write('<li><a href="{0}goto?p={1}-distmap">distribution maps</a>\n'.format(
+            u.config.binrel, path.split('-', 1)[1]))
     sys.stdout.write('</ul>\n')
 
     if method.startswith('lev'):
@@ -168,43 +168,43 @@ def makepage(path):
         <tr valign="top">
         <td>Measuring technique
         <td><ul>
-        <li><a href="{0}bin/goto?p={1}-align">alignments</a>
+        <li><a href="{0}goto?p={1}-align">alignments</a>
         </ul>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
 
     sys.stdout.write('''
     <tr valign="top">
     <td>Differences
     <td><ul>
-    <li><a href="{0}bin/goto?p={1}-diff">statistics and difference maps</a>
-    '''.format(u.config.appurl, path.split('-', 1)[1]))
+    <li><a href="{0}goto?p={1}-diff">statistics and difference maps</a>
+    '''.format(u.config.binrel, path.split('-', 1)[1]))
     if not os.access('map/PSEUDOMAP', os.F_OK):
         sys.stdout.write('''
-        <li><a href="{0}bin/goto?p={1}-plot">linguistic difference &#8596; geographic distance</a>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
+        <li><a href="{0}goto?p={1}-plot">linguistic difference &#8596; geographic distance</a>
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
     sys.stdout.write('''
-    <li><a href="{0}bin/goto?p={1}-refmaps">reference point maps</a>
+    <li><a href="{0}goto?p={1}-refmaps">reference point maps</a>
     </ul>
     <tr><td colspan="2"><hr>
     <tr valign="top">
     <td>Multidimensional Scaling
     <td><ul>
-    <li><a href="{0}bin/goto?p={1}-mdsplots">mds plots</a>
-    <li><a href="{0}bin/goto?p={1}-mdsmaps">mds maps</a>
+    <li><a href="{0}goto?p={1}-mdsplots">mds plots</a>
+    <li><a href="{0}goto?p={1}-mdsmaps">mds maps</a>
     </ul>
     <tr valign="top">
     <td>Discrete clustering
     <td><ul>
-    <li><a href="{0}bin/goto?p={1}-clusters">cluster maps and dendrograms</a>
-    <li><a href="{0}bin/goto?p={1}-clumaps">cluster validation</a>
+    <li><a href="{0}goto?p={1}-clusters">cluster maps and dendrograms</a>
+    <li><a href="{0}goto?p={1}-clumaps">cluster validation</a>
     </ul>
     <tr valign="top">
     <td>Fuzzy clustering
     <td><ul>
-    <li><a href="{0}bin/goto?p={1}-prob">probabilistic dendrogram</a>
-    <li><a href="{0}bin/goto?p={1}-cccmaps">fuzzy cluster maps</a>
+    <li><a href="{0}goto?p={1}-prob">probabilistic dendrogram</a>
+    <li><a href="{0}goto?p={1}-cccmaps">fuzzy cluster maps</a>
     </ul>
-    '''.format(u.config.appurl, path.split('-', 1)[1]))
+    '''.format(u.config.binrel, path.split('-', 1)[1]))
 
     if not method.startswith('num') and not method.startswith('dif'):
         sys.stdout.write('''
@@ -212,9 +212,9 @@ def makepage(path):
         <tr valign="top">
         <td>Data mining
         <td><ul>
-        <li><a href="{0}bin/goto?p={1}-cludet">cluster determinants</a>
+        <li><a href="{0}goto?p={1}-cludet">cluster determinants</a>
         </ul>
-        '''.format(u.config.appurl, path.split('-', 1)[1]))
+        '''.format(u.config.binrel, path.split('-', 1)[1]))
 
     sys.stdout.write('<tr><td colspan="2"><hr>\n</table>\n')
     sys.stdout.write('</div>\n')
@@ -246,4 +246,4 @@ def getProjects(path = ''):
     if projects:
         return '<table class="projects">\n' + projects + '</table>\n', len(filenames)
     else:
-        return 'You don\'t have any projects yet<p>Read about how to get started: <a href="../doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>', 0
+        return 'You don\'t have any projects yet<p>Read about how to get started: <a href="{}doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>'.format(u.config.apprel), 0

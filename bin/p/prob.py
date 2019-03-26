@@ -79,11 +79,11 @@ def makepage(path):
         form.mthd.value = "gawa";
         }}
 	//--></script>
-        <form action="{}bin/probform" method="post">
+        <form action="{}probform" method="post">
         <fieldset><legend></legend>
         <input type="hidden" name="p" value="project_{}">
         noise:&nbsp;<select name="noise">
-        '''.format(eV, u.config.appurl, pnum))
+        '''.format(eV, u.config.binurls, pnum))
         for i in '0.001 0.005 0.01 0.05 0.1 0.2 0.3 0.4 0.5 0.8 1 1.5 2 3 4'.split():
             if i == noise:
                 sel = ' selected="selected"'
@@ -158,7 +158,7 @@ def makepage(path):
     else:
          sys.stdout.write(u.html.makeError(path.split('-', 1)[1]))
          if os.access('reset', os.F_OK):
-             sys.stdout.write('<p>\n<a href="{}bin/probform?p=project_{}">Continue...</a>\n'.format(u.config.appurl, pnum))
+             sys.stdout.write('<p>\n<a href="{}probform?p=project_{}">Continue...</a>\n'.format(u.config.binurls, pnum))
 
     sys.stdout.write('\n</div>\n')
     sys.stdout.write(u.html.foot())

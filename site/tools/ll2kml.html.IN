@@ -19,7 +19,7 @@
 
       <h2>Convert list of locations to kml</h2>
 
-      <form action="../bin/ll2kml" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+      <form action="{0[binurls]}ll2kml" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 
 	<input type="hidden" name="hebci_auml"   value="&auml;">
 	<input type="hidden" name="hebci_divide" value="&divide;">

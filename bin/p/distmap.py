@@ -80,7 +80,7 @@ def makepage(path):
         REGEX = re.compile(currentregex)
 
     sys.stdout.write('''
-    <form action="{}bin/distmapform" method="post" enctype="multipart/form-data">
+    <form action="{}distmapform" method="post" enctype="multipart/form-data">
     <fieldset><legend></legend>
     <input type="hidden" name="hebci_auml"   value="&auml;">
     <input type="hidden" name="hebci_divide" value="&divide;">
@@ -95,7 +95,7 @@ def makepage(path):
     <input type="hidden" name="var" value="">
     Item: <select name="item">
     <option>--</option>
-    '''.format(u.config.appurl, pnum))
+    '''.format(u.config.binrel, pnum))
 
     found = False
     fp = open('items.txt', 'rt', encoding='utf-8')
@@ -146,14 +146,14 @@ def makepage(path):
 
     sys.stdout.write('''
     <p>
-    <form action="{}bin/distmapform" method="post" enctype="multipart/form-data">
+    <form action="{}distmapform" method="post" enctype="multipart/form-data">
     <fieldset>
     <legend></legend>
     <input type="hidden" name="p" value="project_{}">
     <input type="hidden" name="item" value="{}">
     There are {} variants for <em>{}</em><br>
     Select one or more variants:<br><select name="var" multiple="multiple" size="10" class="ipa2">
-    '''.format(u.config.appurl, pnum, currentitem, len(lines), currenthtml))
+    '''.format(u.config.binrel, pnum, currentitem, len(lines), currenthtml))
 
     for line in lines:
         ii, b = line.strip().split('\t', 1)

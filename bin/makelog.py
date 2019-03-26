@@ -34,7 +34,7 @@ try:
 except:
     method = '???'
 
-sys.stdout.write('''Content-type: text/plain
+sys.stdout.write('''Content-type: text/plain; charset=utf-8  
 
 ===================================================================
 

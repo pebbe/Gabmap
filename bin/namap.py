@@ -16,6 +16,7 @@ import os, re, sys
 
 import u.html, u.path, u.distribute
 from u.login import username
+from u.config import apprel
 
 
 #| globals
@@ -81,11 +82,11 @@ Pragma: no-cache
     }}
     -->
     </style>
-    <script type="text/javascript" src="../tip.js"></script>
+    <script type="text/javascript" src="{1}tip.js"></script>
   </head>
   <body class="hide" id="body">
   <h1>map of missing values for: {0}</h1>
-'''.format(u.html.escape(item)))
+'''.format(u.html.escape(item), apprel))
 
 if os.access('../map/image.html', os.F_OK):
     fp = open('../map/image.html', 'rt', encoding='utf-8')

@@ -113,13 +113,13 @@ def makepage(path):
             curplace = '0'
 
         sys.stdout.write('''
-        <form action="{}bin/alignform" method="post">
+        <form action="{}alignform" method="post">
         <input type="hidden" name="p" value="project_{}">
         <fieldset>
         <legend></legend>
         Item: <select name="n">
         <option>--</option>
-        '''.format(u.config.appurl, pnum))
+        '''.format(u.config.binrel, pnum))
         filenames = [x[:-5] for x in os.listdir('../data/_') if x.endswith('.data')]
         lines = []
         for filename in sorted(filenames):

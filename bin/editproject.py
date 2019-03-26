@@ -42,4 +42,4 @@ fp = open('description', 'wt', encoding='utf-8')
 fp.write(u.html.escape(text) + '\n')
 fp.close()
 
-sys.stdout.write('Location: {}bin/goto?p=project_{}\n\n'.format(u.config.appurl, path))
+sys.stdout.write('Location: {}goto?p=project_{}\n\n'.format(u.config.binurls, path))

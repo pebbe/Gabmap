@@ -55,6 +55,7 @@ def makepage(user):
         'projects':projects,
         'username':user,
         'appurl':_c.appurl,
+        'binurl':_c.binurl,
         'count':_c.maxprojects,
         'helpmap': _h.help('homemap'),
         'helpshmap': _h.help('homedisperse'),

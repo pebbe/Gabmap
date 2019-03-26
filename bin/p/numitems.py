@@ -108,9 +108,9 @@ def makepage(path):
         pnum =  path.split('-')[-2].split('_')[-1]
         sys.stdout.write(u.html.img(p + '-datacount', usemap="map1", bw=True))
         sys.stdout.write('''
-        &rarr; <a href="{}bin/getdatacount?{}" target="_blank">download as list</a>
+        &rarr; <a href="{}getdatacount?{}" target="_blank">download as list</a>
         <p>
-        '''.format(u.config.appurl, pnum))
+        '''.format(u.config.binurls, pnum))
 
         lines = []
         fp = open('NAs.txt', 'rt', encoding='utf-8')

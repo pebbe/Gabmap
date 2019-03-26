@@ -15,6 +15,7 @@ import os, random, re, sys, unicodedata
 
 import u.html, u.path, u.myCgi, u.hebci, u.distribute
 from u.login import username
+from u.config import apprel
 
 #| globals
 
@@ -29,8 +30,9 @@ u.html.loginCheck()
 u.path.chdir(username)
 
 cp = u.hebci.cp(u.myCgi.data)
-regex = u.myCgi.data.get('regex', '').decode(cp)
-p = int(u.myCgi.data.get('p', '').decode(cp))
+
+regex = u.myCgi.data.get('regex', b'').decode(cp)
+p = int(u.myCgi.data.get('p', b'0').decode(cp))
 
 try:
     RE = re.compile(regex)
@@ -123,11 +125,11 @@ Pragma: no-cache
       document.getElementById('body').className = 'hide';
     }}
     //--></script>
-    <script type="text/javascript" src="../tip.js"></script>
+    <script type="text/javascript" src="{1}tip.js"></script>
   </head>
   <body class="hide" id="body">
   <h1>map and samples for: {0}</h1>
-'''.format(u.html.escape(RE.pattern)))
+'''.format(u.html.escape(RE.pattern), apprel))
 
 if os.access('../../map/image.html', os.F_OK):
     fp = open('../../map/image.html', 'rt', encoding='utf-8')

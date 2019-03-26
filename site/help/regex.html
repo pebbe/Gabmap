@@ -41,8 +41,8 @@ Example:  <span class="re">ab+c</span> matches 'abc' and 'abbc'
 Example:  <span class="re">ab?c</span> matches 'ac' and 'abc', but not 'abbc'
 	    or 'abbbc'.
 
-<tr valign="top"><td><span class="re">{</span><em>m</em><span class="re">,</span><em>n</em><span class="re">}</span>    <td>Matches from <em>m</em> to <em>n</em> repetitions of the preceding RE.<br>
-Example:  <span class="re">ab{2,4}c</span> matches 'abbc' and 'abbbc'
+<tr valign="top"><td><span class="re">{{</span><em>m</em><span class="re">,</span><em>n</em><span class="re">}}</span>    <td>Matches from <em>m</em> to <em>n</em> repetitions of the preceding RE.<br>
+Example:  <span class="re">ab{{2,4}}c</span> matches 'abbc' and 'abbbc'
 	    and 'abbbbc', but not 'abc' or 'abbbbbc'.
 
 <tr valign="top"><td><span class="re">\</span>     <td>Escapes special characters.<br>

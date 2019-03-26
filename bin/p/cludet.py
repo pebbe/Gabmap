@@ -218,8 +218,8 @@ def makepage(path):
         sys.stdout.write('''<div class="info">
         Here you can discover what linguistic features are characteristic for certain areas.<br>
         &nbsp;<br>
-        For an introduction, read <a href="../doc/ClusterDeterminants" target="_blank">this demonstration</a>
-        </div>''')
+        For an introduction, read <a href="{}doc/ClusterDeterminants" target="_blank">this demonstration</a>
+        </div>'''.format(u.config.appurls))
 
         accents = {}
         if encoding == 'utf-8':
@@ -261,12 +261,12 @@ def makepage(path):
 
         sys.stdout.write('''
         <p>
-        <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+        <form action="{}cludetform" method="post" enctype="multipart/form-data">
         <input type="hidden" name="p" value="{}">
         <input type="hidden" name="action" value="number">
         Number of clusters:
         <select name="n">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
         n = int(current[0])
         for i in range(2, 13):
             if i == n:
@@ -287,10 +287,10 @@ def makepage(path):
 
         sys.stdout.write('''
         <h3 id="s2">Step 2: select cluster</h3>
-        <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+        <form action="{}cludetform" method="post" enctype="multipart/form-data">
         <input type="hidden" name="p" value="{}">
         <input type="hidden" name="action" value="cluster">
-        '''.format(u.config.appurl, project))
+        '''.format(u.config.binurls, project))
 
         if accents:
             sys.stdout.write('''
@@ -364,12 +364,12 @@ def makepage(path):
 
             sys.stdout.write('''
             <h3 id="s3">step 3: select item</h3>
-            <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+            <form action="{}cludetform" method="post" enctype="multipart/form-data">
             <input type="hidden" name="p" value="{}">
             <input type="hidden" name="action" value="item">
             Items sorted by value:
             <select name="item">
-            '''.format(u.config.appurl, project))
+            '''.format(u.config.binurls, project))
             fp = open('score.txt', 'rt')
             for line in fp:
                 a, b, c, f, g = line.split()
@@ -549,7 +549,7 @@ def makepage(path):
 
                 sys.stdout.write('''
                 <h3 id="s4">Step 4: try for determinant feature</h3>
-                <form action="{}bin/cludetform" method="post" enctype="multipart/form-data">
+                <form action="{}cludetform" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="hebci_auml"   value="&auml;">
                 <input type="hidden" name="hebci_divide" value="&divide;">
                 <input type="hidden" name="hebci_euro"   value="&euro;">
@@ -564,7 +564,7 @@ def makepage(path):
                 Regular expression:{}<br><input type="text" name="regex" size="60" value="{}" class="ipa2">
                 <input type="submit" value="Try feature">
                 </form>
-                '''.format(u.config.appurl, project, u.html.help('regex'), regex))
+                '''.format(u.config.binurls, project, u.html.help('regex'), regex))
 
                 if regex:
                     fp = open('reresults.txt', 'rt')

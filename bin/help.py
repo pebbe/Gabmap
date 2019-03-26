@@ -34,6 +34,6 @@ sys.stdout.write('''
 <h2>Help</h2>
 <h3>{}</h3>
 '''.format(title))
-sys.stdout.write(b)
+sys.stdout.write(b.format({'apprel':u.config.apprel}))
 sys.stdout.write('</div>\n')
 sys.stdout.write(u.html.foot())

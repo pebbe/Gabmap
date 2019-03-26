@@ -19,8 +19,7 @@
 
       <h2>Convert x-sampa to unicode<br>(or any other conversion)</h2>
       
-
-      <form action="../bin/xs2utf" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+      <form action="{0[binurls]}xs2utf" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 
 	Upload data file:<br>
 	<input type="file" name="data" size="40">

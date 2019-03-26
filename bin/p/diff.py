@@ -76,16 +76,16 @@ def makepage(path):
         sys.stdout.write('Local incoherence: {}{}\n<p>\n'.format(_number(linc), u.html.help('linc')))
 
         sys.stdout.write('''
-        &rarr; <a href="{0}bin/getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
+        &rarr; <a href="{0}getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
         <p>
-        &rarr; <a href="{0}bin/getdiff?p=project_{1}&f=tab" target="_blank">download differences</a> (table format)
-        '''.format(u.config.appurl, pnum))
+        &rarr; <a href="{0}getdiff?p=project_{1}&f=tab" target="_blank">download differences</a> (table format)
+        '''.format(u.config.binurls, pnum))
 
         if m.startswith('levfeat'):
             sys.stdout.write('''
             <p>
-            &rarr; <a href="{}bin/getfeat?p=project_{}" target="_blank">download feature definition</a>
-            '''.format(u.config.appurl, pnum))
+            &rarr; <a href="{}getfeat?p=project_{}" target="_blank">download feature definition</a>
+            '''.format(u.config.binurls, pnum))
 
 
         sys.stdout.write('''

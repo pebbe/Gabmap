@@ -14,6 +14,7 @@ import cgitb; cgitb.enable(format="html")
 import codecs, cgi, os, re, sys
 
 import u.html, u.myCgi
+from u.config import appdir
 
 #| globals
 
@@ -90,7 +91,7 @@ trans = u.myCgi.data.get('trans', '')
 if trans:
     trans = decode(trans)
 else:
-    fp = open('../tools/XSampaTable.txt', 'rt', encoding='utf-8')
+    fp = open('{}tools/XSampaTable.txt'.format(appdir), 'rt', encoding='utf-8')
     trans = fp.readlines()
     fp.close()
 

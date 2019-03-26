@@ -138,15 +138,15 @@ def makepage(path):
                 <tr><!-- <td align="right"><tt>{0}</tt></td> -->
                     <td><tt>{0:04X}</tt></td>
                     <td align="center" class="ipa2">&nbsp;&#{0};&nbsp;</td>
-                    <td align="right"><a href="{3}bin/sample?{4}-{0}" target="_blank">{1}</a></td>
+                    <td align="right"><a href="{3}sample?{4}-{0}" target="_blank">{1}</a></td>
                     <td>{5}<small>{2}</small>{6}</td>
                 </tr>
-                '''.format(c, n, unicodedata.name('%c' % c, ''), u.config.appurl, pnum, f1, f2))
+                '''.format(c, n, unicodedata.name('%c' % c, ''), u.config.binurls, pnum, f1, f2))
             sys.stdout.write('</table>\n')
 
             sys.stdout.write('''
             <h3 id="search">Sample search{}</h3>
-            <form action="{}bin/samplerx" method="post" enctype="multipart/form-data" accept-charset="utf-8" target="_blank">
+            <form action="{}samplerx" method="post" enctype="multipart/form-data" accept-charset="utf-8" target="_blank">
             <input type="hidden" name="hebci_auml"   value="&auml;">
             <input type="hidden" name="hebci_divide" value="&divide;">
             <input type="hidden" name="hebci_euro"   value="&euro;">
@@ -160,7 +160,7 @@ def makepage(path):
             Regular expression:{}<br>
             <input type="text" name="regex" size="40">
             <input type="submit" value="Get samples">
-            '''.format(u.html.help('datasearch'), u.config.appurl, pnum, u.html.help('regex')))
+            '''.format(u.html.help('datasearch'), u.config.binrel, pnum, u.html.help('regex')))
 
         if method.startswith('levfeat'):
 
@@ -264,9 +264,9 @@ def makepage(path):
                 sys.stdout.write('''<tr>
                   <td><tt>{5}</tt></td>
                   <td align="center" class="ipa2">&nbsp;{0}&nbsp;</td>
-                  <td align="right"><a href="{2}bin/sample2?{3}-{4}" target="_blank">{1}</a></td>
+                  <td align="right"><a href="{2}sample2?{3}-{4}" target="_blank">{1}</a></td>
                   {6}
-                '''.format(u.html.escape(c), items[c], u.config.appurl, pnum, cc, xx, cats))
+                '''.format(u.html.escape(c), items[c], u.config.binurls, pnum, cc, xx, cats))
             sys.stdout.write('</table>\n')
 
     elif os.access('QUEUED', os.F_OK):

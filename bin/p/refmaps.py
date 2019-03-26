@@ -171,13 +171,13 @@ def makepage(path):
         fp.close()
 
         sys.stdout.write('''
-        <form action="{}bin/refmapsform" method="post">
+        <form action="{}refmapsform" method="post">
         <input type="hidden" name="p" value="project_{}">
         <fieldset>
         <legend></legend>
         Place: <select name="pl">
         <option value="0">--</option>
-        '''.format(u.config.appurl, pnum))
+        '''.format(u.config.binurls, pnum))
         for place in sorted(places):
             if places[place] == curplace:
                 sel = ' selected="selected"'

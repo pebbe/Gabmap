@@ -33,12 +33,20 @@ appdir    = os.environ['APPDIR']
 appurl    = os.environ['APPURL']
 appurls   = os.environ['APPURLS']
 apprel    = os.environ['APPREL']
+bindir    = os.environ['BINDIR']
+binurl    = os.environ['BINURL']
+binurls   = os.environ['BINURLS']
+binrel    = os.environ['BINREL']
 
 assert datadir[-1] == '/'
 assert appdir[-1] == '/'
 assert appurl[-1] == '/'
 assert appurls[-1] == '/'
 assert apprel[-1] == '/'
+assert bindir[-1] == '/'
+assert binurl[-1] == '/'
+assert binurls[-1] == '/'
+assert binrel[-1] == '/'
 
 if usermode != 'single':
     mailfrom = os.environ['MAILFROM']

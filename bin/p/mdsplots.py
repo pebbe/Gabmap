@@ -77,12 +77,12 @@ def makepage(path):
           }}
 	//--></script>
         <p>
-        <form action="{}bin/mdsplotform" method="post" enctype="multipart/form-data">
+        <form action="{}mdsplotform" method="post" enctype="multipart/form-data">
         <fieldset><legend></legend>
         <input type="hidden" name="p" value="project_{}">
         Location(s):<br><select name="s" multiple="multiple" size="10">
 
-        '''.format(u.html.img(p + '-plot2d', usemap="map1", noover=True), corr, u.config.appurl, pnum))
+        '''.format(u.html.img(p + '-plot2d', usemap="map1", noover=True), corr, u.config.binurls, pnum))
 
         for i in range(len(places)):
             if places[i] in current:

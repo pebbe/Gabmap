@@ -13,7 +13,7 @@ import cgitb; cgitb.enable(format="html")
 
 import sys
 
-from u.config import appurls
+from u.config import binurls
 from u.html import head, foot, getBody
 from u.login import username
 import p.user

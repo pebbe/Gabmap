@@ -69,8 +69,7 @@ def errorExitCreate(errors):
     for e in errors:
         err += '<div class="error">\nError: ' + e + '\n</div>\n'
     sys.stdout.write(u.html.head('error'))
-    sys.stdout.write(u.html.getBody('accountCreate.html').format({'appurl':appurl,
-                                                                  'appurls':appurls,
+    sys.stdout.write(u.html.getBody('accountCreate.html').format({'binurls':binurls,
                                                                   'errors':err,
                                                                   'email':email,
                                                                   'username':username}))
@@ -118,7 +117,7 @@ def actionLogin():
 
     c = cookies.SimpleCookie()
     c['L04u'] = u.login.mkString(username, passwd)
-    c['L04u']['path'] = apprel
+    c['L04u']['path'] = binrel
 
     if remember:
         days = 'Mon Tue Wed Thu Fri Sat Sun'.split()
@@ -126,13 +125,13 @@ def actionLogin():
         tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst = time.gmtime(time.time() + 60 * 60 * 24 * 30)
         c['L04u']['expires'] = '{}, {:02d}-{}-{} {}:{:02d}:{:02d} GMT'.format(days[tm_wday], tm_day, months[tm_mon], tm_year, tm_hour, tm_min, tm_sec)
 
-    sys.stdout.write('Location: {}bin/home\n{}\n\n'.format(appurl, c.output()))
+    sys.stdout.write('Location: {}home\n{}\n\n'.format(binurl, c.output()))
 
 def actionLogout():
     c = cookies.SimpleCookie()
     c['L04u'] = ''
-    c['L04u']['path'] = apprel
-    sys.stdout.write('Location: {}bin/home\n{}\n\n'.format(appurl, c.output()))
+    c['L04u']['path'] = binrel
+    sys.stdout.write('Location: {}home\n{}\n\n'.format(binurl, c.output()))
 
 def actionRecover():
     username = getval('username')
@@ -159,7 +158,7 @@ Password: {}
 
 {}
 
-'''.format(user, password, appurl))
+'''.format(user, password, binurl))
     u.html.exitMessage('Recover account',
                        '''Your account info was sent to {}
                        <p>
@@ -213,7 +212,7 @@ def actionCreate():
         errorExitCreate(errors)
 
     pending = '.pending{}{}'.format(os.getpid(), username)
-    url = '{}bin/account?action=confirm&id={}{}'.format(appurl, os.getpid(), username)
+    url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
     fp.write('{}\t{}\t{}\n'.format(username, email, password))
@@ -252,7 +251,7 @@ def actionConfirm():
     fp.close()
     open('TIMESTAMP', 'w').close()
 
-    u.html.exitMessage('Confirmed', 'Your account has been confirmed\n<p>\nYou can now log in at the <a href="../">home page</a>')
+    u.html.exitMessage('Confirmed', 'Your account has been confirmed\n<p>\nYou can now log in at the <a href="home">home page</a>')
 
 #| main
 

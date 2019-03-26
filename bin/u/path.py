@@ -34,9 +34,9 @@ def breadcrumbs(path):
 
     return '''
     <div id="crumbs">
-    <a href="{}bin/goto?p={}">{}</a> &mdash; {}
+    <a href="{}goto?p={}">{}</a> &mdash; {}
     </div>
-    '''.format(_c.appurl, path[1], path[1].replace('_', ' '), title)
+    '''.format(_c.binrel, path[1], path[1].replace('_', ' '), title)
 
 #| main
 
