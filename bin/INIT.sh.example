@@ -46,15 +46,19 @@ export DATADIR=/home/yourname/.gabmap/
 
 # Location of the webapp, including trailing slash
 export APPDIR=/home/yourname/public_html/gabmap/
+export BINDIR=/home/yourname/public_html/gabmap/bin/
 
 # The base url to the webapp, including trailing slash
 export APPURL=http://yourdomain/~yourname/gabmap/
+export BINURL=http://yourdomain/~yourname/gabmap/bin/
 
 # The base url to the webapp using https, including trailing slash
 export APPURLS=https://yourdomain/~yourname/gabmap/
+export BINURLS=https://yourdomain/~yourname/gabmap/bin/
 
 # The base url to the webapp without server, including trailing slash
 export APPREL=/~yourname/gabmap/
+export BINREL=/~yourname/gabmap/bin/
 
 # Links to some standard web pages
 export ABOUTURL="http://www.gabmap.nl/?page_id=18"
