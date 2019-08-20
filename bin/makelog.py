@@ -34,7 +34,8 @@ try:
 except:
     method = '???'
 
-sys.stdout.write('''Content-type: text/plain; charset=utf-8  
+sys.stdout.flush()
+sys.stdout.buffer.write('''Content-type: text/plain; charset=utf-8
 
 ===================================================================
 
@@ -54,10 +55,7 @@ Task: {}/{}
 
 Method: {}
 
-'''.format(u.config.contact, u.config.appurl, u.login.username, path.replace('-', '/'), method))
-
-sys.stdout.flush()
-stdout = sys.stdout.detach()
+'''.format(u.config.contact, u.config.appurl, u.login.username, path.replace('-', '/'), method).encode('utf-8'))
 
 queue = ['make.log']
 while True:
@@ -66,15 +64,15 @@ while True:
     f = queue[0]
     queue = queue[1:]
 
-    stdout.write(b'>>> ' + f.encode('ascii') + b'\n\n')
+    sys.stdout.buffer.write(b'>>> ' + f.encode('ascii') + b'\n\n')
     fp = open(f, 'rb')
     for line in fp:
         l = re.sub(b'.*\r', b'', line).replace(b'\a', b'')
-        stdout.write(l)
+        sys.stdout.buffer.write(l)
         m = re.search(b'(\\.\\./[a-zA-Z0-9]+)/OK', l)
         if m:
             queue.append(m.group(1).decode('ascii') + '/make.log')
     fp.close()
-    stdout.write(b'\n\n')
+    sys.stdout.buffer.write(b'\n\n')
 
-stdout.write(b'done\n')
+sys.stdout.buffer.write(b'done\n')
