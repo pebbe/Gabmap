@@ -736,6 +736,7 @@ void insert(int idx)
 	    max_patterns += 32;
 	    patterns = (PATTERN_ *) s_realloc (patterns, max_patterns * sizeof (PATTERN_));
 	}
+	patterns [n_patterns].forms = NULL;
 	patterns [n_patterns].s = s_strdup (buffer2);
 	patterns [n_patterns].n_forms = 0;
 	patterns [n_patterns].max_forms = 0;
