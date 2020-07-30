@@ -63,7 +63,7 @@ if os.access(output, os.F_OK):
 labels = []
 items = {}
 
-fp = open(source, 'r')
+fp = open(source, 'r', encoding="iso-8859=1")
 dim = int(getline(fp, True))
 while True:
     lbl = getline(fp)
@@ -77,7 +77,7 @@ while True:
         items[lbl]['source'].append(float(getline(fp, True)))
 fp.close()
 
-fp = open(target, 'r')
+fp = open(target, 'r', encoding="iso-8859=1")
 n = int(getline(fp, True))
 assert n == dim
 while True:
@@ -210,7 +210,7 @@ if doAxes:
 
 ################################################################
 
-fp = open(output, 'w')
+fp = open(output, 'w', encoding="iso-8859=1")
 fp.write('%i\n' % dim)
 for i in range(n):
     fp.write('%s\n' % labels[i])

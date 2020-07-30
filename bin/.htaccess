@@ -1,2 +1,3 @@
 Options +ExecCGI
 SetHandler cgi-script
+DirectoryIndex home
