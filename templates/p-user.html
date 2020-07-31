@@ -42,7 +42,7 @@ function formtest() {{
   }}
   if (valid && i == 1) {{
     j = f.stringmethod.selectedIndex;
-    if (valid && j == 2 && trim(f.featdef.value) == '') {{
+    if (valid && j > 3 && trim(f.featdef.value) == '') {{
       alert ('Missing: definition file');
       valid = false;
     }} 
@@ -76,7 +76,7 @@ function formtest() {{
 
 function checkmethodstring() {{
   s = document.getElementById('userdef').style;
-  if (document.newproject.stringmethod.selectedIndex == 2) {{
+  if (document.newproject.stringmethod.selectedIndex > 3) {{
     s.visibility = 'visible';
     s.display = 'block';
   }} else {{
@@ -180,8 +180,11 @@ Type of data:{0[helpdatatype]}<br>
 Type of processing:{0[helpmtdstring]}<br> 
 <select name="stringmethod" onchange="checkmethodstring()">
 <option value="lev">string edit distance &mdash; plain</option>
+<option value="lev-pmi">string edit distance &mdash; plain &mdash; PMI</option>
 <option value="levfeat-tok" selected="selected">string edit distance &mdash; tokenized</option>
+<option value="levfeat-tok-pmi">string edit distance &mdash; tokenized &mdash; PMI</option>
 <option value="levfeat-user">string edit distance &mdash; user defined</option>
+<option value="levfeat-user-pmi">string edit distance &mdash; user defined &mdash; PMI</option>
 </select>
 </div>
 

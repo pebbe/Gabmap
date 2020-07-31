@@ -82,12 +82,18 @@ def makepage(path):
     <h2>alignments</h2>
     '''.format(crumbs))
 
-    if os.access('../data/OK', os.F_OK):
+    if os.access('../data/PMI', os.F_OK):
+        pmi = True
+        pmis = ' &mdash; PMI'
+    else:
+        pmi = False
+        pmis = ''
+    if os.access('../data/OK', os.F_OK) and (not pmi or os.access('../diff/OK', os.F_OK)):
 
         fp = open('../data/Method', 'rt')
         m = methods[fp.read().strip()]
         fp.close()
-        sys.stdout.write('Method: {}\n'.format(m))
+        sys.stdout.write('Method: {}{}\n'.format(m, pmis))
 
         if os.access('../data/tokens-int.txt', os.F_OK):
             features = True
@@ -260,6 +266,9 @@ def makepage(path):
 
     elif os.access('../data/QUEUED', os.F_OK):
         os.chdir('../data/')
+        sys.stdout.write(u.html.busy())
+    elif pmi and os.access('../diff/QUEUED', os.F_OK):
+        os.chdir('../diff/')
         sys.stdout.write(u.html.busy())
     else:
         sys.stdout.write(u.html.makeError(path.split('-', 1)[1]).replace('align', 'data'))

@@ -230,6 +230,11 @@ method = u.myCgi.data.get('allmethod', b'-').decode('us-ascii')
 if method == '-':
     u.html.exitMessage('Error', 'No method selected')
 
+pmi = False
+if method.endswith('-pmi'):
+    pmi = True
+    method = method[:-4]
+
 mx = 0
 filenames = [int(x.split('_')[1]) for x in os.listdir('.') if x.startswith('project')]
 if filenames:
@@ -890,6 +895,9 @@ else:
 fp = open('Method', 'wt')
 fp.write(method + '\n')
 fp.close()
+if pmi:
+    fp = open('PMI', 'wt')
+    fp.close()
 
 if method.startswith('levfeat'):
     if method.endswith('user'):
@@ -960,9 +968,14 @@ if method.startswith('levfeat'):
     fp = open('{}/templates/Makefile-data'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
+    if pmi:
+        pmis = '.in'
+    else:
+        pmis = ''
     u.queue.enqueue(path + '/data', make.format({'appdir': u.config.appdir,
                                                  'python3': u.config.python3,
-                                                 'python3path': u.config.python3path}))
+                                                 'python3path': u.config.python3path,
+                                                 'pmi': pmis}))
 elif not method.startswith('num'):
     open('data/OK', 'w').close()
 
@@ -985,11 +998,16 @@ elif method.startswith('lev'):
     else:
         feat = '# '
         plain = ''
+    if pmi:
+        pmis = '.in -S ../data/features-float.txt'
+    else:
+        pmis = ''
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
                                                  'python3': u.config.python3,
                                                  'feat': feat,
-                                                 'plain': plain}))
+                                                 'plain': plain,
+                                                 'pmi': pmis}))
 elif method.startswith('dif'):
     fp = open('{}templates/Makefile-diff-diff'.format(u.config.appdir), 'r')
     make = fp.read()

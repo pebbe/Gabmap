@@ -39,7 +39,7 @@ def makepage(path):
 
         fp = open('../data/Method', 'rt')
         method = fp.read().strip()
-        fp.close;
+        fp.close()
 
         fp = open('current.txt', 'rt')
         noise, limit, exponent, color, mthd = fp.read().split()

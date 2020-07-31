@@ -33,6 +33,10 @@ try:
     method = open('../data/Method', 'rt').read().strip()
 except:
     method = '???'
+if os.access('../data/PMI', os.F_OK):
+    pmis = '-pmi'
+else:
+    pmis = ''
 
 sys.stdout.flush()
 sys.stdout.buffer.write('''Content-type: text/plain; charset=utf-8
@@ -53,9 +57,9 @@ Server: {}
 
 Task: {}/{}
 
-Method: {}
+Method: {}{}
 
-'''.format(u.config.contact, u.config.appurl, u.login.username, path.replace('-', '/'), method).encode('utf-8'))
+'''.format(u.config.contact, u.config.appurl, u.login.username, path.replace('-', '/'), method, pmis).encode('utf-8'))
 
 queue = ['make.log']
 while True:

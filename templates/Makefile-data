@@ -4,5 +4,5 @@ OK: features.def _/*.data
 	features -a -c -l -e errors-int.txt -t tokens-int.txt features.def _/*.data
 	mv features.table.out features-int.txt
 	features -T -g -a -c -l -e errors-float.txt -t tokens-float.txt features.def _/*.data
-	mv features.table.out features-float.txt
+	mv features.table.out features-float.txt{0[pmi]}
 	touch OK

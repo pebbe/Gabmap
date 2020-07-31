@@ -62,6 +62,10 @@ def makepage(path):
             linc = fp.read()
             fp.close()
 
+        if os.access('../data/PMI', os.F_OK):
+            pmis = ' &mdash; PMI'
+        else:
+            pmis = ''
         try:
             fp = open('../data/Method', 'rt')
             m = fp.readline().strip()
@@ -69,7 +73,7 @@ def makepage(path):
         except:
             pass
         else:
-            mt = 'Method: {}\n<p>'.format(_methods[m])
+            mt = 'Method: {}{}\n<p>'.format(_methods[m], pmis)
 
         sys.stdout.write(mt + '\n')
 
