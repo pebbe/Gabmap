@@ -29,7 +29,7 @@ _brackclose = {
 
 #| functions
 
-def makedef(chars, enc):
+def makedef(chars, enc, tokenized):
 
     fp = open('charcat.txt', 'wt')
     for c in sorted(chars):
@@ -48,7 +48,9 @@ def makedef(chars, enc):
 
     for c in sorted(chars):
         c = '{0:c}'.format(c)
-        if c in Vowel:
+        if not tokenized:
+            unknowns.append(c)
+        elif c in Vowel:
             vowels.append(c)
         elif c in Semivowel:
             semivowels.append(c)

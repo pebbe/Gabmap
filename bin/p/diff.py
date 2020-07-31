@@ -85,7 +85,7 @@ def makepage(path):
         &rarr; <a href="{0}getdiff?p=project_{1}&f=tab" target="_blank">download differences</a> (table format)
         '''.format(u.config.binurls, pnum))
 
-        if m.startswith('levfeat'):
+        if m.startswith('levfeat') or pmis != '':
             sys.stdout.write('''
             <p>
             &rarr; <a href="{}getfeat?p=project_{}" target="_blank">download feature definition</a>

@@ -914,9 +914,15 @@ if method.startswith('levfeat'):
     else:
         import u.features
         if enc.startswith('utf'):
-            u.features.makedef(nChars, 'utf-8')
+            u.features.makedef(nChars, 'utf-8', True)
         else:
-            u.features.makedef(nChars, 'iso-8859-1')
+            u.features.makedef(nChars, 'iso-8859-1', True)
+elif pmi:
+    import u.features
+    if enc.startswith('utf'):
+        u.features.makedef(nChars, 'utf-8', False)
+    else:
+        u.features.makedef(nChars, 'iso-8859-1', False)
 
 if enc.startswith('utf'):
     open('UTF', 'wt').close()
@@ -964,7 +970,7 @@ if not pseudo:
     fp.close()
     u.queue.enqueue(path + '/map', make.format({'appdir': u.config.appdir, 'python3': u.config.python3}))
 
-if method.startswith('levfeat'):
+if method.startswith('levfeat') or pmi:
     fp = open('{}/templates/Makefile-data'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
@@ -992,7 +998,7 @@ elif method.startswith('lev'):
     fp = open('{}templates/Makefile-diff'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
-    if method.startswith('levfeat'):
+    if method.startswith('levfeat') or pmi:
         feat = ''
         plain = '# '
     else:
