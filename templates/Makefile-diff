@@ -1,8 +1,8 @@
 OK: ../data/OK ../data/labels.txt ../data/_/*.data
 	rm -f OK
 	rm -f tmp*
-	{0[plain]}leven  -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
-	{0[feat]}leven-r -n {0[nplaces]} -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt{0[pmi]} ../data/_/*.ftr
+	{0[plain]}leven  -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	{0[feat]}leven-r -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt{0[pmi]} ../data/_/*.ftr
 	{0[python3]} {0[appdir]}util/difok diff.txt || \
 		diffix -a 1 -o tmp.diff diff.txt ../map/map.coo || \
 		{0[python3]} {0[appdir]}util/diffix2 diff.txt diff.txt
