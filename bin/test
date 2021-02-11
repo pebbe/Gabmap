@@ -2,4 +2,16 @@
 source INIT.sh
 export PYTHON=$PYTHON3
 export PYTHONPATH=$PYTHON3PATH
+
 $PYTHON test.py
+
+echo
+R --version
+cd /tmp
+tmp=test-$$
+echo 'options(width=2000)' > $tmp.R
+echo 'installed.packages()[,c("Package","LibPath","Version","Depends","Built")]' >> $tmp.R
+R CMD BATCH $tmp.R
+egrep 'iL04|LibPath' $tmp.Rout
+rm -f $tmp.R $tmp.Rout
+

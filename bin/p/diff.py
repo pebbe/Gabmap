@@ -91,6 +91,11 @@ def makepage(path):
             &rarr; <a href="{}getfeat?p=project_{}" target="_blank">download feature definition</a>
             '''.format(u.config.binurls, pnum))
 
+        if pmis != '':
+            sys.stdout.write('''
+            <p>
+            &rarr; <a href="{}gettrain?p=project_{}" target="_blank">download trained sound distances</a> (RuG/L04 format) 
+            '''.format(u.config.binurls, pnum))
 
         sys.stdout.write('''
         <p>
