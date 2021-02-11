@@ -9,9 +9,19 @@ echo
 R --version
 cd /tmp
 tmp=test-$$
+
 echo 'options(width=2000)' > $tmp.R
 echo 'installed.packages()[,c("Package","LibPath","Version","Depends","Built")]' >> $tmp.R
 R CMD BATCH $tmp.R
 egrep 'iL04|LibPath' $tmp.Rout
+rm -f $tmp.R $tmp.Rout
+
+echo
+
+echo 'library(help=iL04)' > $tmp.R
+echo 'library(iL04)' >> $tmp.R
+R CMD BATCH --quiet $tmp.R
+cat $tmp.Rout
+
 rm -f $tmp.R $tmp.Rout
 
