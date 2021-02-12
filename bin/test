@@ -18,7 +18,8 @@ rm -f $tmp.R $tmp.Rout
 
 echo
 
-echo 'library(help=iL04)' > $tmp.R
+echo '.libPaths()' > $tmp.R
+echo 'library(help=iL04)' >> $tmp.R
 echo 'library(iL04)' >> $tmp.R
 R CMD BATCH --quiet $tmp.R
 cat $tmp.Rout
