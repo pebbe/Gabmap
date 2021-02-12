@@ -24,7 +24,7 @@ import u.config
 
 #| main
 
-sys.stdout.write('Content-type: text/plain\n\n')
+sys.stdout.write('Content-type: text/plain; charset=utf-8\n\n')
 
 sys.stdout.write('To do: check if mouse-over plot in "reference point maps" works with current version of R\n\n')
 
