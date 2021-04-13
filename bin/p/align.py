@@ -70,6 +70,8 @@ def makepage(path):
         os.mkdir('align')
     os.chdir('align')
 
+    p2 = os.access('../2P', os.F_OK)
+
     crumbs = u.path.breadcrumbs(path)
     ltitle = path.split('-')[1].replace('_', ' ') + ' / ' + title
 
@@ -139,7 +141,10 @@ def makepage(path):
             sys.stdout.write(b)
         sys.stdout.write('''
         </select><br>
-        &nbsp;<br>
+        ''')
+
+        if not p2:
+            sys.stdout.write('''&nbsp;<br>
         Place: <select name="l">
         <option value="0"> -- random places --</option>
         ''')
@@ -158,15 +163,19 @@ def makepage(path):
         fp2.close()
         fp.close()
         lines.sort()
-        for line in lines:
-            b, a = line.split('\t', 1)
-            if a == curplace:
-                sel = ' selected="selected"'
-            else:
-                sel = ''
-            sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(a, sel, u.html.escape(truelabels[b])))
+        if not p2:
+            for line in lines:
+                b, a = line.split('\t', 1)
+                if a == curplace:
+                    sel = ' selected="selected"'
+                else:
+                    sel = ''
+                sys.stdout.write('<option value="{}"{}>{}</option>\n'.format(a, sel, u.html.escape(truelabels[b])))
+            sys.stdout.write('</select>\n<br>')
+        else:
+            sys.stdout.write('<input type="hidden" name="l" value="1">\n')
 
-        sys.stdout.write('</select>\n<br>&nbsp;<br>\n<input type="submit" value="Show alignments">\n</fieldset>\n</form>\n')
+        sys.stdout.write('&nbsp;<br>\n<input type="submit" value="Show alignments">\n</fieldset>\n</form>\n')
 
 
         if current:

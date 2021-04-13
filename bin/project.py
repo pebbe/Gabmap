@@ -596,8 +596,8 @@ if re.search('office|excel|spreadsheet', filetest, re.I):
     <p>
     You need to convert your data to plain text.<br>
     See:
-    <a href="http://www.gabmap.nl/~app/doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>
-    '''.format(u.html.escape(s)))
+    <a href="{}doc/preparing/" target="_blank">Preparing dialect data for Gabmap</a>
+    '''.format(u.html.escape(s), u.config.appurl))
 
 if data.startswith(codecs.BOM_UTF8):
     enc = 'utf-8-sig'
@@ -773,6 +773,14 @@ else:
 
 
 #||| check data format
+
+if nPlaces < 2:
+    u.html.exitMessage('Error', 'Less than two places found')
+
+p2 = ''
+if nPlaces == 2:
+    p2 = '2'
+    open('2P', 'wt').close()
 
 if method.startswith('num'):
     NAs = 0
@@ -987,7 +995,7 @@ elif not method.startswith('num'):
 
 
 if method.startswith('num'):
-    fp = open('{}/templates/Makefile-diffnum'.format(u.config.appdir), 'r')
+    fp = open('{}/templates/Makefile-diffnum{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
     u.queue.enqueue(path + '/diff', make.format({'appdir': u.config.appdir,
@@ -995,7 +1003,7 @@ if method.startswith('num'):
                                                  'python3path': u.config.python3path}))
 
 elif method.startswith('lev'):
-    fp = open('{}templates/Makefile-diff'.format(u.config.appdir), 'r')
+    fp = open('{}templates/Makefile-diff{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
     if method.startswith('levfeat') or pmi:
@@ -1015,14 +1023,14 @@ elif method.startswith('lev'):
                                                  'plain': plain,
                                                  'pmi': pmis}))
 elif method.startswith('dif'):
-    fp = open('{}templates/Makefile-diff-diff'.format(u.config.appdir), 'r')
+    fp = open('{}templates/Makefile-diff-diff{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
                                                  'python3': u.config.python3}))
 else:
-    fp = open('{}/templates/Makefile-diff-other'.format(u.config.appdir), 'r')
+    fp = open('{}/templates/Makefile-diff-other{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
     c2 = ''

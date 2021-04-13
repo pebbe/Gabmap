@@ -46,7 +46,7 @@ sys.stdout.buffer.write('''Content-type: text/plain; charset=utf-8
 If you see this file, something went wrong that should not go wrong.
 
 Near the end of this file you can see what went wrong.
-Please look at http://www.gabmap.nl/?page_id=178 to see if this is
+Please look at https://github.com/pebbe/Gabmap/issues to see if this is
 a known problem.
 
 Otherwise, please send this file to {}

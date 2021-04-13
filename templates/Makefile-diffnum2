@@ -1,0 +1,12 @@
+OK: ../data/table.txt
+	rm -f OK
+	R --no-save < {0[appdir]}util/num.R
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+		fi
+	echo unavailable > linc.txt
+	touch OK
+	touch ../data/OK

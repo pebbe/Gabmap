@@ -39,6 +39,11 @@ def _number(s):
 
 def makepage(path):
     u.path.chdir(path)
+
+    p2 = os.access('../2P', os.F_OK)
+    if p2:
+        title = 'downloads'
+
     crumbs = u.path.breadcrumbs(path)
     ltitle = path.split('-')[1].replace('_', ' ') + ' / ' + title
 
@@ -80,7 +85,7 @@ def makepage(path):
         sys.stdout.write('Local incoherence: {}{}\n<p>\n'.format(_number(linc), u.html.help('linc')))
 
         sys.stdout.write('''
-        &rarr; <a href="{0}getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format) 
+        &rarr; <a href="{0}getdiff?p=project_{1}&f=L04" target="_blank">download differences</a> (RuG/L04 format)
         <p>
         &rarr; <a href="{0}getdiff?p=project_{1}&f=tab" target="_blank">download differences</a> (table format)
         '''.format(u.config.binurls, pnum))
@@ -94,10 +99,11 @@ def makepage(path):
         if pmis != '':
             sys.stdout.write('''
             <p>
-            &rarr; <a href="{}gettrain?p=project_{}" target="_blank">download trained sound distances</a> (RuG/L04 format) 
+            &rarr; <a href="{}gettrain?p=project_{}" target="_blank">download trained sound distances</a> (RuG/L04 format)
             '''.format(u.config.binurls, pnum))
 
-        sys.stdout.write('''
+        if not p2:
+            sys.stdout.write('''
         <p>
         {}
         <p>

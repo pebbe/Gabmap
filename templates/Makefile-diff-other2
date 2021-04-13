@@ -1,0 +1,11 @@
+OK: ../data/OK ../data/labels.txt ../data/_/*.data
+	rm -f OK
+	{0[command]} -n {0[nplaces]} -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+		fi
+	echo unavailable > linc.txt
+	touch OK

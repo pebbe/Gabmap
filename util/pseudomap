@@ -129,7 +129,24 @@ if found:
 
 #| new pseudomap
 
-os.system('mds -o tmp 2 ../diff/diff.txt')
+fp = open('../data/labels.txt', 'rb')
+lines = []
+for line in fp:
+    lines.append(line)
+    if len(lines) > 2:
+        break
+fp.close()
+
+if len(lines) == 2:
+    fp = open('tmp', 'wb')
+    fp.write(b'2\n')
+    fp.write(lines[0].split(maxsplit=1)[1])
+    fp.write(b'\n-1\n1\n')
+    fp.write(lines[1].split(maxsplit=1)[1])
+    fp.write(b'\n1\n-1\n')
+    fp.close()
+else:
+    os.system('mds -o tmp 2 ../diff/diff.txt')
 
 
 x1 = x2 = y1 = y2 = 0.0
@@ -159,43 +176,51 @@ dR = PI2 / math.pow(0.5 + 0.5 * math.sqrt(5), 2.0)
 grid = []
 gridsize = len(vectors)
 
-r = 0.0
-for n in range(gridsize):
-    v = math.sqrt(n + .3)
-    x = v * math.sin(r)
-    y = v * math.cos(r)
-    grid.append((x, y))
-    r += dR
+if gridsize == 2:
+    grid.append((-1, -1))
+    grid.append((1, 1))
+else:
+    r = 0.0
+    for n in range(gridsize):
+        v = math.sqrt(n + .3)
+        x = v * math.sin(r)
+        y = v * math.cos(r)
+        grid.append((x, y))
+        r += dR
 
-p = math.sqrt(gridsize)
-dx = x2 - x1
-dy = y2 - y1
-for n in range(gridsize):
-    x, y, lbl = vectors[n]
-    x = (2.0 * (x - x1) / dx - 1.0) * p
-    y = (2.0 * (y - y1) / dy - 1.0) * p
-    vectors[n] = (x, y, lbl)
+    p = math.sqrt(gridsize)
+    dx = x2 - x1
+    dy = y2 - y1
+    for n in range(gridsize):
+        x, y, lbl = vectors[n]
+        x = (2.0 * (x - x1) / dx - 1.0) * p
+        y = (2.0 * (y - y1) / dy - 1.0) * p
+        vectors[n] = (x, y, lbl)
 
-busy = True
-while busy:
-    busy = False
-    for i in range(gridsize):
-        for j in range(i + 1, gridsize):
-            d1 = math.sqrt(math.pow(vectors[i][0] - grid[i][0], 2) + math.pow(vectors[i][1] - grid[i][1], 2))
-            d2 = math.sqrt(math.pow(vectors[j][0] - grid[j][0], 2) + math.pow(vectors[j][1] - grid[j][1], 2))
-            d3 = math.sqrt(math.pow(vectors[i][0] - grid[j][0], 2) + math.pow(vectors[i][1] - grid[j][1], 2))
-            d4 = math.sqrt(math.pow(vectors[j][0] - grid[i][0], 2) + math.pow(vectors[j][1] - grid[i][1], 2))
-            if d1 + d2 > d3 + d4:
-                busy = True
-                g = grid[i]
-                grid[i] = grid[j]
-                grid[j] = g
+    busy = True
+    while busy:
+        busy = False
+        for i in range(gridsize):
+            for j in range(i + 1, gridsize):
+                d1 = math.sqrt(math.pow(vectors[i][0] - grid[i][0], 2) + math.pow(vectors[i][1] - grid[i][1], 2))
+                d2 = math.sqrt(math.pow(vectors[j][0] - grid[j][0], 2) + math.pow(vectors[j][1] - grid[j][1], 2))
+                d3 = math.sqrt(math.pow(vectors[i][0] - grid[j][0], 2) + math.pow(vectors[i][1] - grid[j][1], 2))
+                d4 = math.sqrt(math.pow(vectors[j][0] - grid[i][0], 2) + math.pow(vectors[j][1] - grid[i][1], 2))
+                if d1 + d2 > d3 + d4:
+                    busy = True
+                    g = grid[i]
+                    grid[i] = grid[j]
+                    grid[j] = g
+
+dv = 1
+if gridsize == 2:
+    dv = 1.41
 
 fp1 = open('map.coo', 'wt', encoding='iso-8859-1')
 fp2 = open('map.lbl', 'wt', encoding='iso-8859-1')
 for i in range(gridsize):
     s = escape(vectors[i][2])
-    fp1.write('{:g}\t{:g}\t1\t0\t"{}"\n'.format(grid[i][0], grid[i][1], s))
+    fp1.write('{:g}\t{:g}\t1\t0\t"{}"\n'.format(grid[i][0]/dv, grid[i][1]/dv, s))
     fp2.write('{:3d}\t"{}"\n'.format(i + 1, s))
 fp2.close()
 fp1.close()

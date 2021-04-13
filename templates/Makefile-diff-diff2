@@ -1,0 +1,10 @@
+OK: ../data/OK
+	rm -f OK
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+		fi
+	echo unavailable > ca.txt
+	touch OK

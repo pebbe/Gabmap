@@ -44,6 +44,8 @@ def makepage(path):
 
     title = path.split('-', 1)[1].replace('-', '/').replace('_', ' ')
 
+    p2 = os.access('2P', os.F_OK)
+
     try:
         fp = open('description', 'rt', encoding='utf-8')
         description = fp.readline().strip()
@@ -134,7 +136,9 @@ def makepage(path):
     <tr valign="top">
     <td>Index
     <td><ul>
-    <li><a href="{0}goto?p={1}-map">places</a>
+    ''')
+    if not p2:
+        sys.stdout.write('''<li><a href="{0}goto?p={1}-map">places</a>
     '''.format(u.config.binrel, path.split('-', 1)[1]))
     if not method.startswith('dif'):
         sys.stdout.write('''
@@ -159,8 +163,9 @@ def makepage(path):
         sys.stdout.write('''
         <li><a href="{0}goto?p={1}-data">data overview</a>
         '''.format(u.config.binrel, path.split('-', 1)[1]))
-        sys.stdout.write('<li><a href="{0}goto?p={1}-distmap">distribution maps</a>\n'.format(
-            u.config.binrel, path.split('-', 1)[1]))
+        if not p2:
+            sys.stdout.write('<li><a href="{0}goto?p={1}-distmap">distribution maps</a>\n'.format(
+                u.config.binrel, path.split('-', 1)[1]))
     sys.stdout.write('</ul>\n')
 
     if method.startswith('lev'):
@@ -172,17 +177,26 @@ def makepage(path):
         </ul>
         '''.format(u.config.binrel, path.split('-', 1)[1]))
 
-    sys.stdout.write('''
+    if p2:
+        sys.stdout.write('''
+    <tr valign="top">
+    <td>Differences
+    <td><ul>
+    <li><a href="{0}goto?p={1}-diff">downloads</a>
+    '''.format(u.config.binrel, path.split('-', 1)[1]))
+    else:
+        sys.stdout.write('''
     <tr valign="top">
     <td>Differences
     <td><ul>
     <li><a href="{0}goto?p={1}-diff">statistics and difference maps</a>
     '''.format(u.config.binrel, path.split('-', 1)[1]))
-    if not os.access('map/PSEUDOMAP', os.F_OK):
+    if not p2 and not os.access('map/PSEUDOMAP', os.F_OK):
         sys.stdout.write('''
         <li><a href="{0}goto?p={1}-plot">linguistic difference &#8596; geographic distance</a>
         '''.format(u.config.binrel, path.split('-', 1)[1]))
-    sys.stdout.write('''
+    if not p2:
+        sys.stdout.write('''
     <li><a href="{0}goto?p={1}-refmaps">reference point maps</a>
     </ul>
     <tr><td colspan="2"><hr>
@@ -206,7 +220,7 @@ def makepage(path):
     </ul>
     '''.format(u.config.binrel, path.split('-', 1)[1]))
 
-    if not method.startswith('num') and not method.startswith('dif'):
+    if not p2 and not method.startswith('num') and not method.startswith('dif'):
         sys.stdout.write('''
         <tr><td colspan="2"><hr>
         <tr valign="top">

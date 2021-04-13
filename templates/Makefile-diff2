@@ -1,0 +1,12 @@
+OK: ../data/OK ../data/labels.txt ../data/_/*.data
+	rm -f OK
+	{0[plain]}leven  -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt ../data/_/*.data
+	{0[feat]}leven-r -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt{0[pmi]} ../data/_/*.ftr
+	if [ -f ../map/PSEUDOMAP ] ; \
+		then \
+			cd ../map ; \
+			{0[python3]} {0[appdir]}util/pseudomap ; \
+			cd ../diff ; \
+		fi
+	echo unavailable > linc.txt
+	touch OK
