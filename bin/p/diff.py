@@ -38,6 +38,8 @@ def _number(s):
     return f
 
 def makepage(path):
+    global title
+
     u.path.chdir(path)
 
     p2 = os.access('../2P', os.F_OK)
