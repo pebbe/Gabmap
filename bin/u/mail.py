@@ -35,6 +35,10 @@ def sendmail(address, subject, text):
 
     try:
         server = smtplib.SMTP(_c.smtpserv)
+        try:
+            server.starttls()
+        except:
+            pass
         if _c.smtpuser and _c.smtppass:
             server.login(_c.smtpuser, _c.smtppass)
         server.sendmail(_c.mailfrom, address, msg.as_string())
