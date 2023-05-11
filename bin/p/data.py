@@ -125,7 +125,7 @@ def makepage(path):
             for c, n in charcount:
                 if c > 255:
                     f1 = '''
-                    <form method="post" action="http://www.unicode.org/cgi-bin/Code2Chart.pl"
+                    <form method="post" action="https://www.unicode.org/cgi-bin/Code2Chart"
                           enctype="application/x-www-form-urlencoded" target="_blank">
                     <input type="hidden" name="HexCode" value="{:04X}">
                     <input value="?" type="submit">
