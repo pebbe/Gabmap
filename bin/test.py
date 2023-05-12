@@ -49,7 +49,7 @@ sys.stdout.write('\n')
 sys.stdout.write('stdout: {}  (should be UTF-8)\n\n'.format(sys.stdout.encoding))
 
 sys.stdout.flush()
-os.system('PYTHONPATH="{}"; {} "{}util/check2.py" 2>&1'.format(u.config.python2path, u.config.python2, u.config.appdir))
+#os.system('PYTHONPATH="{}"; {} "{}util/check2.py" 2>&1'.format(u.config.python2path, u.config.python2, u.config.appdir))
 os.system('PYTHONPATH="{}"; {} "{}util/check3.py" 2>&1'.format(u.config.python3path, u.config.python3, u.config.appdir))
 sys.stdout.write('\n')
 

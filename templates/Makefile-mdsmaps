@@ -7,20 +7,19 @@ OK: ../diff/OK
 	rm -f OK
 
 	R --no-save < {0[appdir]}util/mds.R
-	PYTHONPATH={0[python2path]} ; \
-		for i in *.tmp; \
+	for i in *.tmp; \
 		do \
 			b=`basename $$i .tmp` ; \
-			{0[python2]} {0[appdir]}util/recolor -m $(OPT) $$i $$b.vec ; \
+			recolor -m $(OPT) $$i $$b.vec ; \
 			rm $$i ; \
 			maprgb ../map/map.cfg $$b.vec > $$b.eps ; \
-			{0[python3]} {0[appdir]}util/smappost $$b.eps ; \
+			smappost $$b.eps ; \
 		done
 	for i in *.rgb ; \
 	do \
 		b=`basename $$i .rgb` ; \
 		maprgb -r ../map/map.cfg $$i > $$b.eps ; \
-		{0[python3]} {0[appdir]}util/smappost $$b.eps ; \
+		smappost $$b.eps ; \
 	done
 	eps2png
 

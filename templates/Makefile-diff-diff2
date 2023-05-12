@@ -3,7 +3,7 @@ OK: ../data/OK
 	if [ -f ../map/PSEUDOMAP ] ; \
 		then \
 			cd ../map ; \
-			{0[python3]} {0[appdir]}util/pseudomap ; \
+			pseudomap ; \
 			cd ../diff ; \
 		fi
 	echo unavailable > ca.txt

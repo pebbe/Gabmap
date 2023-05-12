@@ -6,9 +6,9 @@ OK: map.cfg map.coo
 	perl -p -e 's/\s*\d+\s*/2 /' < ../data/labels.txt > mapidx.ex
 	cat map.ex >> mapidx.ex
 	mapmap -o mapidx.eps mapidx.cfg
-	{0[python3]} {0[appdir]}util/smappost mapidx.eps
-	{0[python3]} {0[appdir]}util/ps2coo
+	smappost mapidx.eps
+	ps2coo
 	eps2png
-	{0[python3]} {0[appdir]}util/mkmap
+	mkmap
 	touch OK
 

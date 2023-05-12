@@ -4,7 +4,7 @@ OK: ../diff/OK cluster.wm
 	clgroup -n {0[n]} -i -o clgroups.txt cluster.wm
 	grep -v ^markers: ../map/map.cfg > map.cfg
 	mapclust -o clmap.eps -u {0[appdir]}templates/palette12.txt map.cfg cluster.wm {0[n]}
-	{0[python3]} {0[appdir]}util/smappost clmap.eps
+	smappost clmap.eps
 	echo {0[n]} > current
 	eps2png
 	touch OK

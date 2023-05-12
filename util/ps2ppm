@@ -136,7 +136,7 @@ $trans .= "$x $y translate";
 
 print "$file.ps -> $file.%02d.$format\n";
 open GS,
-  "|gs $values $gab $tab -g${w}x${h} -r$res -sDEVICE=$format -sOutputFile=$file.%02d.$format -dNOPAUSE -"
+  "|gs $values $gab $tab -g${w}x${h} -r$res -sDEVICE=$format -sOutputFile=$file.%02d.$format -dNOSAFER -dNOPAUSE -"
     or die "\nCan't fork: $!\n\n";
 $SIG{PIPE} = sub { die "\nSpooler pipe broke\n\n" };
 if ($level == 1) {

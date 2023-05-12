@@ -51,11 +51,9 @@ if not os.access('DONE{}'.format(n), os.F_OK):
         m += '\t-cluster -ga -c -N .5 -r 50 -o tmp2 tmp{}.dif\n'.format(i)
         m += '\t-difsum -a -o tmp tmp1 tmp2\n'
         m += '\t-mds -o tmp.vec1 3 tmp\n'
-        m += '\t-PYTHONPATH={} ; {} {}util/recolor -m tmp.vec1 tmp.vec\n'.format(u.config.python2path,
-                                                                                u.config.python2,
-                                                                                u.config.appdir)
+        m += '\t-recolor -m tmp.vec1 tmp.vec\n'
         m += '\t-maprgb -r -o ccc_{0}_{1}.eps ../map/map.cfg tmp.vec || rm -f ccc_{0}_{1}.eps\n'.format(n, i)
-        m += '\t-{} {}util/smappost ccc_{}_{}.eps\n'.format(u.config.python3, u.config.appdir, n, i)
+        m += '\t-smappost ccc_{}_{}.eps\n'.format(n, i)
     m += '\teps2png\n\trm -f tmp*\n\ttouch DONE{}\n\ttouch OK\n'.format(n)
     u.queue.enqueue(path + '/cccmaps', m)
     u.queue.run()

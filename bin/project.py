@@ -976,7 +976,7 @@ if not pseudo:
     fp = open('{}/templates/Makefile-map'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
-    u.queue.enqueue(path + '/map', make.format({'appdir': u.config.appdir, 'python3': u.config.python3}))
+    u.queue.enqueue(path + '/map', make)
 
 if method.startswith('levfeat') or pmi:
     fp = open('{}/templates/Makefile-data'.format(u.config.appdir), 'r')
@@ -987,8 +987,6 @@ if method.startswith('levfeat') or pmi:
     else:
         pmis = ''
     u.queue.enqueue(path + '/data', make.format({'appdir': u.config.appdir,
-                                                 'python3': u.config.python3,
-                                                 'python3path': u.config.python3path,
                                                  'pmi': pmis}))
 elif not method.startswith('num'):
     open('data/OK', 'w').close()
@@ -998,9 +996,7 @@ if method.startswith('num'):
     fp = open('{}/templates/Makefile-diffnum{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
-    u.queue.enqueue(path + '/diff', make.format({'appdir': u.config.appdir,
-                                                 'python3': u.config.python3,
-                                                 'python3path': u.config.python3path}))
+    u.queue.enqueue(path + '/diff', make.format({'appdir': u.config.appdir})
 
 elif method.startswith('lev'):
     fp = open('{}templates/Makefile-diff{}'.format(u.config.appdir, p2), 'r')
@@ -1018,7 +1014,6 @@ elif method.startswith('lev'):
         pmis = ''
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
-                                                 'python3': u.config.python3,
                                                  'feat': feat,
                                                  'plain': plain,
                                                  'pmi': pmis}))
@@ -1027,8 +1022,7 @@ elif method.startswith('dif'):
     make = fp.read()
     fp.close()
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
-                                                 'appdir': u.config.appdir,
-                                                 'python3': u.config.python3}))
+                                                 'appdir': u.config.appdir}))
 else:
     fp = open('{}/templates/Makefile-diff-other{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
@@ -1041,7 +1035,6 @@ else:
         c2 = '-C -4'
     u.queue.enqueue(path + '/diff', make.format({'nplaces': nPlaces,
                                                  'appdir': u.config.appdir,
-                                                 'python3': u.config.python3,
                                                  'command': command,
                                                  'c': c2}))
 
@@ -1049,33 +1042,22 @@ if pseudo:
     fp = open('{}/templates/Makefile-pseudomap'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
-    u.queue.enqueue(path + '/map', make.format({'appdir': u.config.appdir,
-                                                 'python3': u.config.python3}))
+    u.queue.enqueue(path + '/map', make.format({'appdir': u.config.appdir}))
 
 fp = open('{}/templates/Makefile-mdsplots'.format(u.config.appdir), 'r')
 make = fp.read()
 fp.close()
-u.queue.enqueue(path + '/mdsplots', make.format({'appdir': u.config.appdir,
-                                                 'python3': u.config.python3,
-                                                 'python3path': u.config.python3path}))
+u.queue.enqueue(path + '/mdsplots', make.format({'appdir': u.config.appdir}))
 
 fp = open('{}/templates/Makefile-mdsmaps'.format(u.config.appdir), 'r')
 make = fp.read()
 fp.close()
-u.queue.enqueue(path + '/mdsmaps', make.format({'appdir': u.config.appdir,
-                                                'python2': u.config.python2,
-                                                'python3': u.config.python3,
-                                                'python2path': u.config.python2path,
-                                                'python3path': u.config.python3path}))
+u.queue.enqueue(path + '/mdsmaps', make.format({'appdir': u.config.appdir}))
 
 fp = open('{}/templates/Makefile-cccmaps'.format(u.config.appdir), 'r')
 make = fp.read()
 fp.close()
-u.queue.enqueue(path + '/cccmaps', make.format({'appdir': u.config.appdir,
-                                                'python2': u.config.python2,
-                                                'python3': u.config.python3,
-                                                'python2path': u.config.python2path,
-                                                'python3path': u.config.python3path}))
+u.queue.enqueue(path + '/cccmaps', make.format({'appdir': u.config.appdir}))
 
 n = max(2, min(8, nPlaces - 1))
 fp = open('{}/templates/Makefile-clusters'.format(u.config.appdir), 'r')
@@ -1085,27 +1067,18 @@ u.queue.enqueue(path + '/clusters', make.format({'method': 'wa',
                                                  'groups': n,
                                                  'exp': 1,
                                                  'col': 'col',
-                                                 'appdir': u.config.appdir,
-                                                 'python2': u.config.python2,
-                                                 'python3': u.config.python3,
-                                                 'python2path': u.config.python2path,
-                                                 'python3path': u.config.python3path}))
+                                                 'appdir': u.config.appdir}))
 
 fp = open('{}/templates/Makefile-clumaps'.format(u.config.appdir), 'r')
 make = fp.read()
 fp.close()
-u.queue.enqueue(path + '/clumaps', make.format({'appdir': u.config.appdir,
-                                                'python2': u.config.python2,
-                                                'python3': u.config.python3,
-                                                'python2path': u.config.python2path,
-                                                'python3path': u.config.python3path}))
+u.queue.enqueue(path + '/clumaps', make.format({'appdir': u.config.appdir}))
 
 if not method.startswith('num') and not method.startswith('dif'):
     fp = open('{}/templates/Makefile-cludet'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
     u.queue.enqueue(path + '/cludet', make.format({'appdir': u.config.appdir,
-                                                   'python3': u.config.python3,
                                                    'n': 6}))
 
 fp = open('{}/templates/Makefile-prob'.format(u.config.appdir), 'r')

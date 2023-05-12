@@ -3,9 +3,9 @@ OK: ../data/OK ../data/labels.txt ../data/_/*.data
 	rm -f tmp*
 	{0[plain]}leven  -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt ../data/_/*.data
 	{0[feat]}leven-r -n {0[nplaces]} -Q -l ../data/labels.txt -o diff.txt -s ../data/features-float.txt{0[pmi]} ../data/_/*.ftr
-	{0[python3]} {0[appdir]}util/difok diff.txt || \
+	difok diff.txt || \
 		diffix -a 1 -o tmp.diff diff.txt ../map/map.coo || \
-		{0[python3]} {0[appdir]}util/diffix2 diff.txt diff.txt
+		diffix2 diff.txt diff.txt
 	if [ -f tmp.diff ] ; \
 		then \
 			mv diff.txt tmp ; \
@@ -15,7 +15,7 @@ OK: ../data/OK ../data/labels.txt ../data/_/*.data
 	if [ -f ../map/PSEUDOMAP ] ; \
 		then \
 			cd ../map ; \
-			{0[python3]} {0[appdir]}util/pseudomap ; \
+			pseudomap ; \
 			cd ../diff ; \
 			echo unavailable > linc.txt ; \
 		else \
@@ -23,7 +23,7 @@ OK: ../data/OK ../data/labels.txt ../data/_/*.data
 		fi
 	R --no-save < {0[appdir]}util/histnorm.R
 	mapdiff -l -r -o diff1.eps -c 2 ../map/map.cfg ../diff/diff.txt
-	{0[python3]} {0[appdir]}util/smappost diff1.eps
+	smappost diff1.eps
 	maplink -o diff.eps ../map/map.cfg ../diff/diff.txt
 	eps2png
 	rm -f tmp*

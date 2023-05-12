@@ -10,9 +10,9 @@ OK: ../diff/OK
 	cluster -ga -c -N .5 -r 50 -o tmp2 ../diff/diff.txt
 	difsum -a -o tmp tmp1 tmp2
 	mds -o tmp.vec1 3 tmp
-	PYTHONPATH={0[python2path]} ; {0[python2]} {0[appdir]}util/recolor -m $(OPT) tmp.vec1 ccc.rgb
+	recolor -m $(OPT) tmp.vec1 ccc.rgb
 	maprgb -r -o ccc.eps ../map/map.cfg ccc.rgb
-	{0[python3]} {0[appdir]}util/smappost ccc.eps
+	smappost ccc.eps
 
 	-cluster -wm ../diff/diff.txt | clgroup -n 2 -i -o tmp
 	-subgroup 1 tmp tmp1.tbl
@@ -25,18 +25,18 @@ OK: ../diff/OK
 	-difsum -a -o tmp tmp1 tmp2
 	-mds -o tmp.vec1 3 tmp
 	-rm -f tmp.vec
-	-PYTHONPATH={0[python2path]} ; {0[python2]} {0[appdir]}util/recolor -m $(OPT) tmp.vec1 tmp.vec
+	-recolor -m $(OPT) tmp.vec1 tmp.vec
 	-maprgb -r -o ccc_2_1.eps ../map/map.cfg tmp.vec || rm -f ccc_2_1.eps
-	-{0[python3]} {0[appdir]}util/smappost ccc_2_1.eps
+	-smappost ccc_2_1.eps
 
 	-cluster -wa -c -N .5 -r 50 -o tmp1 tmp2.dif
 	-cluster -ga -c -N .5 -r 50 -o tmp2 tmp2.dif
 	-difsum -a -o tmp tmp1 tmp2
 	-mds -o tmp.vec1 3 tmp
 	-rm -f tmp.vec
-	-PYTHONPATH={0[python2path]} ; {0[python2]} {0[appdir]}util/recolor -m $(OPT) tmp.vec1 tmp.vec
+	-recolor -m $(OPT) tmp.vec1 tmp.vec
 	-maprgb -r -o ccc_2_2.eps ../map/map.cfg tmp.vec || rm -f ccc_2_2.eps
-	-{0[python3]} {0[appdir]}util/smappost ccc_2_2.eps 
+	-smappost ccc_2_2.eps 
 
 	eps2png
 

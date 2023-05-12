@@ -76,10 +76,7 @@ else:
                                                      'groups': groups,
                                                      'exp': expval,
                                                      'col': col,
-                                                     'appdir': u.config.appdir,
-                                                     'python3': u.config.python3,
-                                                     'python2': u.config.python2,
-                                                     'python2path': u.config.python2path}))
+                                                     'appdir': u.config.appdir}))
     u.queue.run()
     time.sleep(2)
 

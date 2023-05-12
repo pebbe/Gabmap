@@ -68,14 +68,14 @@ for dirname in sorted(os.listdir('.')):
                     if filename == 'tmp' or filename.startswith('project'):
                         sys.stdout.write('Removing guest data: {}/{}\n'.format(dirname, filename))
                         shutil.rmtree(dirname + '/' + filename)
-        else:
-            if os.stat(t)[stat.ST_MTIME] < limit:
-                sys.stdout.write('Removing user: {}\n'.format(dirname))
-                shutil.rmtree(dirname)
-            elif os.stat(t)[stat.ST_MTIME] < limitm:
-                if os.access(tm, os.F_OK):
-                    continue
-                sys.stdout.write('Sending warning mail to user: {}\n'.format(dirname))
-                open(tm, 'w').close()
-                email = open(dirname + '/email', 'rt', encoding='utf-8').read().strip()
-                sendmail(email, 'Your Gabmap account', mailtxt.format(os.environ['APPURL'], dirname))
+        #else:
+        #    if os.stat(t)[stat.ST_MTIME] < limit:
+        #        sys.stdout.write('Removing user: {}\n'.format(dirname))
+        #        shutil.rmtree(dirname)
+        #    elif os.stat(t)[stat.ST_MTIME] < limitm:
+        #        if os.access(tm, os.F_OK):
+        #            continue
+        #        sys.stdout.write('Sending warning mail to user: {}\n'.format(dirname))
+        #        open(tm, 'w').close()
+        #        email = open(dirname + '/email', 'rt', encoding='utf-8').read().strip()
+        #        sendmail(email, 'Your Gabmap account', mailtxt.format(os.environ['APPURL'], dirname))

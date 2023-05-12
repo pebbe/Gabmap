@@ -1,7 +1,7 @@
 
 OK: ../diff/OK
 	rm -f OK
-	{0[python3]} {0[appdir]}util/ps2coo
+	ps2coo
 	eps2png
-	{0[python3]} {0[appdir]}util/mkmap
+	mkmap
 	touch OK
