@@ -209,7 +209,7 @@ for lbl in lbluse:
 fp.close()
 
 os.system('maprgb -o tmp.eps map.cfg tmp.rgb')
-os.system('$PYTHON3 $APPDIR/util/smappost tmp.eps')
+os.system('smappost tmp.eps')
 
 bbox = 'boundingbox: 0 0 595 842\n'
 fp = os.popen('gs -sDEVICE=bbox -dNOPAUSE -dBATCH -dQUIET tmp.eps 2>&1', 'r')

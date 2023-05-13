@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 
 """
@@ -943,7 +943,7 @@ if method.startswith('dif'):
 if not pseudo:
     if u.myCgi.data.get('shmap', None):
         os.chdir('../map')
-        os.system('$PYTHON3 $APPDIR/util/smappre')
+        os.system('smappre')
 
 #|| finish and return to web
 

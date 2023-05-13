@@ -6,10 +6,8 @@ do
     if [ ! -e $SH ]
     then
 	echo '#!/bin/bash' > $SH
-	echo 'source INIT.sh' >> $SH
-	echo 'export PYTHON=$PYTHON3' >> $SH
-	echo 'export PYTHONPATH=$PYTHON3PATH' >> $SH
-	echo "\$PYTHON $PY" >> $SH
+	echo '. INIT.sh' >> $SH
+	echo "python3 $PY" >> $SH
 	chmod 755 $SH
     fi
 done

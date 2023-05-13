@@ -233,7 +233,7 @@ def makepage(path):
                     fp.write('{}\n{}\n'.format(lbls[i], _colors[fi]))
                 fp.close()
                 os.system('maprgb -r -o curmap.eps ../map/map.cfg current.rgb 2> /dev/null')
-                os.system('$PYTHON3 $APPDIR/util/smappost curmap.eps')
+                os.system('smappost curmap.eps')
                 if currev:
                     os.system('ref2star -r curmap.eps')
                 else:

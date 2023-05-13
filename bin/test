@@ -1,9 +1,6 @@
 #!/bin/bash
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
-
-$PYTHON test.py
+. INIT.sh
+python3 test.py
 
 echo
 R --version

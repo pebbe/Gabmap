@@ -3,8 +3,6 @@
 echo "Content-type: text/plain; charset=utf-8"
 echo
 
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
+. INIT.sh
 cd u
-$PYTHON setChar.py
+python3 setChar.py

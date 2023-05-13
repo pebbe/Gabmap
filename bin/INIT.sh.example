@@ -19,13 +19,7 @@ export MAXDAYS=60
 
 # Python settings
 
-# Which Python binary to use, requires Python 3.1 or above
-export PYTHON2=python2.6
-export PYTHON3=python3.1
-
-export PYTHON2PATH=`pwd`
-export PYTHON3PATH=`pwd`
-export PYTHONPATH=$PYTHON3PATH
+export PYTHONPATH=`pwd`
 
 # Make sure sys.stdout is set to UTF-8
 export PYTHONIOENCODING=utf-8
@@ -64,7 +58,7 @@ export BINREL=/~yourname/gabmap/bin/
 export ABOUTURL="http://www.gabmap.nl/?page_id=18"
 export HELPURL="http://www.gabmap.nl/?page_id=12"
 
-# PATH should include the Python binary, and the RuG/L04 binaries
+# PATH should include the python3 binary, and the RuG/L04 binaries
 PATH=${APPDIR}util:$PATH
 
 # Additional libraries needed for binaries

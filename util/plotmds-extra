@@ -269,7 +269,7 @@ fp1.close()
 
 if os.access('dif3.vec2', os.F_OK):
     os.remove('dif3.vec2')
-os.system('export PYTHONPATH=$PYTHON2PATH ; procrustes -a map.vec2 diff.vec2 dif3.vec2 > axes.txt')
+os.system('procrustes -a map.vec2 diff.vec2 dif3.vec2 > axes.txt')
 
 fp = open('axes.txt', 'rt')
 axes = fp.readlines()

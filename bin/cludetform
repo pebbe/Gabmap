@@ -1,5 +1,3 @@
 #!/bin/bash
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
-$PYTHON cludetform.py
+. INIT.sh
+python3 cludetform.py

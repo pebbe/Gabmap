@@ -1,5 +1,3 @@
 #!/bin/bash
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
-$PYTHON getdatacount.py
+. INIT.sh
+python3 getdatacount.py

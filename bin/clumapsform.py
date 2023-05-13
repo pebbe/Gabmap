@@ -86,7 +86,7 @@ def change(col, n, subset, method):
         fp.write('cluster: {}\n'.format(method))
         #fp.write('mds: kruskal\n')
         fp.close()
-        makes += '\tPYTHONPATH={0} mdsplot {1}.cfg 2> {1}.log\n'.format(u.config.python3path, plotname)
+        makes += '\tmdsplot {0}.cfg 2> {0}.log\n'.format(plotname)
 
     if makes:
         u.queue.enqueue(path + '/clumaps', 'OK: ../diff/OK\n' + makes + '\teps2png\n\ttouch OK\n')

@@ -1,7 +1,3 @@
 #!/bin/bash
-#echo Content-type: text/plain
-#echo
-source INIT.sh
-export PYTHON=$PYTHON3
-export PYTHONPATH=$PYTHON3PATH
-$PYTHON stats.py 2>&1
+. INIT.sh
+python3 stats.py 2>&1

@@ -46,11 +46,11 @@ def makepage(path):
     if os.access('OK', os.F_OK):
 
         if not os.access('mapcoo.eps', os.F_OK):
-            os.system('$PYTHON3 $APPDIR/util/ps2coo')
+            os.system('ps2coo')
         if not os.access('mapcoo.png', os.F_OK):
             os.system('eps2png > /dev/null 2>&1')
         if not os.access('image.html', os.F_OK):
-            os.system('$PYTHON3 $APPDIR/util/mkmap')
+            os.system('mkmap')
 
         fp = open('image.html', 'rt', encoding='utf-8')
         for line in fp:

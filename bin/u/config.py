@@ -19,12 +19,6 @@ usermode = os.environ.get("USERMODE", "multi")
 maxprojects = int(os.environ['MAXPROJECTS'])
 maxdays = int(os.environ['MAXDAYS'])
 
-python = os.environ['PYTHON']
-python2 = os.environ['PYTHON2']
-python3 = os.environ['PYTHON3']
-python2path = os.environ.get('PYTHON2PATH', '')
-python3path = os.environ.get('PYTHON3PATH', '')
-
 secret = os.environ['SECRET']
 tryxforwardedfor = _istrue(os.environ.get('TRY_X_FORWARDED_FOR', ''))
 

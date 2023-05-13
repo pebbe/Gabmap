@@ -125,7 +125,7 @@ def distmap(placen, placeall, outfile=None, normalise=True, normaliseBoth=False,
     os.system('maprgb -r -o {0}.eps {1} {0}.rgb 2> {0}.err'.format(ofile, cfg))
     if exfile:
         os.remove(cfg)
-    os.system('$PYTHON3 $APPDIR/util/smappost {0}.eps >> {0}.err 2>&1'.format(ofile))
+    os.system('smappost {0}.eps >> {0}.err 2>&1'.format(ofile))
     #os.system('( echo cd `dirname {0}.eps` ; cd `dirname {0}.eps` ; eps2png ) >> {0}.err 2>&1'.format(ofile))
     os.chdir('map')
     if not outfile:
