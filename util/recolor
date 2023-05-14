@@ -94,7 +94,7 @@ while sys.argv[1][0] == '-':
     sys.argv.pop(1)
 
 dim1 = dim2 = dim3 = True
-fp = open(sys.argv[1], 'rt')
+fp = open(sys.argv[1], 'rt', encoding='iso-8859-1')
 state = 0
 for line in fp:
     line = line.strip()
@@ -177,7 +177,7 @@ if axEqual:
         bmax += (rgbrange - brange) / 2.0
 
 if len(sys.argv) > 2:
-    fp = open(sys.argv[2], 'wt')
+    fp = open(sys.argv[2], 'wt', encoding='iso-8859-1')
 else:
     fp = sys.stdout
 

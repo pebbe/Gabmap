@@ -61,7 +61,7 @@ def change(col, n, subset, method):
             makes += '\techo othermarkers: {}.map >> map.cfg\n'.format(grpfile)
             makes += "\tmapclust {} map.cfg tmp.m {} | perl -p -e s'!/Graylimit .* def!/Graylimit 0 def!' > {}.eps\n".format(
                 opt, n, mapname)
-        makes += '\t{} {}/util/smappost {}.eps\n'.format(u.config.python3, u.config.appdir, mapname)
+        makes += '\tsmappost {}.eps\n'.format(mapname)
         makes += '\trm -f tmp.m\n'
 
     if col == 'bw':

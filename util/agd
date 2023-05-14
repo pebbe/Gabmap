@@ -310,7 +310,7 @@ for arg in argv1:
 if not argv:
     usage()
 
-fp = open(argv[0], 'r')
+fp = open(argv[0], 'rt', encoding='iso-8859-1')
 items = getline(fp).split()
 fp.close()
 if len(items) == 1:
@@ -325,7 +325,7 @@ else:
 
 if colorfile:
     colors = {}
-    fp = open(colorfile, 'r')
+    fp = open(colorfile, 'rt', encoding='iso-8859-1')
     i = int(getline(fp))
     assert i == 3
     while True:
@@ -405,7 +405,7 @@ try:
 
     #| longest string and maximum value
 
-    fp = open(gr, 'r')
+    fp = open(gr, 'rt', encoding='iso-8859-1')
     n = int(getline(fp))
     n = int(getline(fp))
     maxlbl = 0

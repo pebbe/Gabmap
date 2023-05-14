@@ -49,7 +49,7 @@ sys.stdout.write('\n')
 sys.stdout.write('stdout: {}  (should be UTF-8)\n\n'.format(sys.stdout.encoding))
 
 sys.stdout.flush()
-os.system('check3.py" 2>&1')
+os.system('check3.py 2>&1')
 sys.stdout.write('\n')
 
 sys.stdout.flush()

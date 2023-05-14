@@ -80,7 +80,7 @@ for line in used:
 fp.close()
 
 os.system('smap map.tmp > map.coo2')
-os.remove('map.tmp')
+#os.remove('map.tmp')
 fp = open('map.coo2', 'at', encoding='iso-8859-1')
 for line in unused:
     fp.write(line + '\n')

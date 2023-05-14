@@ -940,6 +940,7 @@ if method.startswith('dif'):
 
 #|| do shift map
 
+
 if not pseudo:
     if u.myCgi.data.get('shmap', None):
         os.chdir('../map')
@@ -996,7 +997,7 @@ if method.startswith('num'):
     fp = open('{}/templates/Makefile-diffnum{}'.format(u.config.appdir, p2), 'r')
     make = fp.read()
     fp.close()
-    u.queue.enqueue(path + '/diff', make.format({'appdir': u.config.appdir})
+    u.queue.enqueue(path + '/diff', make.format({'appdir': u.config.appdir}))
 
 elif method.startswith('lev'):
     fp = open('{}templates/Makefile-diff{}'.format(u.config.appdir, p2), 'r')

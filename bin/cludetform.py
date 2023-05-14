@@ -9,7 +9,9 @@ __date__ = "2010/05/13"
 
 #| imports
 
-import cgitb; cgitb.enable(format="html")
+import cgitb
+
+cgitb.enable(format="html")
 
 import os, re, sys, time
 
@@ -23,6 +25,7 @@ target = ''
 
 #| functions
 
+
 def _unquote(s):
     s = s.strip()
     if len(s) < 2:
@@ -31,11 +34,14 @@ def _unquote(s):
         return s
     return re.sub(r'\\(.)', r'\1', s[1:-1]).strip()
 
+
 def _num2chr(m):
     return '{:c}'.format(int(m.group(1)))
 
+
 def getval(field):
     return u.myCgi.data.get(field, b'').decode(codepage).strip()
+
 
 def setNumber():
     n = int(getval('n'))
@@ -43,12 +49,18 @@ def setNumber():
     fp = open('{}/templates/Makefile-cludet'.format(u.config.appdir), 'r')
     make = fp.read()
     fp.close()
-    u.queue.enqueue(path + '/cludet', make.format({'appdir': u.config.appdir, 'python3': u.config.python3, 'n': n}))
-    for i in 'score.txt currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split():
+    u.queue.enqueue(path + '/cludet',
+                    make.format({
+                        'appdir': u.config.appdir,
+                        'n': n
+                    }))
+    for i in 'score.txt currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split(
+    ):
         if os.access(i, os.F_OK):
             os.remove(i)
     u.queue.run()
     time.sleep(2)
+
 
 def setCluster():
     c = getval('c')
@@ -80,10 +92,12 @@ def setCluster():
     makes += '\tdetpre.py\n'
     if mm == 'fast':
         params = '{} {}'.format(FastBeta, Limit)
-        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+        makes += '\tfor i in ../data/_/*.data; do determinants1 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(
+            params)
     else:
         params = '{} {} {}'.format(SlowBeta, Limit, Sep)
-        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(params)
+        makes += '\tfor i in ../data/_/*.data; do determinants2 $$i {} > _/`basename $$i .data`.utxt; done\n'.format(
+            params)
     makes += '\t( for i in _/*.utxt; do echo `tail -n 1 $$i` $$i; done ) | cdsort > score.txt\n'
     makes += '\ttouch OK\n'
     u.queue.enqueue(path + '/cludet', makes)
@@ -92,9 +106,11 @@ def setCluster():
     fp = open('currentparms', 'wt')
     fp.write(params + '\n')
     fp.close()
-    for i in 'currentlist.txt currentselect.txt distmap.eps distmap.ex currentregex.txt'.split():
+    for i in 'currentlist.txt currentselect.txt distmap.eps distmap.ex currentregex.txt'.split(
+    ):
         if os.access(i, os.F_OK):
             os.remove(i)
+
 
 def setItem():
     item = getval('item')
@@ -104,9 +120,11 @@ def setItem():
     fp = open('current', 'wt')
     fp.write('{} {} {}\n'.format(n, c, item))
     fp.close()
-    for i in 'currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split():
+    for i in 'currentlist.txt currentselect.txt distmap.eps currentregex.txt'.split(
+    ):
         if os.access(i, os.F_OK):
             os.remove(i)
+
 
 def setRegex():
     global codepage
@@ -117,7 +135,9 @@ def setRegex():
     try:
         RE = re.compile(regex)
     except:
-        u.html.exitMessage('Error', 'Invalid regular expression: ' + u.html.escape(str(sys.exc_info()[1])))
+        u.html.exitMessage(
+            'Error', 'Invalid regular expression: ' +
+            u.html.escape(str(sys.exc_info()[1])))
     fp = open('currentregex.txt', 'wt', encoding='utf-8')
     fp.write(regex + '\n')
     fp.close()
@@ -199,7 +219,7 @@ def setRegex():
 
         fp.close()
 
-    else: # mtd == 'slow'
+    else:  # mtd == 'slow'
         import math, pickle
 
         fp = open('currentparms', 'rt')
@@ -271,21 +291,41 @@ def setRegex():
                 FP += fp
                 TN += 1 - fp
 
-        p = TP / (TP + FP)
-        r = TP / (TP + FN)
-        bp = (TP + FN) / (TP + FN + FP + TN)
-        br = (TP + FP) / (TP + FN + FP + TN)
-        ap = (p - bp) / (1 - bp)
-        ar = (r - br) / (1 - br)
-        if ap < 0 or ar < 0:
-            af = 0
-        else:
-            af = (ap + beta * ar) / (1 + beta)
+        try:
+            p = TP / (TP + FP)
+        except:
+            p = float("nan")
+        try:
+            r = TP / (TP + FN)
+        except:
+            r  =float("nan")
+        try:
+            bp = (TP + FN) / (TP + FN + FP + TN)
+        except:
+            bp = float("nan")
+        try:
+            br = (TP + FP) / (TP + FN + FP + TN)
+        except:
+            br = float("nan")
+        try:
+            ap = (p - bp) / (1 - bp)
+        except:
+            ap = float("nan")
+        try:
+            ar = (r - br) / (1 - br)
+        except:
+            ar = float("nan")
+        try:
+            if ap < 0 or ar < 0:
+                af = 0
+            else:
+                af = (ap + beta * ar) / (1 + beta)
+        except:
+            af = float("nan")
 
         fp = open('reresults.txt', 'wt')
         fp.write('{:.2f} {:.2f} {:.2f}\n'.format(af, ap, ar))
         fp.close()
-
 
     fp = open('rematches.txt', 'wt', encoding='utf-8')
     for i in sorted(matches):

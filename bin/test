@@ -1,6 +1,6 @@
 #!/bin/bash
 . INIT.sh
-python3 test.py
+python3 test.py 2>&1
 
 echo
 R --version

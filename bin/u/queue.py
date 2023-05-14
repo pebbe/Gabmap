@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 
 TO DO:
@@ -109,4 +109,4 @@ def enqueue(directory, make):
     unlock()
 
 def run():
-    os.system('{} {}util/doqueue > /dev/null 2>&1 &'.format(_c.python3, _c.appdir))
+    os.system('doqueue > /dev/null 2>&1 &')
