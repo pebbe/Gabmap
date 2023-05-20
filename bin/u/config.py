@@ -60,3 +60,6 @@ if contact == '':
     contact = 'mailto:' + mailfrom
 if contactname == '':
     contactname = mailfrom
+
+salt = os.environ.get('SALT', '')
+

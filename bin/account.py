@@ -16,6 +16,7 @@ from http import cookies
 
 import u.html, u.login, u.mail
 from u.config import *
+from u.crypt import hash
 
 #| globals
 
@@ -33,11 +34,11 @@ def userbymail(email):
             continue
         if fname.startswith('guest') or fname.startswith('demo'):
             continue
-        fp = open(fname + '/email', 'rt', encoding='utf-8')
+        fp = open(fname + '/emailh', 'rt', encoding='utf-8')
         em = fp.readline().strip()
         fp.close()
         if email == em:
-            fp = open(fname + '/passwd', 'rt', encoding='utf-8')
+            fp = open(fname + '/passwdh', 'rt', encoding='utf-8')
             pw = fp.readline().strip()
             fp.close()
             return email, fname, pw
@@ -48,10 +49,10 @@ def userbyuser(user):
         if user.startswith('guest') or user.startswith('demo'):
             em = ''
         else:
-            fp = open(user + '/email', 'rt', encoding='utf-8')
+            fp = open(user + '/emailh', 'rt', encoding='utf-8')
             em = fp.readline().strip()
             fp.close()
-        fp = open(user + '/passwd', 'rt', encoding='utf-8')
+        fp = open(user + '/passwdh', 'rt', encoding='utf-8')
         pw = fp.readline().strip()
         fp.close()
         return em, user, pw
@@ -111,12 +112,12 @@ def actionLogin():
 
     try:
         em, us, pw = userbyuser(username)
-        assert pw == passwd
+        assert pw == hash(passwd, salt)
     except:
         u.html.exitMessage('Error', 'Invalid username / password')
 
     c = cookies.SimpleCookie()
-    c['L04u'] = u.login.mkString(username, passwd)
+    c['L04u'] = u.login.mkString(username, pw)
     c['L04u']['path'] = binrel
 
     if remember:
@@ -132,39 +133,6 @@ def actionLogout():
     c['L04u'] = ''
     c['L04u']['path'] = binrel
     sys.stdout.write('Location: {}home\n{}\n\n'.format(binurl, c.output()))
-
-def actionRecover():
-    username = getval('username')
-
-    if not username:
-        u.html.exitMessage('Error', 'Missing username/e-mail')
-
-    if username.startswith('guest') or username.startswith('demo'):
-        u.html.exitMessage('Error', 'No password for this user')
-
-    if username.find('@') > -1:
-        mail, user, password = userbymail(username)
-    else:
-        mail, user, password = userbyuser(re.sub('[^a-z0-9_]+', '', username))
-
-    if not mail:
-        u.html.exitMessage('Error', 'Unknown username/e-mail')
-
-    u.mail.sendmail(mail, 'Your Gabmap account', '''
-Here is your account info
-
-Username: {}
-Password: {}
-
-{}
-
-'''.format(user, password, binurl))
-    u.html.exitMessage('Recover account',
-                       '''Your account info was sent to {}
-                       <p>
-                       If you don\'t receive an e-mail, please contact {}
-                       '''.format(escape(mail), contacthtml))
-
 
 def actionCreate():
     global email, username
@@ -184,6 +152,9 @@ def actionCreate():
     if password and password != passwrd2:
         errors.append('Passwords do not match')
 
+    password = hash(password, salt)
+    emailh = hash(email, salt)
+
     if email:
         valid = True
         if not re.match('[-.a-z0-9!#$%&\'*+/=?^_`{|}~]+@[-.a-z0-9]+$', email):
@@ -193,7 +164,7 @@ def actionCreate():
         if not valid:
             errors.append('Malformed e-mail address')
             email = ''
-        elif userbymail(email)[0]:
+        elif userbymail(emailh)[0]:
             errors.append('E-mail address already used')
             email = ''
 
@@ -215,7 +186,7 @@ def actionCreate():
     url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
-    fp.write('{}\t{}\t{}\n'.format(username, email, password))
+    fp.write('{}\t{}\t{}\n'.format(username, emailh, password))
     fp.close()
     os.chmod(pending, 0o600)
 
@@ -242,11 +213,11 @@ def actionConfirm():
     os.remove(filename)
     os.mkdir(username)
     os.chdir(username)
-    fp = open('passwd', 'wt', encoding='utf-8')
+    fp = open('passwdh', 'wt', encoding='utf-8')
     fp.write(password + '\n')
     fp.close()
-    os.chmod('passwd', 0o600)
-    fp = open('email', 'wt', encoding='utf-8')
+    os.chmod('passwdh', 0o600)
+    fp = open('emailh', 'wt', encoding='utf-8')
     fp.write(email + '\n')
     fp.close()
     open('TIMESTAMP', 'w').close()
@@ -273,8 +244,6 @@ if action == 'login':
     actionLogin()
 elif action == 'logout':
     actionLogout()
-elif action == 'recover':
-    actionRecover()
 elif action == 'create':
     actionCreate()
 elif action == 'confirm':

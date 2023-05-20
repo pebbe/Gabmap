@@ -11,6 +11,11 @@ __date__ = "2010/02/18"
 
 import cgitb; cgitb.enable(format="html")
 
+from os import environ
+if not 'SALT' in environ:
+    import u.upgrade
+    u.upgrade.salt()
+
 import sys
 
 from u.config import binurls

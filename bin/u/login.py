@@ -13,6 +13,7 @@ import hashlib, os, sys
 from http import cookies
 
 import u.config as _c
+from u.crypt import hash
 
 #| globals
 
@@ -58,7 +59,7 @@ def _init():
         return
 
     try:
-        fp = open(_c.datadir + user + '/passwd', 'rt', encoding='utf-8')
+        fp = open(_c.datadir + user + '/passwdh', 'rt', encoding='utf-8')
         passwd = fp.readline().strip()
         fp.close()
     except:
