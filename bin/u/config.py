@@ -9,7 +9,6 @@ import os
 usermode = os.environ.get("USERMODE", "multi")
 
 maxprojects = int(os.environ['MAXPROJECTS'])
-maxdays = int(os.environ['MAXDAYS'])
 
 secret = os.environ['SECRET']
 
