@@ -102,7 +102,6 @@ def actionLogin():
             rh,
             os.environ.get('HTTP_USER_AGENT', '[unknown]')))
         fp.close()
-    remember = getval('remember')
     if not username:
         u.html.exitMessage('Error', 'Missing value for username')
     if not passwd:
@@ -120,11 +119,10 @@ def actionLogin():
     c['L04u'] = u.login.mkString(username, pw)
     c['L04u']['path'] = binrel
 
-    if remember:
-        days = 'Mon Tue Wed Thu Fri Sat Sun'.split()
-        months = 'x Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split()
-        tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst = time.gmtime(time.time() + 60 * 60 * 24 * 30)
-        c['L04u']['expires'] = '{}, {:02d}-{}-{} {}:{:02d}:{:02d} GMT'.format(days[tm_wday], tm_day, months[tm_mon], tm_year, tm_hour, tm_min, tm_sec)
+    days = 'Mon Tue Wed Thu Fri Sat Sun'.split()
+    months = 'x Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split()
+    tm_year, tm_mon, tm_day, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst = time.gmtime(time.time() + 60 * 60 * 24)
+    c['L04u']['expires'] = '{}, {:02d}-{}-{} {}:{:02d}:{:02d} GMT'.format(days[tm_wday], tm_day, months[tm_mon], tm_year, tm_hour, tm_min, tm_sec)
 
     sys.stdout.write('Location: {}home\n{}\n\n'.format(binurl, c.output()))
 

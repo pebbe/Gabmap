@@ -2,80 +2,19 @@
 
 import cgitb; cgitb.enable(format="text")
 
-import os, time, shutil, stat, sys, smtplib
-from email.mime.text import MIMEText
+import os, time, shutil, stat, sys
 
-def sendmail(address, subject, text):
-    try:
-        text.encode('us-ascii')
-    except:
-        try:
-            text.encode('iso-8859-1')
-        except:
-            msg = MIMEText(text.encode('utf-8'), _charset='utf-8')
-        else:
-            msg = MIMEText(text, _charset='iso-8859-1')
-    else:
-        msg = MIMEText(text)
-
-    mailfrom = os.environ['MAILFROM']
-    smtpserv = os.environ['SMTPSERV']
-    smtpuser = os.environ.get('SMTPUSER', '')
-    smtppass = os.environ.get('SMTPPASS', '')
-
-    msg['From'] = 'Gabmap <{}>'.format(mailfrom)
-    msg['To'] = address
-    msg['Subject'] = subject
-
-    try:
-        server = smtplib.SMTP(smtpserv)
-        if smtpuser and smtppass:
-            server.login(smtpuser, smtppass)
-        server.sendmail(mailfrom, address, msg.as_string())
-        server.quit()
-    except:
-        i = [str(x) for x in sys.exc_info()]
-        sys.stdout.write('Error sending e-mail to {0}: {1[0]} - {1[1]}\n'.format(address, i))
-
-
-
-mailtxt = """
-Dear Gabmap user,
-
-You haven't used your Gabmap account for a while.
-Your account, including all data, will be removed in 30 days,
-unless you log in before then.
-
-Gabmap: {}
-Username: {}
-"""
-
-
-limit  = time.time() - 60 * 60 * 24 * int(os.environ['MAXDAYS'])
-limitm = time.time() - 60 * 60 * 24 * (int(os.environ['MAXDAYS']) - 31)
-limit2 = time.time() - 60 * 60 * 24 * 2
+limit = time.time() - 60 * 60 * 24 * 2
 
 os.chdir(os.environ['DATADIR'])
 for dirname in sorted(os.listdir('.')):
     t = dirname + '/TIMESTAMP'
-    tm = dirname + '/mailsent'
     if os.access(t, os.F_OK):
         if dirname.startswith('demo') or dirname.startswith('.demo'):
             pass
         elif dirname.startswith('guest'):
-            if os.stat(t)[stat.ST_MTIME] < limit2:
+            if os.stat(t)[stat.ST_MTIME] < limit:
                 for filename in os.listdir(dirname):
                     if filename == 'tmp' or filename.startswith('project'):
                         sys.stdout.write('Removing guest data: {}/{}\n'.format(dirname, filename))
                         shutil.rmtree(dirname + '/' + filename)
-        #else:
-        #    if os.stat(t)[stat.ST_MTIME] < limit:
-        #        sys.stdout.write('Removing user: {}\n'.format(dirname))
-        #        shutil.rmtree(dirname)
-        #    elif os.stat(t)[stat.ST_MTIME] < limitm:
-        #        if os.access(tm, os.F_OK):
-        #            continue
-        #        sys.stdout.write('Sending warning mail to user: {}\n'.format(dirname))
-        #        open(tm, 'w').close()
-        #        email = open(dirname + '/email', 'rt', encoding='utf-8').read().strip()
-        #        sendmail(email, 'Your Gabmap account', mailtxt.format(os.environ['APPURL'], dirname))

@@ -6,21 +6,12 @@ Configuration variables
 
 import os
 
-def _istrue(s):
-    try:
-        i = int(s)
-        return i != 0
-    except:
-        pass
-    return s.lower() in ['y', 'yes', 't', 'true']
-
 usermode = os.environ.get("USERMODE", "multi")
 
 maxprojects = int(os.environ['MAXPROJECTS'])
 maxdays = int(os.environ['MAXDAYS'])
 
 secret = os.environ['SECRET']
-tryxforwardedfor = _istrue(os.environ.get('TRY_X_FORWARDED_FOR', ''))
 
 datadir   = os.environ['DATADIR']
 appdir    = os.environ['APPDIR']

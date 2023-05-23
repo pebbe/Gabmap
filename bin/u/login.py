@@ -9,11 +9,10 @@ __date__ = "2010/01/29"
 
 #| imports
 
-import hashlib, os, sys
+import hashlib, os
 from http import cookies
-
+from datetime import datetime, timedelta
 import u.config as _c
-from u.crypt import hash
 
 #| globals
 
@@ -21,19 +20,12 @@ username = ''
 
 #| functions
 
-def mkString(user, passwd):
-    # TO DO: Better to drop the REMOTE_IP and HTTP_X_FORWARDED_FOR altogether?
-    addr = ''
-    if _c.tryxforwardedfor:
-        addr = os.environ.get('HTTP_X_FORWARDED_FOR', '')
-        if addr.startswith("'") and addr.endswith("'"):
-            addr = addr[1:-1]
-            addr = addr.split()[-1]
-    if not addr:
-        addr = os.environ.get('REMOTE_ADDR', '')
-    data = passwd + addr + _c.secret
+def mkString(user, passwd, expires=''):
+    if expires == '':
+        expires = (datetime.utcnow() + timedelta(hours=12)).strftime('%Y%m%d%H')
+    data = user + passwd + expires + _c.secret
     hashed = hashlib.sha224(data.encode('utf-8')).hexdigest()
-    return user + '-' + hashed
+    return expires + '-' + user + '-' + hashed
 
 
 def _init():
@@ -54,8 +46,14 @@ def _init():
         return
 
     try:
-        user = cs.split('-')[0]
+        aa = cs.split('-')
+        expires = aa[0]
+        user = aa[1]
     except:
+        return
+
+    ex = datetime.utcnow().strftime('%Y%m%d%H')
+    if ex > expires:
         return
 
     try:
@@ -65,13 +63,9 @@ def _init():
     except:
         return
 
-    if cs == mkString(user, passwd):
+    if cs == mkString(user, passwd, expires):
         username = user
         open(_c.datadir + user + '/TIMESTAMP', 'w').close()
-        try:
-            os.remove(_c.datadir + user + '/mailsent')
-        except:
-            pass
 
 
 #| main
@@ -81,5 +75,3 @@ _init()
 #| if main
 if __name__ == "__main__":
     pass
-
-
