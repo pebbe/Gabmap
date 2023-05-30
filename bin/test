@@ -3,6 +3,9 @@
 python3 test.py 2>&1
 
 echo
+python3 -V
+
+echo
 R --version
 cd /tmp
 tmp=test-$$

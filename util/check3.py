@@ -47,6 +47,42 @@ def pyproj():
     """
     pass
 
+def numpy():
+    """
+    >>> import numpy as np
+
+    >>> x = np.arange(4).reshape((2,2))
+    >>> x
+    array([[0, 1],
+           [2, 3]])
+
+    >>> np.transpose(x)
+    array([[0, 2],
+           [1, 3]])
+
+    >>> x = np.ones((1, 2, 3))
+    >>> np.transpose(x, (1, 0, 2)).shape
+    (2, 1, 3)
+
+    >>> a = np.random.randn(9, 6) + 1j*np.random.randn(9, 6)
+    >>> U, s, Vh = np.linalg.svd(a)
+    >>> U.shape, Vh.shape, s.shape
+    ((9, 9), (6, 6), (6,))
+
+    >>> U, s, Vh = np.linalg.svd(a, full_matrices=False)
+    >>> U.shape, Vh.shape, s.shape
+    ((9, 6), (6, 6), (6,))
+    >>> S = np.diag(s)
+    >>> np.allclose(a, np.dot(U, np.dot(S, Vh)))
+    True
+
+    >>> s2 = np.linalg.svd(a, compute_uv=False)
+    >>> np.allclose(s, s2)
+    True
+    """
+    pass
+
+
 
 def test():
     """run the examples in the docstrings using the doctest module"""
@@ -55,6 +91,10 @@ def test():
     print('Testing pyproj.Proj ...')
     doctest.run_docstring_examples(pyproj, None, name='pyproj.Proj', verbose=False)
     print('Testing pyproj.Proj ... done')
+
+    print('Testing numpy ...')
+    doctest.run_docstring_examples(numpy, None, name='numpy', verbose=False)
+    print('Testing numpy ... done')
 
 #| main
 

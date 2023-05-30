@@ -20,7 +20,7 @@ def salt():
                     found = True
         if found:
             return
-        
+
         import u.config
         from u.crypt import hash
 
@@ -29,8 +29,9 @@ def salt():
         with open(bindir + 'INIT.sh', 'a') as fp:
             fp.write('\n')
             fp.write('# A random string used for hashing of sensitive information\n')
+            fp.write("# DON'T EVER CHANGE THIS OR ALL LOGINS WILL FAIL\n")
             fp.write('export SALT=' + u.config.salt + '\n')
-        
+
         for item in os.listdir(u.config.datadir):
             filename = u.config.datadir + item
             if not os.path.isdir(filename):
