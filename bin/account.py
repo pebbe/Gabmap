@@ -77,6 +77,29 @@ def errorExitCreate(errors):
     sys.stdout.write(u.html.foot())
     sys.exit()
 
+def errorExitUpdateUserPass(errors):
+    err = ''
+    for e in errors:
+        err += '<div class="error">\nError: ' + e + '\n</div>\n'
+    sys.stdout.write(u.html.head('error'))
+    sys.stdout.write(u.html.getBody('accountUpdateUserPass.html').format({'binurls':binurls,
+                                                                  'errors':err,
+                                                                  'email':email}))
+    sys.stdout.write(u.html.foot())
+    sys.exit()
+
+def errorExitUpdateMail(errors):
+    err = ''
+    for e in errors:
+        err += '<div class="error">\nError: ' + e + '\n</div>\n'
+    sys.stdout.write(u.html.head('error'))
+    sys.stdout.write(u.html.getBody('accountUpdateMail.html').format({'binurls':binurls,
+                                                                  'errors':err,
+                                                                  'email':email,
+                                                                  'username':username}))
+    sys.stdout.write(u.html.foot())
+    sys.exit()
+
 def actionLogin():
 
     username = getval('username')
@@ -110,7 +133,7 @@ def actionLogin():
         u.html.exitMessage('Error', 'Invalid characters in username')
 
     try:
-        em, us, pw = userbyuser(username)
+        _, _, pw = userbyuser(username)
         assert pw == hash(passwd, salt)
     except:
         u.html.exitMessage('Error', 'Invalid username / password')
@@ -184,7 +207,7 @@ def actionCreate():
     url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
-    fp.write('{}\t{}\t{}\n'.format(username, emailh, password))
+    fp.write('{}\t{}\t{}\tcreate\n'.format(username, emailh, password))
     fp.close()
     os.chmod(pending, 0o600)
 
@@ -199,6 +222,144 @@ def actionCreate():
         '''.format(escape(email), contacthtml))
 
 
+def actionUpdateUserPass():
+    global email, username
+    email    = getval('email').lower()
+    username = getval('username')
+    password = getval('password')
+    passwrd2 = getval('password2')
+
+    errors = []
+
+    if not email:
+        errors.append('Missing value for e-mail address')
+    if not (username or password):
+        errors.append('Missing value for username and password, at least one should be provided')
+    if password and password != passwrd2:
+        errors.append('Passwords do not match')
+
+    valid = False
+    if email:
+        valid = True
+        if not re.match('[-.a-z0-9!#$%&\'*+/=?^_`{|}~]+@[-.a-z0-9]+$', email):
+            valid = False
+        elif email[0] == '.' or email[-1] == '.' or email.find('..') > -1 or email.find('.@') > -1 or email.find('@.') > -1:
+            valid = False
+        if not valid:
+            errors.append('Malformed e-mail address')
+            email = ''
+    if not valid:
+        errorExitUpdateUserPass(errors)
+
+
+    emailh = hash(email, salt)
+    mail_by_mail, name_by_mail, pw_by_mail = userbymail(emailh)
+    if not mail_by_mail:
+        errors.append('No user for this e-mail found')
+        errorExitUpdateUserPass(errors)
+
+    if not username:
+        username = name_by_mail
+    if password:
+        password = hash(password, salt)
+    else:
+        password = pw_by_mail
+
+    mail_by_user, name_by_user, pw_by_user = userbyuser(username)
+    if mail_by_user:
+        if mail_by_user != emailh:
+            errors.append('Username already used')
+            username = ''
+
+    if not re.match(r'[a-z][a-z0-9_]*$', username):
+        errors.append('Invalid characters in username')
+        username = ''
+    elif username.startswith('guest') or username.startswith('demo'):
+        errors.append('Reserved username')
+        username = ''
+
+    if errors:
+        errorExitUpdateUserPass(errors)
+
+    pending = '.pending{}{}'.format(os.getpid(), username)
+    url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
+
+    fp = open(pending, 'wt', encoding='utf-8')
+    fp.write('{}\t{}\t{}\tuserpass\n'.format(username, emailh, password))
+    fp.close()
+    os.chmod(pending, 0o600)
+
+    u.mail.sendmail(email, 'Confirm your account update', '\nVisit the url below to confirm your account update\n\n' + url)
+    u.html.exitMessage(
+        'Account update',
+        '''A message was sent to {}
+        <p>
+        Visit the link in that message to confirm your account update
+        <p>
+        If you don\'t receive an e-mail, please contact {}
+        '''.format(escape(email), contacthtml))
+
+
+def actionUpdateMail():
+    global email, username
+    email    = getval('email').lower()
+    username = getval('username')
+    password = getval('password')
+
+    errors = []
+
+    if not email:
+        errors.append('Missing value for e-mail address')
+    if not username:
+        errors.append('Missing value for username')
+    if not password:
+        errors.append('Missing password')
+    if errors:
+        errorExitUpdateMail(errors)
+
+    password = hash(password, salt)
+    emailh = hash(email, salt)
+
+    valid = True
+    if not re.match('[-.a-z0-9!#$%&\'*+/=?^_`{|}~]+@[-.a-z0-9]+$', email):
+        valid = False
+    elif email[0] == '.' or email[-1] == '.' or email.find('..') > -1 or email.find('.@') > -1 or email.find('@.') > -1:
+        valid = False
+    if not valid:
+        errors.append('Malformed e-mail address')
+        email = ''
+    if not valid:
+        errorExitUpdateMail(errors)
+
+    _, _, pw = userbyuser(username)
+    if pw != password:
+        errors.append("Invalid username / password")
+        errorExitUpdateMail(errors)
+
+    ma, _, _ = userbymail(emailh)
+    if ma:
+        errors.append("E-mail address already in use")
+        errorExitUpdateMail(errors)
+
+    pending = '.pending{}{}'.format(os.getpid(), username)
+    url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
+
+    fp = open(pending, 'wt', encoding='utf-8')
+    fp.write('{}\t{}\t{}\tmail\n'.format(username, emailh, password))
+    fp.close()
+    os.chmod(pending, 0o600)
+
+    u.mail.sendmail(email, 'Confirm your account update', '\nVisit the url below to confirm your account update\n\n' + url)
+    u.html.exitMessage(
+        'Account update',
+        '''A message was sent to {}
+        <p>
+        Visit the link in that message to confirm your account update
+        <p>
+        If you don\'t receive an e-mail, please contact {}
+        '''.format(escape(email), contacthtml))
+
+
 def actionConfirm():
     filename = '.pending' + re.sub('[^a-z0-9_]+', '', getval('id'))
 
@@ -206,21 +367,48 @@ def actionConfirm():
         u.html.exitMessage('Error', 'The url you try is not valid, or it has expired, or your account has already been confirmed')
 
     fp = open(filename, 'rt', encoding='utf-8')
-    username, email, password = fp.readline().strip('\r\n').split('\t')
+    username, email, password, action = fp.readline().strip('\r\n').split('\t')
     fp.close()
     os.remove(filename)
-    os.mkdir(username)
-    os.chdir(username)
-    fp = open('passwdh', 'wt', encoding='utf-8')
-    fp.write(password + '\n')
-    fp.close()
-    os.chmod('passwdh', 0o600)
-    fp = open('emailh', 'wt', encoding='utf-8')
-    fp.write(email + '\n')
-    fp.close()
-    open('TIMESTAMP', 'w').close()
 
-    u.html.exitMessage('Confirmed', 'Your account has been confirmed\n<p>\nYou can now log in at the <a href="home">home page</a>')
+    if action == 'create':
+
+        os.mkdir(username)
+        os.chdir(username)
+        fp = open('passwdh', 'wt', encoding='utf-8')
+        fp.write(password + '\n')
+        fp.close()
+        os.chmod('passwdh', 0o600)
+        fp = open('emailh', 'wt', encoding='utf-8')
+        fp.write(email + '\n')
+        fp.close()
+        open('TIMESTAMP', 'w').close()
+
+        u.html.exitMessage('Confirmed', 'Your account has been confirmed\n<p>\nYou can now log in at the <a href="home">home page</a>')
+
+    elif action == 'userpass':
+
+        _, un, _ = userbymail(email)
+        if un != username:
+            os.rename(un, username)
+        os.chdir(username)
+        fp = open('passwdh', 'wt', encoding='utf-8')
+        fp.write(password + '\n')
+        fp.close()
+        open('TIMESTAMP', 'w').close()
+
+        u.html.exitMessage('Confirmed', 'Your account update has been confirmed\n<p>\nYou can now log in at the <a href="home">home page</a>')
+
+    elif action == 'mail':
+        os.chdir(username)
+        fp = open('emailh', 'wt', encoding='utf-8')
+        fp.write(email + '\n')
+        fp.close()
+        open('TIMESTAMP', 'w').close()
+
+        u.html.exitMessage('Confirmed', 'Your account update has been confirmed\n<p>\nYou can now log in at the <a href="home">home page</a>')
+
+
 
 #| main
 
@@ -246,10 +434,10 @@ elif action == 'create':
     actionCreate()
 elif action == 'confirm':
     actionConfirm()
-elif action == 'edit':
-    actionEdit()
-elif action == 'remove':
-    actionRemove()
+elif action == 'updateuserpass':
+    actionUpdateUserPass()
+elif action == 'updatemail':
+    actionUpdateMail()
 else:
     u.html.exitMessage('Error', 'Invalid action')
 

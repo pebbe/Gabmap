@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Gabmap - Change username and/or password</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+  </head>
+<body>
+
+<div class="login"> 
+
+<b>There were one or more errors</b>
+<p>
+{0[errors]}
+<p>
+<b>Please try again</b>
+<p>
+
+<form action="{0[binurls]}account" method="post" accept-charset="utf-8" >
+<fieldset>
+<legend>Change username and/or password</legend>
+Your current e-mail:  <input type="text" name="email" size="40" value="{0[email]}">
+<p>
+New username: <input type="text" name="username" size="20">
+        (lower case letter, followed by
+	      lower case letters, numbers, underscores)
+<p>
+New password: <input type="password" name="password" size="20">
+<p>
+New password: <input type="password" name="password2" size="20"> (again)
+<p>
+<input type="hidden" name="action" value="updateuserpass">
+<input type="submit" value="Update account">
+</fieldset>
+</form>
+
+</div>
+
+</body>
+</html>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+coding:utf-8
+sgml-declaration:"HTML4.01/HTML4.decl"
+sgml-omittag:t
+sgml-shorttag:nil
+End:
+-->
