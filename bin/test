@@ -1,9 +1,11 @@
 #!/bin/bash
-. INIT.sh
-python3 test.py 2>&1
-
+echo 'Content-type: text/plain; charset=utf-8'
 echo
+
+. INIT.sh
 python3 -V
+echo
+python3 test.py 2>&1
 
 echo
 R --version

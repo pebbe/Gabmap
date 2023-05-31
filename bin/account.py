@@ -34,7 +34,7 @@ def userbymail(email):
             continue
         if fname.startswith('guest') or fname.startswith('demo'):
             continue
-        fp = open(fname + '/emailh', 'rt', encoding='utf-8')
+        fp = open(fname + '/email', 'rt', encoding='utf-8')
         em = fp.readline().strip()
         fp.close()
         if email == em:
@@ -49,7 +49,7 @@ def userbyuser(user):
         if user.startswith('guest') or user.startswith('demo'):
             em = ''
         else:
-            fp = open(user + '/emailh', 'rt', encoding='utf-8')
+            fp = open(user + '/email', 'rt', encoding='utf-8')
             em = fp.readline().strip()
             fp.close()
         fp = open(user + '/passwdh', 'rt', encoding='utf-8')
@@ -174,7 +174,6 @@ def actionCreate():
         errors.append('Passwords do not match')
 
     password = hash(password, salt)
-    emailh = hash(email, salt)
 
     if email:
         valid = True
@@ -185,7 +184,7 @@ def actionCreate():
         if not valid:
             errors.append('Malformed e-mail address')
             email = ''
-        elif userbymail(emailh)[0]:
+        elif userbymail(email)[0]:
             errors.append('E-mail address already used')
             email = ''
 
@@ -207,7 +206,7 @@ def actionCreate():
     url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
-    fp.write('{}\t{}\t{}\tcreate\n'.format(username, emailh, password))
+    fp.write('{}\t{}\t{}\tcreate\n'.format(username, email, password))
     fp.close()
     os.chmod(pending, 0o600)
 
@@ -252,8 +251,7 @@ def actionUpdateUserPass():
         errorExitUpdateUserPass(errors)
 
 
-    emailh = hash(email, salt)
-    mail_by_mail, name_by_mail, pw_by_mail = userbymail(emailh)
+    mail_by_mail, name_by_mail, pw_by_mail = userbymail(email)
     if not mail_by_mail:
         errors.append('No user for this e-mail found')
         errorExitUpdateUserPass(errors)
@@ -267,7 +265,7 @@ def actionUpdateUserPass():
 
     mail_by_user, name_by_user, pw_by_user = userbyuser(username)
     if mail_by_user:
-        if mail_by_user != emailh:
+        if mail_by_user != email:
             errors.append('Username already used')
             username = ''
 
@@ -285,7 +283,7 @@ def actionUpdateUserPass():
     url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
-    fp.write('{}\t{}\t{}\tuserpass\n'.format(username, emailh, password))
+    fp.write('{}\t{}\t{}\tuserpass\n'.format(username, email, password))
     fp.close()
     os.chmod(pending, 0o600)
 
@@ -318,7 +316,6 @@ def actionUpdateMail():
         errorExitUpdateMail(errors)
 
     password = hash(password, salt)
-    emailh = hash(email, salt)
 
     valid = True
     if not re.match('[-.a-z0-9!#$%&\'*+/=?^_`{|}~]+@[-.a-z0-9]+$', email):
@@ -336,7 +333,7 @@ def actionUpdateMail():
         errors.append("Invalid username / password")
         errorExitUpdateMail(errors)
 
-    ma, _, _ = userbymail(emailh)
+    ma, _, _ = userbymail(email)
     if ma:
         errors.append("E-mail address already in use")
         errorExitUpdateMail(errors)
@@ -345,7 +342,7 @@ def actionUpdateMail():
     url = '{}account?action=confirm&id={}{}'.format(binurl, os.getpid(), username)
 
     fp = open(pending, 'wt', encoding='utf-8')
-    fp.write('{}\t{}\t{}\tmail\n'.format(username, emailh, password))
+    fp.write('{}\t{}\t{}\tmail\n'.format(username, email, password))
     fp.close()
     os.chmod(pending, 0o600)
 
@@ -379,7 +376,7 @@ def actionConfirm():
         fp.write(password + '\n')
         fp.close()
         os.chmod('passwdh', 0o600)
-        fp = open('emailh', 'wt', encoding='utf-8')
+        fp = open('email', 'wt', encoding='utf-8')
         fp.write(email + '\n')
         fp.close()
         open('TIMESTAMP', 'w').close()
@@ -401,7 +398,7 @@ def actionConfirm():
 
     elif action == 'mail':
         os.chdir(username)
-        fp = open('emailh', 'wt', encoding='utf-8')
+        fp = open('email', 'wt', encoding='utf-8')
         fp.write(email + '\n')
         fp.close()
         open('TIMESTAMP', 'w').close()

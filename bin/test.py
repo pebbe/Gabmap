@@ -11,20 +11,11 @@ __date__ = "2010/04/24"
 
 import cgitb; cgitb.enable(format="text")
 
-import os, re, stat, sys, time
+import os, sys
 
 import u.config
 
 
-#| globals
-
-#| functions
-
-
-
-#| main
-
-sys.stdout.write('Content-type: text/plain; charset=utf-8\n\n')
 
 sys.stdout.write('To do: check if mouse-over plot in "reference point maps" works with current version of R\n\n')
 
@@ -45,7 +36,7 @@ sys.stdout.write('\n')
 sys.stdout.flush()
 os.system('free -m')
 sys.stdout.write('\n')
-       
+
 sys.stdout.write('stdout: {}  (should be UTF-8)\n\n'.format(sys.stdout.encoding))
 
 sys.stdout.flush()

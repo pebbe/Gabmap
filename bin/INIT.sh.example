@@ -77,7 +77,3 @@ export CONTACTNAME="Your Name"
 
 # This overrides CONTACT and CONTACTNAME, and defines a complete footer in HTML
 #export CONTACTLINE="For help, please contact <a href=\"mailto:yourname@yourdomain\">me</a>"
-
-# A random string used for hashing of sensitive information
-# ONCE SET, DON'T EVER CHANGE THIS OR ALL LOGINS WILL FAIL
-export SALT="odieof joweijf woiu4u5jfr"

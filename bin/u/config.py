@@ -12,15 +12,15 @@ maxprojects = int(os.environ['MAXPROJECTS'])
 
 secret = os.environ['SECRET']
 
-datadir   = os.environ['DATADIR']
-appdir    = os.environ['APPDIR']
-appurl    = os.environ['APPURL']
-appurls   = os.environ['APPURLS']
-apprel    = os.environ['APPREL']
-bindir    = os.environ['BINDIR']
-binurl    = os.environ['BINURL']
-binurls   = os.environ['BINURLS']
-binrel    = os.environ['BINREL']
+datadir = os.environ['DATADIR']
+appdir  = os.environ['APPDIR']
+appurl  = os.environ['APPURL']
+appurls = os.environ['APPURLS']
+apprel  = os.environ['APPREL']
+bindir  = os.environ['BINDIR']
+binurl  = os.environ['BINURL']
+binurls = os.environ['BINURLS']
+binrel  = os.environ['BINREL']
 
 assert datadir[-1] == '/'
 assert appdir[-1] == '/'
@@ -51,5 +51,37 @@ if contact == '':
 if contactname == '':
     contactname = mailfrom
 
-salt = os.environ.get('SALT', '')
+if usermode != 'single':
+    _mdir = datadir + '.master'
+    _salt = _mdir + '/salt'
+    try:
+        salt = open(_salt, 'rt').read().strip()
+    except:
+        salt = os.urandom(16).hex()
+
+        try:
+            os.mkdir(_mdir)
+        except:
+            pass
+        with open(_salt, 'wt') as _fp:
+            _fp.write(salt + '\n')
+        os.chmod(_salt, 0o400)
+
+        from u.crypt import hash
+
+        for _item in os.listdir(datadir):
+            _filename = datadir + _item
+            if not os.path.isdir(_filename):
+                continue
+            if _item[0] == '.':
+                continue
+            _name = _filename + '/passwd'
+            if os.access(_name, os.F_OK):
+                with open(_name, 'rt') as _fp:
+                    _txt = _fp.read()
+                _txt = _txt.strip()
+                _txt = hash(_txt, salt)
+                with open(_name + 'h', 'wt') as _fp:
+                    _fp.write(_txt + '\n')
+                os.remove(_name)
 
